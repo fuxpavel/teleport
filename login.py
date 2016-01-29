@@ -1,9 +1,15 @@
 import falcon
+import json
 
 class Login(object):
 
     def on_post(self, req, resp):
-        resp.data = str(req.get_param('username'))
+        body = req.stream.read()
+        userdata = json.loads(body)
+	username = userdata['username']
+	password = userdata['password']
+        resp.body = 'username: {:s}, password: {:s}'.format(username,
+                                                            password)
         resp.content_type = 'text/html'
         resp.status = falcon.HTTP_200
         
