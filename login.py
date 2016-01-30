@@ -10,7 +10,7 @@ class Login(object):
 	password = userdata['password']
         resp.body = '{{username: {:s}, password: {:s}}}'.format(username,
                                                             password)
-        resp.content_type = 'text/json'
+        resp.content_type = 'application/json'
         resp.status = falcon.HTTP_200
         
 
