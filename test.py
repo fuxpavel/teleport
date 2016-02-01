@@ -1,16 +1,28 @@
 import requests
 import json
 import unittest
+import subprocess
+import time
 
-class Tests(unittest.TestCase):
+class TestPostRequest(unittest.TestCase):
+    @classmethod
+    def setUpClass(self):
+        # setting up the server
+        self.server = subprocess.Popen(('gunicorn', 'server'), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        time.sleep(1) # let server start
 
-    def setUp(self):
-        self.send_data = { 'username': 'alex',
-                           'password': '1234' }
+        self.send_data = {'username': 'alex',
+                          'password': '1234'}
+        # ret = '{"username": "alex", "password": "1234"}'
         ret = post(self.send_data)
         self.ret_data = json.loads(ret)
 
-    def tearDown(self):
+    @classmethod
+    def tearDownClass(self):
+        # shutting down the server
+        self.server.kill()
+        subprocess.call(['pkill', 'gunicorn']) # getting rid of additional processes
+
         del self.send_data
         del self.ret_data
 
@@ -19,7 +31,8 @@ class Tests(unittest.TestCase):
 
     def test_passwords(self):
         self.assertEqual(self.send_data['password'], self.ret_data['password'], "passwords don't match")
-        
+
+
 def post(payload):
     url = 'http://localhost:8000/login'
     r = requests.post(url, json=payload)
@@ -27,4 +40,5 @@ def post(payload):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    suite = unittest.TestLoader().loadTestsFromTestCase(TestPostRequest)
+    unittest.TextTestRunner(verbosity=2).run(suite)
