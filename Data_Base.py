@@ -3,9 +3,12 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-engine = create_engine('sqlite:///Teleport_DB.db')
 Base = declarative_base()
+DB_URL = 'sqlite:///Teleport_DB.db'
 
+def get_engine():
+    return create_engine(DB_URL)
+    
 class User(Base):
 
     __tablename__ = 'User'
@@ -13,7 +16,12 @@ class User(Base):
     username = Column(String, unique=True, nullable=False)
     password = Column(String, nullable=False)
 
-    def register_user(self, username, password):
+    def init_data_base(self, engine=None):
+        engine = engine if engine else get_engine()
+        Base.metadata.create_all(engine)
+
+    def register_user(self, username, password, engine=None):
+        engine = engine if engine else get_engine()
         Base.metadata.bind = engine
         DBSession = sessionmaker(bind=engine)
         session = DBSession()
@@ -25,7 +33,8 @@ class User(Base):
             return False
         return True
 
-    def login_user(self, username, password):
+    def login_user(self, username, password, engine=None):
+        engine = engine if engine else get_engine()
         DBSession = sessionmaker()
         DBSession.bind = engine
         session = DBSession()
@@ -35,12 +44,11 @@ class User(Base):
         else:
             return False
 
-    def print_DB(self):
+    def print_DB(self, engine=None):
+        engine = engine if engine else get_engine()
         DBSession = sessionmaker()
-        DBSession.bind = engine
+        DBSession.bind = self.engine
         session = DBSession()
         info = session.query(User).all()
         for i in info:
             print i.username, i.password
-
-Base.metadata.create_all(engine)
