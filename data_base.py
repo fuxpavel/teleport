@@ -35,8 +35,8 @@ class User(Base):
 
     def login_user(self, username, password, engine=None):
         engine = engine if engine else get_engine()
-        DBSession = sessionmaker()
-        DBSession.bind = engine
+        Base.metadata.bind = engine
+        DBSession = sessionmaker(bind=engine)
         session = DBSession()
         info = session.query(User).filter_by(username=username).all()
         if info and info[0].password == password:

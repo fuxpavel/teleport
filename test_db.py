@@ -1,4 +1,4 @@
-from Data_Base import User
+from data_base import User
 import unittest
 from sqlalchemy import create_engine
 
@@ -8,6 +8,7 @@ class TestDataBase(unittest.TestCase):
         self.engine = create_engine('sqlite:///:memory:')
         db = User()
         db.init_data_base(self.engine)
+        de = User()
 
     def test_register(self):
         db = User()
