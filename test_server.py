@@ -3,65 +3,84 @@ import json
 import unittest
 import subprocess
 import socket
-from retrying import retry
+import time
 
 
 class Server:
     def start(self):
-        self.server = subprocess.Popen(['gunicorn', 'server'])
+        self.server = subprocess.Popen(['gunicorn', 'server'], stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                                       stderr=subprocess.PIPE)
 
-    @staticmethod
     def shutdown(self):
         self.server.kill()
-        subprocess.call(['pkill', 'gunicorn'])
+        subprocess.call(['pkill', 'gunicorn'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+    def check_server(self):
+        # attempt to connect to localhost/8000
+        ip = '127.0.0.1'
+        port = 8000
+        timeout = 6  # in seconds
+        delay = 0.5  # in seconds
+        sock = socket.socket()
+        start_time = time.time()
+        status = False
+        while time.time() - start_time < timeout and not status:
+            try:
+                sock.connect((ip, port))
+            except socket.error as e:
+                status = False
+            else:
+                status = True
+            time.sleep(delay)
+        sock.close()
+        return status
 
 
-@retry(stop_max_delay=60000, wait_fixed=2000)
-def check_server(sock):
-    # attempt to connect to localhost/8000
-    ip = '127.0.0.1'
-    port = 8000
-    sock.connect((ip, port))
-    return True
+class ServerCommunication:
+    @staticmethod
+    def login(payload):
+        url = 'http://localhost:8000/api/login'
+        r = requests.post(url, json=payload)
+        return r.text
 
-
-def post(payload):
-    url = 'http://localhost:8000/login'
-    r = requests.post(url, json=payload)
-    return r.text
+    @staticmethod
+    def register(payload):
+        url = 'http://localhost:8000/api/register'
+        r = requests.post(url, json=payload)
+        return r.text
 
 
 class TestPostRequest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         # setting up the server
-        Server.start()
-        sock = socket.socket()
-        if not check_server(sock):
-            sock.close()
+        cls.server = Server()
+        cls.server.start()
+        if not cls.server.check_server():
             raise Exception('Server could not be started')
-        sock.close()
 
-        cls.send_data = {'username': 'alex',
-                         'password': '1234'}
-        # ret = '{"username": "alex", "password": "1234"}'
-        ret = post(cls.send_data)
-        cls.ret_data = json.loads(ret)
+        # communicating
+        cls.register_send_data = {'username': 'alex', 'password': '1234'}
+        cls.login_send_data = {'username': 'alex', 'password': '1234'}
+        cls.register_ret_data = json.loads(ServerCommunication.login(cls.register_send_data))
+        cls.login_ret_data = json.loads(ServerCommunication.login(cls.login_send_data))
 
     @classmethod
     def tearDownClass(cls):
         # shutting down the server
-        cls.server.kill()
-        subprocess.call(['pkill', 'gunicorn'])  # getting rid of additional processes
+        cls.server.shutdown()
 
-        del cls.send_data
-        del cls.ret_data
+    def testRegisterUsername(self):
+        self.assertEquals(self.register_send_data['username'], self.register_ret_data['username'])
 
-    def test_username(self):
-        self.assertEqual(self.send_data['username'], self.ret_data['username'], "usernames don't match")
+    def testRegisterPassword(self):
+        self.assertEquals(self.register_send_data['password'], self.register_ret_data['password'])
 
-    def test_passwords(self):
-        self.assertEqual(self.send_data['password'], self.ret_data['password'], "passwords don't match")
+    def testLoginUsername(self):
+        self.assertEquals(self.login_send_data['username'], self.login_ret_data['username'])
+
+    def testLoginPassword(self):
+        self.assertEquals(self.login_send_data['password'], self.login_ret_data['password'])
 
 
 if __name__ == '__main__':
