@@ -2,4 +2,4 @@ all: test
 
 test:
 	@echo "\nRunning test:\n"
-	@python -m unittest test
+	@python -m unittest discover
