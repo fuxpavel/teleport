@@ -6,7 +6,7 @@ import socket
 import time
 
 
-class Server:
+class Server(object):
     def start(self):
         self.server = subprocess.Popen(['gunicorn', 'server'], stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                                        stderr=subprocess.PIPE)
@@ -36,7 +36,7 @@ class Server:
         return status
 
 
-class ServerCommunication:
+class ServerCommunication(object):
     @staticmethod
     def login(payload):
         url = 'http://localhost:8000/api/login'
