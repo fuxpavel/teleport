@@ -1,20 +1,24 @@
 from sqlalchemy import Column, Integer, String
+import sqlalchemy
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy import update
 
 Base = declarative_base()
 DB_URL = 'sqlite:///Teleport_DB.db'
 
+
 def get_engine():
     return create_engine(DB_URL)
-    
-class User(Base):
 
+
+class User(Base):
     __tablename__ = 'User'
     id = Column(Integer, primary_key=True)
     username = Column(String, unique=True, nullable=False)
     password = Column(String, nullable=False)
+    ip = Column(String)
 
     def init_data_base(self, engine=None):
         engine = engine if engine else get_engine()
@@ -35,8 +39,8 @@ class User(Base):
 
     def login_user(self, username, password, engine=None):
         engine = engine if engine else get_engine()
-        DBSession = sessionmaker()
-        DBSession.bind = engine
+        Base.metadata.bind = engine
+        DBSession = sessionmaker(bind=engine)
         session = DBSession()
         info = session.query(User).filter_by(username=username).all()
         if info and info[0].password == password:
@@ -44,11 +48,25 @@ class User(Base):
         else:
             return False
 
-    def print_DB(self, engine=None):
+    def update_user_ip(self, username, ip_address, engine=None):
+        engine = engine if engine else get_engine()
+        Base.metadata.bind = engine
+        DBSession = sessionmaker(bind=engine)
+        session = DBSession()
+        if session.query(User).filter_by(username=username).update({"ip": ip_address}):
+            try:
+                session.commit()
+            except:
+                return False
+            return True
+        else:
+            return False
+
+    def print_db(self, engine=None):
         engine = engine if engine else get_engine()
         DBSession = sessionmaker()
-        DBSession.bind = self.engine
+        DBSession.bind = engine
         session = DBSession()
         info = session.query(User).all()
         for i in info:
-            print i.username, i.password
+            print str(i.id)+")", i.username, i.password, i.ip
