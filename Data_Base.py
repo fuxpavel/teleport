@@ -1,9 +1,7 @@
-from sqlalchemy import Column, Integer, String, Table, ForeignKey
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy import update
 
 Base = declarative_base()
 DB_URL = 'sqlite:///Teleport_DB.db'
@@ -16,8 +14,8 @@ def get_engine():
 def get_session(engine=None):
         engine = engine if engine else get_engine()
         Base.metadata.bind = engine
-        DBSession = sessionmaker(bind=engine)
-        session = DBSession()
+        #DBSession = sessionmaker(bind=engine)
+        session = sessionmaker(bind=engine)()
         return session
 
 
@@ -71,6 +69,75 @@ class User(Base):
             print str(i.id)+")", i.username, i.password, i.ip
 
 
+class FriendRequest(Base):
+    __tablename__ = 'Friend_request'
+    id = Column(Integer, primary_key=True)
+    sender = Column(String, ForeignKey(User.username))
+    reply = Column(String, ForeignKey(User.username))
+
+    def init_data_base(self, engine=None):
+        engine = engine if engine else get_engine()
+        Base.metadata.create_all(engine)
+
+    def check_waiting_request(self, reply, engine=None):
+        session = get_session(engine)
+        waiting = session.query(FriendRequest).filter_by(reply=reply).all()
+        return waiting
+
+    def confirm_request(self, sender, reply, engine=None):
+        session = get_session(engine)
+        db = Friendship()
+        if db.create_friendship(sender, reply, engine):
+            session.query(FriendRequest).filter_by(sender=sender, reply=reply).delete()
+            try:
+                session.commit()
+            except:
+                return False
+            return True
+        else:
+            return False
+
+    def denial_request(self, sender, reply, engine=None):
+        session = get_session(engine)
+        session.query(FriendRequest).filter_by(sender=sender, reply=reply).delete()
+        try:
+            session.commit()
+        except:
+            return False
+        return True
+
+    def send_friend_request(self, sender, reply, engine=None):
+        session = get_session(engine)
+        db = User()
+        f = Friendship()
+        if db.check_exist_user(sender, engine) and db.check_exist_user(reply, engine):
+            if not f.check_friendship(sender, reply, engine) and not self.check_friend_request(sender, reply, engine):
+                new_request = FriendRequest(sender=sender, reply=reply)
+                session.add(new_request)
+                try:
+                    session.commit()
+                except:
+                    return False
+                return True
+            else:
+                return False
+        else:
+            return False
+
+    def check_friend_request(self, sender, reply, engine=None):
+        session = get_session(engine)
+        if session.query(FriendRequest).filter_by(sender=sender, reply=reply).all():
+            return True
+        else:
+            return False
+
+    def print_connection(self, engine=None):
+        session = get_session(engine)
+        info = session.query(FriendRequest).all()
+        for i in info:
+            print i.sender, "<-->", i.reply
+
+
 class Friendship(Base):
     __tablename__ = 'Friendship'
     id = Column(Integer, primary_key=True)
@@ -81,7 +148,7 @@ class Friendship(Base):
         session = get_session(engine)
         db = User()
         if db.check_exist_user(friend1, engine) and db.check_exist_user(friend2, engine):
-            if not self.check_friendship(friend1, friend2, engine):
+            if not self.check_friendship(friend1, friend2, engine) :
                 new_friendship = Friendship(friend1=friend1, friend2=friend2)
                 session.add(new_friendship)
                 try:
