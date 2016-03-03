@@ -74,6 +74,7 @@ class FriendRequest(Base):
     id = Column(Integer, primary_key=True)
     sender = Column(String, ForeignKey(User.username))
     reply = Column(String, ForeignKey(User.username))
+    status = Column(String)
 
     def init_data_base(self, engine=None):
         engine = engine if engine else get_engine()
@@ -82,7 +83,10 @@ class FriendRequest(Base):
     def check_waiting_request(self, reply, engine=None):
         session = get_session(engine)
         waiting = session.query(FriendRequest).filter_by(reply=reply).all()
-        return waiting
+        lst = []
+        for i in waiting:
+            lst.append(str(i.sender))
+        return lst
 
     def confirm_request(self, sender, reply, engine=None):
         session = get_session(engine)
@@ -148,7 +152,7 @@ class Friendship(Base):
         session = get_session(engine)
         db = User()
         if db.check_exist_user(friend1, engine) and db.check_exist_user(friend2, engine):
-            if not self.check_friendship(friend1, friend2, engine) :
+            if not self.check_friendship(friend1, friend2, engine):
                 new_friendship = Friendship(friend1=friend1, friend2=friend2)
                 session.add(new_friendship)
                 try:
