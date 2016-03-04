@@ -10,16 +10,17 @@ class Friendship(object):
     def on_post(self, req, resp):
         userdata = json.loads(req.stream.read())
 
-        if req.path == '/api/friendship':
-            sender = userdata['sender']
-            reply = userdata['reply']
+        sender = userdata['sender']
+        reply = userdata['reply']
 
-            if self.db.send_friend_request(sender, reply):
-                status = 'success'
-            else:
-                status = 'failure'
+        if self.db.send_friend_request(sender, reply):
+            status = 'success'
+        else:
+            status = 'failure'
 
-            resp.body = '{"sender": "%s","reply":"%s" ,"status": "%s"}' % (sender, reply, status)
+        resp.body = '{"sender": "%s","reply":"%s" ,"status": "%s"}' % (sender, reply, status)
+        resp.content_type = 'application/json'
+        resp.status = falcon.HTTP_200
 
     def on_get(self, req, resp):
         userdata = json.loads(req.stream.read())
@@ -57,5 +58,3 @@ class FriendshipResponse:
         resp.body = '{"sender": "%s","reply":"%s" ,"status": "%s"}' % (sender, reply, status)
         resp.content_type = 'application/json'
         resp.status = falcon.HTTP_200
-
-
