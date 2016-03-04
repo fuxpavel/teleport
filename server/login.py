@@ -1,10 +1,10 @@
 import falcon
 import json
-from db_accessor import get_db
+from db_accessor import get_user_db
 
 class Login(object):
     def __init__(self):
-        self.db = get_db()
+        self.db = get_user_db()
 
     def on_post(self, req, resp):
         body = req.stream.read()
@@ -24,7 +24,7 @@ class Login(object):
 
 class Register(object):
     def __init__(self):
-        self.db = get_db()
+        self.db = get_user_db()
 
     def on_post(self, req, resp):
         body = req.stream.read()

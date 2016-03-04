@@ -1,7 +1,6 @@
 import falcon
 import login
 import friendship
-from wsgiref import simple_server
 
 api = application = falcon.API()
 
@@ -14,7 +13,3 @@ api.add_route('/api/login', login_res)
 api.add_route('/api/register', register_res)
 api.add_route('/api/friendship', friendship_res)
 api.add_route('/api/friendship/response', friendship_response_res)
-
-if __name__ == '__main__':
-    httpd = simple_server.make_server('127.0.0.1', 8000, api)
-    httpd.serve_forever()

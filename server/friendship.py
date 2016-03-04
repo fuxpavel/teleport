@@ -1,7 +1,6 @@
 import falcon
 import json
 from db_accessor import get_friend_request_db
-from werkzeug.wrappers import Request, Response
 
 class Friendship(object):
     def __init__(self):
