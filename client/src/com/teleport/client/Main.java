@@ -1,13 +1,13 @@
 package com.teleport.client;
 
 import org.apache.commons.cli.*;
-import org.json.simple.JSONObject;
 
+import java.io.IOException;
 import java.util.Scanner;
 
 public class Main
 {
-    public static void main(String[] args)
+    public static void main(String[] args) throws IOException, org.json.simple.parser.ParseException
     {
         Scanner sc = new Scanner(System.in);
 
@@ -43,23 +43,23 @@ public class Main
             {
                 if (cmd.hasOption("h"))
                 {
-                    formatter.printHelp("option", options);
                     validInput = true;
+                    formatter.printHelp("option", options);
                 }
                 if (cmd.hasOption("r"))
                 {
-                    register();
                     validInput = true;
+                    register();
                 }
                 if (cmd.hasOption("l"))
                 {
-                    login();
                     validInput = true;
+                    login();
                 }
                 if (cmd.hasOption("q"))
                 {
-                    work = false;
                     validInput = true;
+                    work = false;
                 }
                 if (!validInput)
                 {
@@ -69,31 +69,41 @@ public class Main
         }
     }
 
-    private static void register()
+    private static void register() throws IOException, org.json.simple.parser.ParseException
     {
         Scanner sc = new Scanner(System.in);
-        Register registerHandler = new Register();
+        Client client = new Client();
         System.out.print("username: ");
         String username = sc.nextLine();
         System.out.print("password: ");
         String password = sc.nextLine();
-        JSONObject data = new JSONObject();
-        data.put("username", username);
-        data.put("password", password);
-        registerHandler.post(data);
+        boolean result = client.register(username, password);
+        if (result)
+        {
+            System.out.println("Registered successfully");
+        }
+        else
+        {
+            System.out.println("Could not register");
+        }
     }
 
-    private static void login()
+    private static void login() throws IOException, org.json.simple.parser.ParseException
     {
         Scanner sc = new Scanner(System.in);
-        Login loginHandler = new Login();
+        Client client = new Client();
         System.out.print("username: ");
         String username = sc.nextLine();
         System.out.print("password: ");
         String password = sc.nextLine();
-        JSONObject data = new JSONObject();
-        data.put("username", username);
-        data.put("password", password);
-        loginHandler.post(data);
+        boolean result = client.login(username, password);
+        if (result)
+        {
+            System.out.println("Logged in successfully");
+        }
+        else
+        {
+            System.out.println("Could not login");
+        }
     }
 }
