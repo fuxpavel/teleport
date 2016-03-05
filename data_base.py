@@ -209,3 +209,8 @@ class Friendship(Base):
         info = session.query(Friendship).all()
         for i in info:
             print i.friend1, "<-->", i.friend2
+
+
+
+
+
