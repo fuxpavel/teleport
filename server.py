@@ -1,7 +1,7 @@
-import falcon
 import login
 import friendship
 from wsgiref import simple_server
+import falcon
 
 api = application = falcon.API()
 

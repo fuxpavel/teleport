@@ -1,7 +1,7 @@
 import falcon
 import json
 from db_accessor import get_friend_request_db
-from werkzeug.wrappers import Request, Response
+
 
 class Friendship(object):
     def __init__(self):
@@ -33,7 +33,6 @@ class Friendship(object):
 
 
 class FriendshipResponse:
-
     def __init__(self):
         self.db = get_friend_request_db()
 
@@ -54,6 +53,8 @@ class FriendshipResponse:
                 status = 'success'
             else:
                 status = 'failure'
+        else:
+            status = 'failure'
 
         resp.body = '{"sender": "%s","reply":"%s" ,"status": "%s"}' % (sender, reply, status)
         resp.content_type = 'application/json'
