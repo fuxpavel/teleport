@@ -21,8 +21,8 @@ class TestDataBase(unittest.TestCase):
     def test_update_ip(self):
         db = User()
         db.register_user("ben", "1234", self.engine)
-        self.assertTrue(db.update_user_ip("ben", "127.0.0.1", self.engine))
-        self.assertFalse(db.update_user_ip("alex", "127.0.0.1", self.engine))
+        t = db.login_user("ben", "1234", self.engine)
+        self.assertTrue(db.set_user_ip(t, "127.0.0.1", self.engine))
 
     def test_create_friendship(self):
         db = User()
@@ -32,7 +32,6 @@ class TestDataBase(unittest.TestCase):
         f1 = db.login_user("ben", "123", self.engine)
         f2 = db.login_user("alex", "123", self.engine)
         self.assertTrue(f.create_friendship(f1, f2, self.engine))
-        self.assertFalse(f.create_friendship(f2, "pavel", self.engine))
 
     def test_send_friend_request(self):
         db = User()

@@ -83,14 +83,21 @@ class User(Base):
         session = get_session(engine)
         return session.query(User).filter_by(username=username).all()
 
-    def update_user_ip(self, username, ip_address, engine=None):
+    def set_user_ip(self, token, ip_address, engine=None):
         session = get_session(engine)
-        if session.query(User).filter_by(username=username).update({"ip": ip_address}):
+        if session.query(User).filter_by(token=token).update({"ip": ip_address}):
             try:
                 session.commit()
             except:
                 return False
             return True
+        else:
+            return False
+
+    def get_user_ip(self, token, engine=None):
+        session = get_session(engine)
+        if self.check_exist_user_token(token):
+            return session.query(User).filter_by(token=token).all()[0].ip
         else:
             return False
 
@@ -102,11 +109,10 @@ class User(Base):
 
 
 class FriendRequest(Base):
-    __tablename__ = 'Friend_request'
+    __tablename__ = 'FriendRequest'
     id = Column(Integer, primary_key=True)
     sender = Column(String, ForeignKey(User.token))
     reply = Column(String, ForeignKey(User.token))
-    status = Column(String)
 
     def init_data_base(self, engine=None):
         engine = engine if engine else get_engine()
@@ -115,9 +121,10 @@ class FriendRequest(Base):
     def check_waiting_request(self, reply, engine=None):
         session = get_session(engine)
         waiting = session.query(FriendRequest).filter_by(reply=reply).all()
+        db = User()
         lst = []
         for i in waiting:
-            lst.append(str(i.sender))
+            lst.append(db.get_username_by_token(i.sender))
         return lst
 
     def confirm_request(self, sender, reply, engine=None):
@@ -209,8 +216,3 @@ class Friendship(Base):
         info = session.query(Friendship).all()
         for i in info:
             print i.friend1, "<-->", i.friend2
-
-
-
-
-
