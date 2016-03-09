@@ -21,16 +21,17 @@ class TestDataBase(unittest.TestCase):
     def test_update_ip(self):
         db = User()
         db.register_user("ben", "1234", self.engine)
-        self.assertTrue(db.update_user_ip("ben", "127.0.0.1", self.engine))
-        self.assertFalse(db.update_user_ip("alex", "127.0.0.1", self.engine))
+        t = db.login_user("ben", "1234", self.engine)
+        self.assertTrue(db.set_user_ip(t, "127.0.0.1", self.engine))
 
     def test_create_friendship(self):
         db = User()
         f = Friendship()
         db.register_user("alex", "123", self.engine)
         db.register_user("ben", "123", self.engine)
-        self.assertTrue(f.create_friendship("ben", "alex", self.engine))
-        self.assertFalse(f.create_friendship("alex", "pavel", self.engine))
+        f1 = db.login_user("ben", "123", self.engine)
+        f2 = db.login_user("alex", "123", self.engine)
+        self.assertTrue(f.create_friendship(f1, f2, self.engine))
 
     def test_send_friend_request(self):
         db = User()
@@ -38,16 +39,18 @@ class TestDataBase(unittest.TestCase):
         db.init_data_base(self.engine)
         db.register_user("ben", "123", self.engine)
         db.register_user("alex", "123", self.engine)
-        waiting = r.check_waiting_request("ben", self.engine)
+        f1 = db.login_user("ben", "123", self.engine)
+        f2 = db.login_user("alex", "123", self.engine)
+        waiting = r.check_waiting_request(f1, self.engine)
         self.assertEqual(len(waiting), 0)
-        self.assertTrue(r.send_friend_request("alex", "ben", self.engine))
-        waiting = r.check_waiting_request("ben", self.engine)
+        self.assertTrue(r.send_friend_request(f2, f1, self.engine))
+        waiting = r.check_waiting_request(f1, self.engine)
         self.assertEqual(len(waiting), 1)
-        self.assertTrue(r.denial_request("alex", "ben", self.engine))
-        waiting = r.check_waiting_request("ben", self.engine)
+        self.assertTrue(r.denial_request(f2, f1, self.engine))
+        waiting = r.check_waiting_request(f1, self.engine)
         self.assertEqual(len(waiting), 0)
-        self.assertTrue(r.send_friend_request("alex", "ben", self.engine))
-        self.assertTrue(r.confirm_request("alex", "ben", self.engine))
+        self.assertTrue(r.send_friend_request(f2, f1, self.engine))
+        self.assertTrue(r.confirm_request(f2, f1, self.engine))
         self.assertEqual(len(waiting), 0)
 
 
