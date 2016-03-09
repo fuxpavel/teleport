@@ -50,9 +50,12 @@ public class Client
         return friendshipHandler.getFriendRequests();
     }
 
-    public void addFriends(String friend) throws IOException
+    public boolean addFriends(String friend) throws IOException, ParseException
     {
-        friendshipHandler.addFriends(friend);
+        HttpResponse response = friendshipHandler.addFriends(friend);
+        String body = EntityUtils.toString(response.getEntity());
+        JSONObject json = (JSONObject) (new JSONParser().parse(body));
+        return json.get("status").equals("success");
     }
 
     public boolean sendFile(String reciever, List<String> fileNames) throws IOException

@@ -9,7 +9,6 @@ class Friendship(object):
 
     def on_post(self, req, resp):
         userdata = json.loads(req.stream.read())
-        print userdata
         sender = req.get_header('Authorization')
         reply = userdata['reply']
         u = User()

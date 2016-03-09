@@ -11,6 +11,13 @@ import java.util.List;
 
 public class PostLoginInterface
 {
+    private Client client;
+
+    public PostLoginInterface() throws IOException
+    {
+        client = new Client();
+    }
+
     @Command
     public void getFriendRequests() throws IOException, ParseException
     {
@@ -20,9 +27,16 @@ public class PostLoginInterface
     }
 
     @Command
-    public void addFriend(String friend) throws IOException
+    public void addFriend(String friend) throws IOException, ParseException
     {
-        client.addFriends(friend);
+        if (client.addFriends(friend))
+        {
+            System.out.println("Request sent");
+        }
+        else
+        {
+            System.out.println("Couldn't send request");
+        }
     }
 
     @Command
@@ -43,12 +57,5 @@ public class PostLoginInterface
     public void recieve(String sender)
     {
 
-    }
-
-    private Client client;
-
-    public PostLoginInterface() throws IOException
-    {
-        client = new Client();
     }
 }

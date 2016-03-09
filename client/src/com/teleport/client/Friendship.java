@@ -56,10 +56,33 @@ public class Friendship
             JSONObject sendData = new JSONObject(map);
 
             HttpPost request = new HttpPost(SERVER_URL);
-            StringEntity params = new StringEntity(sendData.toJSONString());
+            request.addHeader("Authorization", authorizationHandler.getToken());
             request.setHeader("Content-Type", "application/json");
+            StringEntity params = new StringEntity(sendData.toJSONString());
             request.setEntity(params);
             return httpClient.execute(request);
+        }
+    }
+
+    private class RequestResponder
+    {
+        private static final String ADDRESS = "127.0.0.1";
+        private static final String PORT = "8000";
+        private static final String SERVER_URL = "http://" + ADDRESS + ":" + PORT + "/api/friendship/response"
+
+        public void post(String friend, boolean status) throws IOException
+        {
+            Map<String, String> map = new HashMap<>();
+            map.put("reply", friend);
+            map.put("status", status ? "confirn" : "denial");
+            JSONObject sendData = new JSONObject(map);
+
+            HttpPost request = new HttpPost(SERVER_URL);
+            request.addHeader("Authorization", authorizationHandler.getToken());
+            request.setHeader("Content-Type", "application/json");
+            StringEntity params = new StringEntity(sendData.toJSONString());
+            request.setEntity(params);
+            httpClient.execute(request);
         }
     }
 
