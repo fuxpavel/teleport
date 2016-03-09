@@ -41,15 +41,12 @@ class User(Base):
         return True
 
     def login_user(self, username, password, engine=None):
-<<<<<<< HEAD:server/data_base.py
         engine = engine if engine else get_engine()
         Base.metadata.bind = engine
         DBSession = sessionmaker(bind=engine)
         session = DBSession()
         info = session.query(User).filter_by(username=username).all()
-=======
         info = self.check_exist_user(username, engine)
->>>>>>> bensrep/master:Data_Base.py
         if info and info[0].password == password:
             return True
         else:

@@ -44,9 +44,9 @@ public class Friendship
 
     private class FriendAdder
     {
-        private final String ADDRESS = "127.0.0.1";
-        private final String PORT = "8000";
-        private final String SERVER_URL = "http://" + ADDRESS + ":" + PORT + "/api/friendship/";
+        private static final String ADDRESS = "127.0.0.1";
+        private static final String PORT = "8000";
+        private static final String SERVER_URL = "http://" + ADDRESS + ":" + PORT + "/api/friendship/";
 
         public HttpResponse post(List<String> friendList) throws IOException
         {
@@ -64,9 +64,9 @@ public class Friendship
 
     private class RequestRetriever
     {
-        private final String ADDRESS = "127.0.0.1";
-        private final String PORT = "8000";
-        private final String SERVER_URL = "http://" + ADDRESS + ":" + PORT + "/api/friendship";
+        private static final String ADDRESS = "127.0.0.1";
+        private static final String PORT = "8000";
+        private static final String SERVER_URL = "http://" + ADDRESS + ":" + PORT + "/api/friendship";
 
         public List<String> post() throws IOException, ParseException
         {

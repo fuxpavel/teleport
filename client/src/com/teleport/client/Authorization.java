@@ -1,7 +1,6 @@
 package com.teleport.client;
 
-import java.io.*;
-import java.nio.charset.StandardCharsets;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -16,7 +15,7 @@ public class Authorization
         Path path = Paths.get(fileName);
         if (Files.exists(path))
         {
-            token = new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
+            token = new String(Files.readAllBytes(path), "UTF-8");
         }
     }
 
@@ -29,7 +28,7 @@ public class Authorization
         {
             Files.createFile(path);
         }
-        Files.write(path, token.getBytes());
+        Files.write(path, token.getBytes("UTF-8"));
     }
 
     public String getToken()
