@@ -5,21 +5,18 @@ import asg.cliche.ShellFactory;
 import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
-import java.util.Scanner;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Main
 {
     @Command
-    public String register() throws IOException, ParseException
+    public String register(String username, String password) throws IOException, ParseException
     {
-        Scanner sc = new Scanner(System.in);
         Client client = new Client();
-        System.out.print("username: ");
-        String username = sc.nextLine();
-        System.out.print("password: ");
-        String password = sc.nextLine();
-        boolean result = client.register(username, password);
-        if (result)
+        if (client.register(username, password))
         {
             return "Registered successfully";
         }
@@ -27,19 +24,14 @@ public class Main
         {
             return "Could not register";
         }
+
     }
 
     @Command
-    public String login() throws IOException, ParseException
+    public String login(String username, String password) throws IOException, ParseException
     {
-        Scanner sc = new Scanner(System.in);
         Client client = new Client();
-        System.out.print("username: ");
-        String username = sc.nextLine();
-        System.out.print("password: ");
-        String password = sc.nextLine();
-        boolean result = client.login(username, password);
-        if (result)
+        if (client.login(username, password))
         {
             return "Logged in successfully";
         }
@@ -49,14 +41,23 @@ public class Main
         }
     }
 
-    @Command
-    public void send()
-    {
 
+    @Command
+    public void send(String reciever, String dir) throws IOException
+    {
+        Client client = new Client();
+        List<String> files = new ArrayList<>();
+        Files.walk(Paths.get(dir)).forEach(path -> {
+            if (Files.isRegularFile(path))
+            {
+                files.add(path.toString());
+            }
+        });
+        client.sendFile(reciever, files);
     }
 
     @Command
-    public void recieve()
+    public void recieve(String sender)
     {
 
     }

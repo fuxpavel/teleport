@@ -44,10 +44,10 @@ public class Client
         return json.get("status").equals("success");
     }
 
-    public boolean sendFile(List<String> fileNames, String reciever) throws IOException
+    public boolean sendFile(String reciever, List<String> fileNames) throws IOException
     {
         Map<String, byte[]> contents = new HashMap<>();
-        for (String fileName: fileNames)
+        for (String fileName : fileNames)
         {
             Path path = Paths.get(fileName);
             contents.put(fileName, Files.readAllBytes(path));
