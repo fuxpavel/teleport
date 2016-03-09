@@ -23,7 +23,7 @@ public class Authorization
     public void setToken(String token) throws IOException
     {
         this.token = token;
-
+        System.out.println(token);
         Path path = Paths.get(fileName);
         if (!Files.exists(path))
         {

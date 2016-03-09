@@ -41,7 +41,18 @@ public class Client
         HttpResponse response = signingHandler.login(username, password);
         String body = EntityUtils.toString(response.getEntity());
         JSONObject json = (JSONObject) (new JSONParser().parse(body));
+        authorizationHandler.setToken(json.get("token").toString());
         return json.get("status").equals("success");
+    }
+
+    public List<String> getFriendRequests() throws IOException, ParseException
+    {
+        return friendshipHandler.getFriendRequests();
+    }
+
+    public void addFriends(String friend) throws IOException
+    {
+        friendshipHandler.addFriends(friend);
     }
 
     public boolean sendFile(String reciever, List<String> fileNames) throws IOException

@@ -7,6 +7,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -32,14 +33,14 @@ public class Friendship
         requestsRetriever = new RequestRetriever();
     }
 
-    public HttpResponse addFriends(List<String> friendList) throws IOException
+    public HttpResponse addFriends(String friend) throws IOException
     {
-        return friendAdder.post(friendList);
+        return friendAdder.post(friend);
     }
 
     public List<String> getFriendRequests() throws IOException, ParseException
     {
-        return requestsRetriever.post();
+        return requestsRetriever.get();
     }
 
     private class FriendAdder
@@ -48,10 +49,10 @@ public class Friendship
         private static final String PORT = "8000";
         private static final String SERVER_URL = "http://" + ADDRESS + ":" + PORT + "/api/friendship/";
 
-        public HttpResponse post(List<String> friendList) throws IOException
+        public HttpResponse post(String friend) throws IOException
         {
-            Map<String, List> map = new HashMap<>();
-            map.put("friends", friendList);
+            Map<String, String> map = new HashMap<>();
+            map.put("reply", friend);
             JSONObject sendData = new JSONObject(map);
 
             HttpPost request = new HttpPost(SERVER_URL);
@@ -68,17 +69,17 @@ public class Friendship
         private static final String PORT = "8000";
         private static final String SERVER_URL = "http://" + ADDRESS + ":" + PORT + "/api/friendship";
 
-        public List<String> post() throws IOException, ParseException
+        public List<String> get() throws IOException, ParseException
         {
             HttpGet request = new HttpGet(SERVER_URL);
             request.addHeader("Authorization", authorizationHandler.getToken());
             HttpResponse response = httpClient.execute(request);
             String body = EntityUtils.toString(response.getEntity());
-            JSONObject json = (JSONObject) (new JSONParser().parse(body));
+            JSONArray arr = (JSONArray) new JSONParser().parse(body);
             ArrayList<String> friends = new ArrayList<>();
-            for (int i = 0; i < json.size(); ++i)
+            for (Object obj: arr)
             {
-                friends.add(json.get(i).toString());
+                friends.add(obj.toString());
             }
             return friends;
         }
