@@ -5,6 +5,8 @@ import subprocess
 import socket
 import time
 import platform
+import os
+import signal
 
 
 class Server(object):
@@ -16,8 +18,7 @@ class Server(object):
 
     def shutdown(self):
         if platform.system() == 'Windows':
-            self.server.kill()
-            subprocess.call('Taskkill /F /IM python.exe', shell=True, stdout=subprocess.PIPE)
+            subprocess.call(['taskkill', '/F', '/T', '/PID', str(self.server.pid)])
         else:
             self.server.kill()
             subprocess.call(['pkill', 'gunicorn'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -104,6 +105,11 @@ class TestPostRequest(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         # shutting down the server
+        # alex this (^) is useless comment
+        # like to write on this code:
+        # i++ // increase i by 1
+        # why did you do this ??!!
+
         cls.server.shutdown()
 
     def test_register_username(self):
