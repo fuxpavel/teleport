@@ -6,23 +6,18 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.util.EntityUtils;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class Friendship
 {
-    private FriendAdder friendAdder;
+    private FriendsAdder friendsAdder;
     private RequestRetriever requestsRetriever;
     private RequestResponder requestResponder;
+    private FriendsRetriever friendsRetriever;
     private HttpClient httpClient;
     private Authorization authorizationHandler;
 
@@ -30,17 +25,18 @@ public class Friendship
     {
         httpClient = HttpClientBuilder.create().build();
         this.authorizationHandler = authorizationHandler;
-        friendAdder = new FriendAdder();
+        friendsAdder = new FriendsAdder();
         requestsRetriever = new RequestRetriever();
         requestResponder = new RequestResponder();
+        friendsRetriever = new FriendsRetriever();
     }
 
     public HttpResponse addFriends(String friend) throws IOException
     {
-        return friendAdder.post(friend);
+        return friendsAdder.post(friend);
     }
 
-    public HttpResponse getFriendRequests() throws IOException, ParseException
+    public HttpResponse getFriendRequests() throws IOException
     {
         return requestsRetriever.get();
     }
@@ -50,7 +46,12 @@ public class Friendship
         return requestResponder.post(friend, status);
     }
 
-    private class FriendAdder
+    public HttpResponse getFriends() throws IOException
+    {
+        return friendsRetriever.get();
+    }
+
+    private class FriendsAdder
     {
         private static final String ADDRESS = "127.0.0.1";
         private static final String PORT = "8000";
@@ -97,9 +98,23 @@ public class Friendship
     {
         private static final String ADDRESS = "127.0.0.1";
         private static final String PORT = "8000";
+        private static final String SERVER_URL = "http://" + ADDRESS + ":" + PORT + "/api/friendship/response";
+
+        public HttpResponse get() throws IOException
+        {
+            HttpGet request = new HttpGet(SERVER_URL);
+            request.addHeader("Authorization", authorizationHandler.getToken());
+            return httpClient.execute(request);
+        }
+    }
+
+    private class FriendsRetriever
+    {
+        private static final String ADDRESS = "127.0.0.1";
+        private static final String PORT = "8000";
         private static final String SERVER_URL = "http://" + ADDRESS + ":" + PORT + "/api/friendship";
 
-        public HttpResponse get() throws IOException, ParseException
+        public HttpResponse get() throws IOException
         {
             HttpGet request = new HttpGet(SERVER_URL);
             request.addHeader("Authorization", authorizationHandler.getToken());

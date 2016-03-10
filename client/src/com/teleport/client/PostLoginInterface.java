@@ -52,6 +52,13 @@ public class PostLoginInterface
     }
 
     @Command
+    public void getFriends() throws IOException, ParseException
+    {
+        List<String> friends = client.getFriends();
+        friends.forEach(System.out::println);
+    }
+
+    @Command
     public void send(String receiver, String dir) throws IOException
     {
         Client client = new Client();

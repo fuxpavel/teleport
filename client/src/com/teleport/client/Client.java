@@ -68,6 +68,19 @@ public class Client
         return json.get("status").equals("success");
     }
 
+    public List<String> getFriends() throws IOException, ParseException
+    {
+        HttpResponse response = friendshipHandler.getFriends();
+        String body = EntityUtils.toString(response.getEntity());
+        JSONArray arr = (JSONArray) new JSONParser().parse(body);
+        ArrayList<String> friends = new ArrayList<>();
+        for (Object obj: arr)
+        {
+            friends.add(obj.toString());
+        }
+        return friends;
+    }
+
     public boolean respondToRequest(String friend, boolean status) throws IOException, ParseException
     {
         HttpResponse response = friendshipHandler.respondToRequest(friend, status);
