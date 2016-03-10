@@ -22,7 +22,6 @@ public class PostLoginInterface
     public void getFriendRequests() throws IOException, ParseException
     {
         List<String> friends = client.getFriendRequests();
-        System.out.println(friends.size());
         friends.forEach(System.out::println);
     }
 

@@ -120,11 +120,13 @@ class FriendRequest(Base):
 
     def check_waiting_request(self, reply, engine=None):
         session = get_session(engine)
+        db = User()
+        reply = db.get_username_by_token(reply)
         waiting = session.query(FriendRequest).filter_by(reply=reply).all()
         db = User()
         lst = []
         for i in waiting:
-            lst.append(db.get_username_by_token(i.sender))
+            lst.append(i.sender)
         return lst
 
     def confirm_request(self, sender, reply, engine=None):
@@ -154,9 +156,8 @@ class FriendRequest(Base):
         db = User()
         f = Friendship()
 
-        if db.check_exist_user_token(sender, engine) and db.check_exist_user_token(reply, engine):
+        if db.check_exist_user_token(sender, engine) and db.check_exist_user_username(reply, engine):
             sender = db.get_username_by_token(sender, engine)
-            reply = db.get_username_by_token(reply, engine)
             if not f.check_friendship(sender, reply, engine) and not self.check_friend_request(sender, reply, engine):
                 new_request = FriendRequest(sender=sender, reply=reply)
                 session.add(new_request)

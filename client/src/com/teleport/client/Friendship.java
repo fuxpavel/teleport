@@ -68,7 +68,7 @@ public class Friendship
     {
         private static final String ADDRESS = "127.0.0.1";
         private static final String PORT = "8000";
-        private static final String SERVER_URL = "http://" + ADDRESS + ":" + PORT + "/api/friendship/response"
+        private static final String SERVER_URL = "http://" + ADDRESS + ":" + PORT + "/api/friendship/response";
 
         public void post(String friend, boolean status) throws IOException
         {
