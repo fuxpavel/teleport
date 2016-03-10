@@ -153,7 +153,10 @@ class FriendRequest(Base):
         session = get_session(engine)
         db = User()
         f = Friendship()
+
         if db.check_exist_user_token(sender, engine) and db.check_exist_user_token(reply, engine):
+            sender = db.get_username_by_token(sender, engine)
+            reply = db.get_username_by_token(reply, engine)
             if not f.check_friendship(sender, reply, engine) and not self.check_friend_request(sender, reply, engine):
                 new_request = FriendRequest(sender=sender, reply=reply)
                 session.add(new_request)
@@ -190,7 +193,9 @@ class Friendship(Base):
     def create_friendship(self, friend1, friend2, engine=None):
         session = get_session(engine)
         db = User()
-        if db.check_exist_user_token(friend1, engine) and db.check_exist_user_token(friend2, engine):
+        friend1 = db.get_username_by_token(friend1)
+        friend2 = db.get_username_by_token(friend2)
+        if db.check_exist_user_username(friend1, engine) and db.check_exist_user_username(friend2, engine):
             if not self.check_friendship(friend1, friend2, engine):
                 new_friendship = Friendship(friend1=friend1, friend2=friend2)
                 session.add(new_friendship)
