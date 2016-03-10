@@ -11,7 +11,6 @@ class Friendship(object):
         userdata = json.loads(req.stream.read())
         sender = req.get_header('Authorization')
         reply = userdata['reply']
-        print sender, reply
         u = User()
 
         if self.db.send_friend_request(sender, reply):
@@ -24,10 +23,10 @@ class Friendship(object):
         resp.status = falcon.HTTP_200
 
     def on_get(self, req, resp):
-        #userdata = json.loads(req.stream.read())
         reply = req.get_header('Authorization')
-        waiting = self.db.check_waiting_request(reply)
-        resp.body = json.dumps(waiting)
+        f = Friendship()
+        friends = f.get_friends_list(reply)
+        resp.body = json.dumps(friends)
         resp.content_type = 'application/json'
         resp.status = falcon.HTTP_200
 
@@ -58,6 +57,14 @@ class FriendshipResponse(object):
             status = 'failure'
 
         resp.body = '{"sender": "%s", "reply":"%s", "status": "%s"}' % (sender, reply, status)
+        resp.content_type = 'application/json'
+        resp.status = falcon.HTTP_200
+
+    def on_get(self, req, resp):
+        #userdata = json.loads(req.stream.read())
+        reply = req.get_header('Authorization')
+        waiting = self.db.check_waiting_request(reply)
+        resp.body = json.dumps(waiting)
         resp.content_type = 'application/json'
         resp.status = falcon.HTTP_200
 

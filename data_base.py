@@ -13,11 +13,11 @@ def get_engine():
 
 
 def get_session(engine=None):
-        engine = engine if engine else get_engine()
-        Base.metadata.bind = engine
-        #DBSession = sessionmaker(bind=engine)
-        session = sessionmaker(bind=engine)()
-        return session
+    engine = engine if engine else get_engine()
+    Base.metadata.bind = engine
+    # DBSession = sessionmaker(bind=engine)
+    session = sessionmaker(bind=engine)()
+    return session
 
 
 class User(Base):
@@ -51,14 +51,14 @@ class User(Base):
 
     def get_username_by_token(self, token, engine=None):
         session = get_session(engine)
-        if self.check_exist_user_token(token):
+        if self.check_exist_user_token(token, engine):
             return session.query(User).filter_by(token=token).all()[0].username
         else:
             return False
 
     def get_token_by_username(self, username, engine=None):
         session = get_session(engine)
-        if self.check_exist_user_username(username):
+        if self.check_exist_user_username(username, engine):
             return session.query(User).filter_by(username=username).all()[0].token
         else:
             return False
@@ -96,7 +96,7 @@ class User(Base):
 
     def get_user_ip(self, token, engine=None):
         session = get_session(engine)
-        if self.check_exist_user_token(token):
+        if self.check_exist_user_token(token, engine):
             return session.query(User).filter_by(token=token).all()[0].ip
         else:
             return False
@@ -105,7 +105,7 @@ class User(Base):
         session = get_session(engine)
         info = session.query(User).all()
         for i in info:
-            print str(i.id)+")", i.username, i.password, i.ip, i.token
+            print str(i.id) + ")", i.username, i.password, i.ip, i.token
 
 
 class FriendRequest(Base):
@@ -121,9 +121,8 @@ class FriendRequest(Base):
     def check_waiting_request(self, reply, engine=None):
         session = get_session(engine)
         db = User()
-        reply = db.get_username_by_token(reply)
+        reply = db.get_username_by_token(reply, engine)
         waiting = session.query(FriendRequest).filter_by(reply=reply).all()
-        db = User()
         lst = []
         for i in waiting:
             lst.append(i.sender)
@@ -132,8 +131,9 @@ class FriendRequest(Base):
     def confirm_request(self, sender, reply, engine=None):
         session = get_session(engine)
         db = Friendship()
+        u = User()
         if db.create_friendship(sender, reply, engine):
-            session.query(FriendRequest).filter_by(sender=sender, reply=reply).delete()
+            session.query(FriendRequest).filter_by(sender=reply, reply=sender).delete()
             try:
                 session.commit()
             except:
@@ -144,7 +144,9 @@ class FriendRequest(Base):
 
     def denial_request(self, sender, reply, engine=None):
         session = get_session(engine)
-        session.query(FriendRequest).filter_by(sender=sender, reply=reply).delete()
+        u = User()
+        sender = u.get_username_by_token(sender, engine)
+        session.query(FriendRequest).filter_by(sender=reply, reply=sender).delete()
         try:
             session.commit()
         except:
@@ -155,7 +157,6 @@ class FriendRequest(Base):
         session = get_session(engine)
         db = User()
         f = Friendship()
-
         if db.check_exist_user_token(sender, engine) and db.check_exist_user_username(reply, engine):
             sender = db.get_username_by_token(sender, engine)
             if not f.check_friendship(sender, reply, engine) and not self.check_friend_request(sender, reply, engine):
@@ -194,10 +195,8 @@ class Friendship(Base):
     def create_friendship(self, friend1, friend2, engine=None):
         session = get_session(engine)
         db = User()
-        friend1 = db.get_username_by_token(friend1)
-        friend2 = db.get_username_by_token(friend2)
-        if db.check_exist_user_username(friend1, engine) and db.check_exist_user_username(friend2, engine):
-            if not self.check_friendship(friend1, friend2, engine):
+        if db.check_exist_user_token(friend1, engine) and db.check_exist_user_username(friend2, engine):
+            if not (self.check_friendship(friend1, friend2, engine) or self.check_friendship(friend2, friend1, engine)):
                 new_friendship = Friendship(friend1=friend1, friend2=friend2)
                 session.add(new_friendship)
                 try:
@@ -212,10 +211,21 @@ class Friendship(Base):
 
     def check_friendship(self, friend1, friend2, engine=None):
         session = get_session(engine)
-        if session.query(Friendship).filter_by(friend1=friend1, friend2=friend2).all() or session.query(Friendship).filter_by(friend1=friend2, friend2=friend1).all():
+        if session.query(Friendship).filter_by(friend1=friend1, friend2=friend2).all() or session.query(
+                Friendship).filter_by(friend1=friend2, friend2=friend1).all():
             return True
         else:
             return False
+
+    def get_friends_list(self, token, engine=None):
+        session = get_session(engine)
+        db = User()
+        reply = db.get_username_by_token(token, engine)
+        friends = session.query(FriendRequest).filter_by(reply=reply).all()
+        lst = []
+        for i in friends:
+            lst.append(i.sender)
+        return lst
 
     def print_connection(self, engine=None):
         session = get_session(engine)

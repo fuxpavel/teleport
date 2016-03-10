@@ -31,7 +31,7 @@ class TestDataBase(unittest.TestCase):
         db.register_user("ben", "123", self.engine)
         f1 = db.login_user("ben", "123", self.engine)
         f2 = db.login_user("alex", "123", self.engine)
-        self.assertTrue(f.create_friendship(f1, f2, self.engine))
+        self.assertTrue(f.create_friendship(f1, 'alex', self.engine))
 
     def test_send_friend_request(self):
         db = User()
@@ -43,14 +43,14 @@ class TestDataBase(unittest.TestCase):
         f2 = db.login_user("alex", "123", self.engine)
         waiting = r.check_waiting_request(f1, self.engine)
         self.assertEqual(len(waiting), 0)
-        self.assertTrue(r.send_friend_request(f2, f1, self.engine))
+        self.assertTrue(r.send_friend_request(f2, 'ben', self.engine))
         waiting = r.check_waiting_request(f1, self.engine)
         self.assertEqual(len(waiting), 1)
-        self.assertTrue(r.denial_request(f2, f1, self.engine))
+        self.assertTrue(r.denial_request(f1, 'alex', self.engine))
         waiting = r.check_waiting_request(f1, self.engine)
         self.assertEqual(len(waiting), 0)
-        self.assertTrue(r.send_friend_request(f2, f1, self.engine))
-        self.assertTrue(r.confirm_request(f2, f1, self.engine))
+        self.assertTrue(r.send_friend_request(f2, 'ben', self.engine))
+        self.assertTrue(r.confirm_request(f1, 'alex', self.engine))
         self.assertEqual(len(waiting), 0)
 
 
