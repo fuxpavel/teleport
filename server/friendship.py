@@ -12,7 +12,6 @@ class Friendship(object):
         sender = req.get_header('Authorization')
         reply = userdata['reply']
         print sender, reply
-        u = User()
 
         if self.db.send_friend_request(sender, reply):
             status = 'success'
@@ -24,7 +23,7 @@ class Friendship(object):
         resp.status = falcon.HTTP_200
 
     def on_get(self, req, resp):
-        #userdata = json.loads(req.stream.read())
+        # userdata = json.loads(req.stream.read())
         reply = req.get_header('Authorization')
         waiting = self.db.check_waiting_request(reply)
         resp.body = json.dumps(waiting)
@@ -39,7 +38,6 @@ class FriendshipResponse(object):
     def on_post(self, req, resp):
         userdata = json.loads(req.stream.read())
         sender = req.get_header('Authorization')
-        u = User()
         reply = userdata['reply']
         request_status = userdata['status']
 
@@ -70,9 +68,9 @@ class SwitchIP(object):
         userdata = json.loads(req.stream.read())
         sender = req.get_header('Authorization')
         receiver = userdata['receiver']
-        #request_ip = req.env['HTTP_X_FORWARDED_FOR']
-        #if the current request come from the sender client
-        #if self.db.get_user_ip(sender) == request_ip:
+        # request_ip = req.env['HTTP_X_FORWARDED_FOR']
+        # if the current request come from the sender client
+        # if self.db.get_user_ip(sender) == request_ip:
         ip = self.db.get_user_ip(self.db.get_token_by_username(receiver))
         resp.body = json.dumps({'msg': ip})
         '''

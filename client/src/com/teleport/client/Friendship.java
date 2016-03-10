@@ -22,6 +22,7 @@ public class Friendship
 {
     private FriendAdder friendAdder;
     private RequestRetriever requestsRetriever;
+    private RequestResponder requestResponder;
     private HttpClient httpClient;
     private Authorization authorizationHandler;
 
@@ -31,6 +32,7 @@ public class Friendship
         this.authorizationHandler = authorizationHandler;
         friendAdder = new FriendAdder();
         requestsRetriever = new RequestRetriever();
+        requestResponder = new RequestResponder();
     }
 
     public HttpResponse addFriends(String friend) throws IOException
@@ -38,9 +40,14 @@ public class Friendship
         return friendAdder.post(friend);
     }
 
-    public List<String> getFriendRequests() throws IOException, ParseException
+    public HttpResponse getFriendRequests() throws IOException, ParseException
     {
         return requestsRetriever.get();
+    }
+
+    public HttpResponse respondToRequest(String friend, boolean status) throws IOException
+    {
+        return requestResponder.post(friend, status);
     }
 
     private class FriendAdder
@@ -70,11 +77,11 @@ public class Friendship
         private static final String PORT = "8000";
         private static final String SERVER_URL = "http://" + ADDRESS + ":" + PORT + "/api/friendship/response";
 
-        public void post(String friend, boolean status) throws IOException
+        public HttpResponse post(String friend, boolean status) throws IOException
         {
             Map<String, String> map = new HashMap<>();
             map.put("reply", friend);
-            map.put("status", status ? "confirn" : "denial");
+            map.put("status", status ? "confirm" : "denial");
             JSONObject sendData = new JSONObject(map);
 
             HttpPost request = new HttpPost(SERVER_URL);
@@ -82,7 +89,7 @@ public class Friendship
             request.setHeader("Content-Type", "application/json");
             StringEntity params = new StringEntity(sendData.toJSONString());
             request.setEntity(params);
-            httpClient.execute(request);
+            return httpClient.execute(request);
         }
     }
 
@@ -92,20 +99,11 @@ public class Friendship
         private static final String PORT = "8000";
         private static final String SERVER_URL = "http://" + ADDRESS + ":" + PORT + "/api/friendship";
 
-        public List<String> get() throws IOException, ParseException
+        public HttpResponse get() throws IOException, ParseException
         {
             HttpGet request = new HttpGet(SERVER_URL);
             request.addHeader("Authorization", authorizationHandler.getToken());
-            HttpResponse response = httpClient.execute(request);
-            String body = EntityUtils.toString(response.getEntity());
-            JSONArray arr = (JSONArray) new JSONParser().parse(body);
-            ArrayList<String> friends = new ArrayList<>();
-            for (Object obj: arr)
-            {
-                friends.add(obj.toString());
-            }
-            return friends;
+            return httpClient.execute(request);
         }
     }
 }
-

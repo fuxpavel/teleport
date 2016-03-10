@@ -39,6 +39,19 @@ public class PostLoginInterface
     }
 
     @Command
+    public void respondToRequest(String friend, boolean status) throws IOException, ParseException
+    {
+        if (client.respondToRequest(friend, status))
+        {
+            System.out.println("Responded successfully");
+        }
+        else
+        {
+            System.out.println("Couldn't respond");
+        }
+    }
+
+    @Command
     public void send(String reciever, String dir) throws IOException
     {
         Client client = new Client();

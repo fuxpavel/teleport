@@ -13,11 +13,11 @@ def get_engine():
 
 
 def get_session(engine=None):
-        engine = engine if engine else get_engine()
-        Base.metadata.bind = engine
-        #DBSession = sessionmaker(bind=engine)
-        session = sessionmaker(bind=engine)()
-        return session
+    engine = engine if engine else get_engine()
+    Base.metadata.bind = engine
+    # DBSession = sessionmaker(bind=engine)
+    session = sessionmaker(bind=engine)()
+    return session
 
 
 class User(Base):
@@ -105,7 +105,7 @@ class User(Base):
         session = get_session(engine)
         info = session.query(User).all()
         for i in info:
-            print str(i.id)+")", i.username, i.password, i.ip, i.token
+            print str(i.id) + ")", i.username, i.password, i.ip, i.token
 
 
 class FriendRequest(Base):
@@ -123,7 +123,6 @@ class FriendRequest(Base):
         db = User()
         reply = db.get_username_by_token(reply)
         waiting = session.query(FriendRequest).filter_by(reply=reply).all()
-        db = User()
         lst = []
         for i in waiting:
             lst.append(i.sender)
@@ -132,8 +131,10 @@ class FriendRequest(Base):
     def confirm_request(self, sender, reply, engine=None):
         session = get_session(engine)
         db = Friendship()
+        u = User()
+        sender = u.get_username_by_token(sender)
         if db.create_friendship(sender, reply, engine):
-            session.query(FriendRequest).filter_by(sender=sender, reply=reply).delete()
+            session.query(FriendRequest).filter_by(sender=reply, reply=sender).delete()
             try:
                 session.commit()
             except:
@@ -144,7 +145,9 @@ class FriendRequest(Base):
 
     def denial_request(self, sender, reply, engine=None):
         session = get_session(engine)
-        session.query(FriendRequest).filter_by(sender=sender, reply=reply).delete()
+        u = User()
+        sender = u.get_username_by_token(sender)
+        session.query(FriendRequest).filter_by(sender=reply, reply=sender).delete()
         try:
             session.commit()
         except:
@@ -194,10 +197,8 @@ class Friendship(Base):
     def create_friendship(self, friend1, friend2, engine=None):
         session = get_session(engine)
         db = User()
-        friend1 = db.get_username_by_token(friend1)
-        friend2 = db.get_username_by_token(friend2)
         if db.check_exist_user_username(friend1, engine) and db.check_exist_user_username(friend2, engine):
-            if not self.check_friendship(friend1, friend2, engine):
+            if not (self.check_friendship(friend1, friend2, engine) or self.check_friendship(friend2, friend1, engine)):
                 new_friendship = Friendship(friend1=friend1, friend2=friend2)
                 session.add(new_friendship)
                 try:
@@ -212,7 +213,8 @@ class Friendship(Base):
 
     def check_friendship(self, friend1, friend2, engine=None):
         session = get_session(engine)
-        if session.query(Friendship).filter_by(friend1=friend1, friend2=friend2).all() or session.query(Friendship).filter_by(friend1=friend2, friend2=friend1).all():
+        if session.query(Friendship).filter_by(friend1=friend1, friend2=friend2).all() or session.query(
+                Friendship).filter_by(friend1=friend2, friend2=friend1).all():
             return True
         else:
             return False

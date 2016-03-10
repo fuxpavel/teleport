@@ -2,6 +2,7 @@ package com.teleport.client;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -10,6 +11,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,12 +49,28 @@ public class Client
 
     public List<String> getFriendRequests() throws IOException, ParseException
     {
-        return friendshipHandler.getFriendRequests();
+        HttpResponse response = friendshipHandler.getFriendRequests();
+        String body = EntityUtils.toString(response.getEntity());
+        JSONArray arr = (JSONArray) new JSONParser().parse(body);
+        ArrayList<String> friends = new ArrayList<>();
+        for (Object obj: arr)
+        {
+            friends.add(obj.toString());
+        }
+        return friends;
     }
 
     public boolean addFriends(String friend) throws IOException, ParseException
     {
         HttpResponse response = friendshipHandler.addFriends(friend);
+        String body = EntityUtils.toString(response.getEntity());
+        JSONObject json = (JSONObject) (new JSONParser().parse(body));
+        return json.get("status").equals("success");
+    }
+
+    public boolean respondToRequest(String friend, boolean status) throws IOException, ParseException
+    {
+        HttpResponse response = friendshipHandler.respondToRequest(friend, status);
         String body = EntityUtils.toString(response.getEntity());
         JSONObject json = (JSONObject) (new JSONParser().parse(body));
         return json.get("status").equals("success");
