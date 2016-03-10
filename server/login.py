@@ -17,11 +17,12 @@ class Login(object):
         token = self.db.login_user(username, password)
         if token is not None:
             status = 'success'
-            #self.db.set_user_ip(token, req.env['HTTP_X_FORWARDED_FOR'])
+            # self.db.set_user_ip(token, req.env['HTTP_X_FORWARDED_FOR'])
         else:
             status = 'failure'
 
-        resp.body = '{"username": "%s", "password": "%s", "token": "%s", "status": "%s"}' % (username, password, token, status)
+        resp.body = '{"username": "%s", "password": "%s", "token": "%s", "status": "%s"}' % (
+        username, password, token, status)
         resp.content_type = 'application/json'
         resp.status = falcon.HTTP_200
 

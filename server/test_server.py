@@ -5,8 +5,6 @@ import subprocess
 import socket
 import time
 import platform
-import os
-import signal
 
 
 class Server(object):
@@ -14,14 +12,16 @@ class Server(object):
         if platform.system() == 'Windows':
             self.server = subprocess.Popen('python server.py', shell=True, stdout=subprocess.PIPE)
         else:
-            self.server = subprocess.Popen(['gunicorn', 'server'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            self.server = subprocess.Popen(['gunicorn', 'server'], stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                                           stderr=subprocess.PIPE)
 
     def shutdown(self):
         if platform.system() == 'Windows':
             subprocess.call(['taskkill', '/F', '/T', '/PID', str(self.server.pid)])
         else:
             self.server.kill()
-            subprocess.call(['pkill', 'gunicorn'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            subprocess.call(['pkill', 'gunicorn'], stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE)
 
     def check_server(self):
         # attempt to connect to localhost/8000
@@ -97,10 +97,17 @@ class TestPostRequest(unittest.TestCase):
         cls.friendship_send_data = {'reply': 'alex'}
         cls.friendship_response_send_data = {'reply': 'alex', 'status': 'confirm'}
         cls.switch_ip_send_data = {'receiver': 'alex'}
-        cls.friendship_ret_data_post = json.loads(ServerCommunication.friendship({'Authorization': cls.login_ret_data['token'].encode('ascii')}, cls.friendship_send_data))
-        cls.friendship_ret_data_get = json.loads(ServerCommunication.friendship({'Authorization': cls.login_ret_data['token'].encode('ascii')}))
-        cls.friendship_response_ret_data = json.loads(ServerCommunication.friendship_respones({'Authorization': cls.login_ret_data['token'].encode('ascii')}, cls.friendship_response_send_data))
-        cls.switch_ip_ret_data = json.loads(ServerCommunication.switch_ip({'Authorization': cls.login_ret_data['token'].encode('ascii')}, cls.switch_ip_send_data))
+        cls.friendship_ret_data_post = json.loads(
+            ServerCommunication.friendship({'Authorization': cls.login_ret_data['token'].encode('ascii')},
+                                           cls.friendship_send_data))
+        cls.friendship_ret_data_get = json.loads(
+            ServerCommunication.friendship({'Authorization': cls.login_ret_data['token'].encode('ascii')}))
+        cls.friendship_response_ret_data = json.loads(
+            ServerCommunication.friendship_respones({'Authorization': cls.login_ret_data['token'].encode('ascii')},
+                                                    cls.friendship_response_send_data))
+        cls.switch_ip_ret_data = json.loads(
+            ServerCommunication.switch_ip({'Authorization': cls.login_ret_data['token'].encode('ascii')},
+                                          cls.switch_ip_send_data))
 
     @classmethod
     def tearDownClass(cls):
@@ -131,6 +138,7 @@ class TestPostRequest(unittest.TestCase):
     def test_friendship_request(self):
         self.assertEqual(self.friendship_response_ret_data['sender'], self.login_ret_data['token'])
         self.assertEqual(self.friendship_response_send_data['reply'], self.friendship_response_send_data['reply'])
+
 
 if __name__ == '__main__':
     suite = unittest.TestLoader().loadTestsFromTestCase(TestPostRequest)

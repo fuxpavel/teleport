@@ -52,7 +52,7 @@ public class PostLoginInterface
     }
 
     @Command
-    public void send(String reciever, String dir) throws IOException
+    public void send(String receiver, String dir) throws IOException
     {
         Client client = new Client();
         List<String> files = new ArrayList<>();
@@ -62,7 +62,7 @@ public class PostLoginInterface
                 files.add(path.toString());
             }
         });
-        client.sendFile(reciever, files);
+        client.sendFile(receiver, files);
     }
 
     @Command

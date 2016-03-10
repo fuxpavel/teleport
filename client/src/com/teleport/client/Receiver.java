@@ -12,12 +12,12 @@ import java.util.Map;
 
 import static com.teleport.client.Protocol.*;
 
-public class Reciever
+public class Receiver
 {
     private static final int PORT = 10113;
     private static final int BUF_SIZE = 1024;
 
-    public Map<String, List<byte[]>> recieve() throws IOException
+    public Map<String, List<byte[]>> receive() throws IOException
     {
         try (ServerSocket serverSock = new ServerSocket(PORT))
         {
