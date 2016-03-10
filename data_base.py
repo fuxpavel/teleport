@@ -138,7 +138,6 @@ class FriendRequest(Base):
                 session.commit()
             except:
                 return False
-            print "delete:",reply, sender
             return True
         else:
             return False
