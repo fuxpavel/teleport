@@ -192,6 +192,10 @@ class Friendship(Base):
     friend1 = Column(String, ForeignKey(User.token))
     friend2 = Column(String, ForeignKey(User.token))
 
+    def init_data_base(self, engine=None):
+        engine = engine if engine else get_engine()
+        Base.metadata.create_all(engine)
+
     def create_friendship(self, friend1, friend2, engine=None):
         session = get_session(engine)
         db = User()

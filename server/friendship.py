@@ -6,6 +6,7 @@ from db_accessor import *
 class Friendship(object):
     def __init__(self):
         self.db = get_friend_request_db()
+        self.dbf  = get_friendship_db()
 
     def on_post(self, req, resp):
         userdata = json.loads(req.stream.read())
@@ -23,8 +24,7 @@ class Friendship(object):
 
     def on_get(self, req, resp):
         reply = req.get_header('Authorization')
-        f = Friendship()
-        friends = f.get_friends_list(reply)
+        friends = self.dbf.get_friends_list(reply)
         resp.body = json.dumps(friends)
         resp.content_type = 'application/json'
         resp.status = falcon.HTTP_200

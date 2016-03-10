@@ -1,7 +1,8 @@
-from data_base import User
-from data_base import FriendRequest
+from data_base import *
+
 _db = None
 _dbb = None
+_dbf = None
 
 def get_user_db():
     global _db
@@ -17,3 +18,10 @@ def get_friend_request_db():
         _dbb = FriendRequest()
         _dbb.init_data_base()
     return _dbb
+
+def get_friendship_db():
+    global _dbf
+    if not _dbf:
+        _dbf = Friendship()
+        _dbf.init_data_base()
+    return _dbf
