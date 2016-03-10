@@ -11,9 +11,10 @@ class Friendship(object):
         userdata = json.loads(req.stream.read())
         sender = req.get_header('Authorization')
         reply = userdata['reply']
+        print sender, reply
         u = User()
 
-        if self.db.send_friend_request(sender, u.get_token_by_username(reply)):
+        if self.db.send_friend_request(sender, reply):
             status = 'success'
         else:
             status = 'failure'
@@ -39,7 +40,7 @@ class FriendshipResponse(object):
         userdata = json.loads(req.stream.read())
         sender = req.get_header('Authorization')
         u = User()
-        reply = u.get_token_by_username(userdata['reply'])
+        reply = userdata['reply']
         request_status = userdata['status']
 
         if request_status == 'confirm':
