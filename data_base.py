@@ -15,7 +15,6 @@ def get_engine():
 def get_session(engine=None):
     engine = engine if engine else get_engine()
     Base.metadata.bind = engine
-    # DBSession = sessionmaker(bind=engine)
     session = sessionmaker(bind=engine)()
     return session
 

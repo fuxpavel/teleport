@@ -111,12 +111,6 @@ class TestPostRequest(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        # shutting down the server
-        # alex this (^) is useless comment
-        # like to write on this code:
-        # i++ // increase i by 1
-        # why did you do this ??!!
-
         cls.server.shutdown()
 
     def test_register_username(self):

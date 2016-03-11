@@ -15,9 +15,8 @@ class Login(object):
         password = userdata['password']
 
         token = self.db.login_user(username, password)
-        if token is not None:
+        if token:
             status = 'success'
-            # self.db.set_user_ip(token, req.env['HTTP_X_FORWARDED_FOR'])
         else:
             status = 'failure'
 
