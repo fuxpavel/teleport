@@ -15,7 +15,6 @@ def get_engine():
 def get_session(engine=None):
     engine = engine if engine else get_engine()
     Base.metadata.bind = engine
-    # DBSession = sessionmaker(bind=engine)
     session = sessionmaker(bind=engine)()
     return session
 
@@ -133,7 +132,7 @@ class FriendRequest(Base):
         db = Friendship()
         u = User()
         if db.create_friendship(sender, reply, engine):
-            session.query(FriendRequest).filter_by(sender=reply, reply=sender).delete()
+            session.query(FriendRequest).filter_by(sender=reply, reply=u.get_username_by_token(sender, engine)).delete()
             try:
                 session.commit()
             except:
@@ -151,6 +150,7 @@ class FriendRequest(Base):
             session.commit()
         except:
             return False
+        print "delete:",reply, sender
         return True
 
     def send_friend_request(self, sender, reply, engine=None):
@@ -183,7 +183,7 @@ class FriendRequest(Base):
         session = get_session(engine)
         info = session.query(FriendRequest).all()
         for i in info:
-            print i.sender, "<-->", i.reply
+            print i.sender, "<---->", i.reply
 
 
 class Friendship(Base):
@@ -200,6 +200,7 @@ class Friendship(Base):
         session = get_session(engine)
         db = User()
         if db.check_exist_user_token(friend1, engine) and db.check_exist_user_username(friend2, engine):
+            friend1 = db.get_username_by_token(friend1)
             if not (self.check_friendship(friend1, friend2, engine) or self.check_friendship(friend2, friend1, engine)):
                 new_friendship = Friendship(friend1=friend1, friend2=friend2)
                 session.add(new_friendship)
@@ -225,10 +226,13 @@ class Friendship(Base):
         session = get_session(engine)
         db = User()
         reply = db.get_username_by_token(token, engine)
-        friends = session.query(FriendRequest).filter_by(reply=reply).all()
+        list1 = session.query(Friendship).filter_by(friend1=reply).all()
+        list2 = session.query(Friendship).filter_by(friend2=reply).all()
         lst = []
-        for i in friends:
-            lst.append(i.sender)
+        for i in list1:
+            lst.append(i.friend2)
+        for i in list2:
+            lst.append(i.friend1)
         return lst
 
     def print_connection(self, engine=None):
