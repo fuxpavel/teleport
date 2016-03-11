@@ -1,9 +1,14 @@
 package com.teleport.client;
 
-import asg.cliche.*;
+import asg.cliche.Command;
+import asg.cliche.Shell;
+import asg.cliche.ShellDependent;
+import asg.cliche.ShellFactory;
 import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class LoginInterface implements ShellDependent
 {
@@ -34,6 +39,21 @@ public class LoginInterface implements ShellDependent
         {
             System.out.println("Could not login");
         }
+    }
+
+
+    @Command
+    public void send(String ip, String fileName) throws IOException
+    {
+        List<String> files = new ArrayList<>();
+        files.add(fileName);
+        client.sendFile(ip, files);
+    }
+
+    @Command
+    public void receive() throws IOException
+    {
+        ;
     }
 
     private Shell shell;

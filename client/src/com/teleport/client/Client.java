@@ -89,7 +89,7 @@ public class Client
         return json.get("status").equals("success");
     }
 
-    public boolean sendFile(String reciever, List<String> fileNames) throws IOException
+    public boolean sendFile(String receiver, List<String> fileNames) throws IOException
     {
         Map<String, byte[]> contents = new HashMap<>();
         for (String fileName : fileNames)
@@ -97,7 +97,7 @@ public class Client
             Path path = Paths.get(fileName);
             contents.put(fileName, Files.readAllBytes(path));
         }
-        sender.send(contents, reciever);
+        sender.send(contents, receiver);
         return true;
     }
 }
