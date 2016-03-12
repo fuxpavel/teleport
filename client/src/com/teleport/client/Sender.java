@@ -51,6 +51,10 @@ public class Sender
                     }
                     sock.close();
                 }
+                else
+                {
+                    sock.close();
+                }
             }
         }
         return true;
