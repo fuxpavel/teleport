@@ -11,6 +11,7 @@ public class Receiver
     private static final int PORT = 10113;
     private static final int BUF_SIZE = 1024;
 
+
     public boolean receive(String ip) throws IOException
     {
         try (Socket sock = new Socket(ip, PORT))

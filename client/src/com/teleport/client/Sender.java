@@ -12,6 +12,19 @@ public class Sender
     private static final int PORT = 10113;
     private static final int BUF_SIZE = 1024;
 
+    private static String size(long size1) {
+        float size = size1;
+        if (size > 1000000) {
+            if (size > 1000000000) {
+                return String.format("%.1f", size / 1000000000) + " GB";
+            } else {
+                return String.format("%.1f", size / 1000000) + " MB";
+            }
+
+        }
+        return String.format("%.1f", size / 1000) + " KB";
+    }
+
     public boolean send(String path) throws IOException
     {
         try (ServerSocket serverSock = new ServerSocket(PORT))
@@ -25,8 +38,7 @@ public class Sender
                 byte[] buf = new byte[BUF_SIZE];
                 int count;
                 String filename = path.substring(path.lastIndexOf("\\")+1);
-                long size = myFile.length();
-                out.write((P2P_CONNECT_REQUEST + "-" + filename + "-"+size+"--").getBytes("UTF-8"));
+                out.write((P2P_CONNECT_REQUEST + "-" + filename + "-" + size(myFile.length()) + "--").getBytes("UTF-8"));
                 out.flush();
                 in.read(buf);
 
