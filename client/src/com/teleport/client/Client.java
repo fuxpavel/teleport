@@ -51,7 +51,7 @@ public class Client
         String body = EntityUtils.toString(response.getEntity());
         JSONArray arr = (JSONArray) new JSONParser().parse(body);
         ArrayList<String> friends = new ArrayList<>();
-        for (Object obj: arr)
+        for (Object obj : arr)
         {
             friends.add(obj.toString());
         }
@@ -72,7 +72,7 @@ public class Client
         String body = EntityUtils.toString(response.getEntity());
         JSONArray arr = (JSONArray) new JSONParser().parse(body);
         ArrayList<String> friends = new ArrayList<>();
-        for (Object obj: arr)
+        for (Object obj : arr)
         {
             friends.add(obj.toString());
         }
@@ -91,10 +91,11 @@ public class Client
     {
         HttpResponse response = ipHandler.getSenderIP(sender);
         String body = EntityUtils.toString(response.getEntity());
-        JSONParser p =new JSONParser();
+        JSONParser p = new JSONParser();
         JSONObject jsonObject = (JSONObject) p.parse(body);
         return (String) jsonObject.get("ip");
     }
+
     public boolean sendFile(String path) throws IOException
     {
         sender.send(path);

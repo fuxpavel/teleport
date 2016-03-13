@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.Scanner;
 
 import static com.teleport.client.Protocol.*;
 
@@ -30,20 +31,30 @@ public class Receiver
             {
                 String filename = input[1];
                 String size = input[2];
-                out.write((P2P_ANS_CONNECT_REQUEST + "-" + P2P_POSITIVE_ANS + "--").getBytes());
-                out.flush();
-                System.out.println("size:" + size);
-
-                FileOutputStream fos = new FileOutputStream("/home/alextikh/Desktop/" + filename);
-                while ((len = in.read(buf)) > 0)
+                System.out.println("want send you a file " + size + " " + filename + " do you want to get it? (y/n)");
+                Scanner scanner = new Scanner(System.in);
+                if (scanner.next().equals("y"))
                 {
-                    fos.write(buf);
-                }
+                    out.write((P2P_ANS_CONNECT_REQUEST + "-" + P2P_POSITIVE_ANS + "--").getBytes());
+                    out.flush();
 
-                fos.close();
-                sock.close();
+                    FileOutputStream fos = new FileOutputStream("D:\\Users\\user-pc\\Desktop\\" + filename);
+                    while ((len = in.read(buf)) > 0)
+                    {
+                        fos.write(buf);
+                    }
+
+                    fos.close();
+                    sock.close();
+                }
+                else
+                {
+                    out.write((P2P_ANS_CONNECT_REQUEST + "-" + P2P_REFUSE_ANS + "--").getBytes());
+                    out.flush();
+                    sock.close();
+                }
             }
+            return true;
         }
-        return true;
     }
 }

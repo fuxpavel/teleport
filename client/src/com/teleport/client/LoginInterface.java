@@ -31,7 +31,8 @@ public class LoginInterface implements ShellDependent
         if (client.login(username, password))
         {
             System.out.println("Logged in successfully");
-            ShellFactory.createSubshell("PostLoginInterface", shell, "teleport-client", new PostLoginInterface()).commandLoop();
+            ShellFactory.createSubshell("PostLoginInterface", shell, "teleport-client", new PostLoginInterface())
+                        .commandLoop();
         }
         else
         {
