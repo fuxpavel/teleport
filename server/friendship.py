@@ -70,11 +70,11 @@ class SwitchIP(object):
     def __init__(self):
         self.db = get_user_db()
 
-    def on_get(self, req, resp):
+    def on_post(self, req, resp):
         userdata = json.loads(req.stream.read())
-        sender = req.get_header('Authorization')
-        receiver = userdata['receiver']
-        ip = self.db.get_user_ip(self.db.get_token_by_username(receiver))
-        resp.body = json.dumps({'msg': ip})
+        receiver = req.get_header('Authorization')
+        sender = userdata['sender']
+        ip = self.db.get_user_ip(self.db.get_token_by_username(sender))
+        resp.body = json.dumps({'ip': ip})
         resp.content_type = 'application/json'
         resp.status = falcon.HTTP_200

@@ -4,9 +4,6 @@ import asg.cliche.Command;
 import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 
 public class PostLoginInterface
@@ -59,22 +56,17 @@ public class PostLoginInterface
     }
 
     @Command
-    public void send(String receiver, String dir) throws IOException
+    public void send(String path) throws IOException
     {
         Client client = new Client();
-        List<String> files = new ArrayList<>();
-        Files.walk(Paths.get(dir)).forEach(path -> {
-            if (Files.isRegularFile(path))
-            {
-                files.add(path.toString());
-            }
-        });
-        client.sendFile(receiver, files);
+        client.sendFile(path);
     }
 
     @Command
-    public void recieve(String sender)
+    public void receive(String sender) throws IOException, ParseException
     {
-
+        Client client = new Client();
+        String ip = client.get_sender_ip(sender);
+        client.recvFile(ip);
     }
 }

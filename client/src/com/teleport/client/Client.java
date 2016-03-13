@@ -8,26 +8,24 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class Client
 {
     private Authorization authorizationHandler;
     private Signing signingHandler;
     private Friendship friendshipHandler;
+    private Friendship ipHandler;
     private Sender sender = new Sender();
+    private Receiver recv = new Receiver();
 
     public Client() throws IOException
     {
         authorizationHandler = new Authorization();
         signingHandler = new Signing();
         friendshipHandler = new Friendship(authorizationHandler);
+        ipHandler = new Friendship(authorizationHandler);
     }
 
     public boolean register(String username, String password) throws IOException, ParseException
@@ -89,15 +87,23 @@ public class Client
         return json.get("status").equals("success");
     }
 
-    public boolean sendFile(String receiver, List<String> fileNames) throws IOException
+    public String get_sender_ip(String sender) throws IOException, ParseException
     {
-        Map<String, byte[]> contents = new HashMap<>();
-        for (String fileName : fileNames)
-        {
-            Path path = Paths.get(fileName);
-            contents.put(fileName, Files.readAllBytes(path));
-        }
-        sender.send(contents, receiver);
+        HttpResponse response = ipHandler.getSenderIP(sender);
+        String body = EntityUtils.toString(response.getEntity());
+        JSONParser p =new JSONParser();
+        JSONObject jsonObject = (JSONObject) p.parse(body);
+        return (String) jsonObject.get("ip");
+    }
+    public boolean sendFile(String path) throws IOException
+    {
+        sender.send(path);
+        return true;
+    }
+
+    public boolean recvFile(String ip) throws IOException
+    {
+        recv.receive(ip);
         return true;
     }
 }

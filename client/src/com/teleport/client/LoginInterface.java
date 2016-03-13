@@ -7,8 +7,7 @@ import asg.cliche.ShellFactory;
 import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+
 
 public class LoginInterface implements ShellDependent
 {
@@ -31,9 +30,8 @@ public class LoginInterface implements ShellDependent
     {
         if (client.login(username, password))
         {
-            ShellFactory.createSubshell("PostLoginInterface", shell, "teleport-client", new PostLoginInterface())
-                        .commandLoop();
             System.out.println("Logged in successfully");
+            ShellFactory.createSubshell("PostLoginInterface", shell, "teleport-client", new PostLoginInterface()).commandLoop();
         }
         else
         {
@@ -41,19 +39,15 @@ public class LoginInterface implements ShellDependent
         }
     }
 
-
-    @Command
-    public void send(String ip, String fileName) throws IOException
+    public void send(String path) throws IOException
     {
-        List<String> files = new ArrayList<>();
-        files.add(fileName);
-        client.sendFile(ip, files);
+        client.sendFile(path);
     }
 
     @Command
-    public void receive() throws IOException
+    public void receive(String ip) throws IOException
     {
-        ;
+        client.recvFile(ip);
     }
 
     private Shell shell;
