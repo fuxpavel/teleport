@@ -10,4 +10,5 @@ public final class Protocol
     public static final String P2P_ANS_SEND_FILE = "306";
     public static final String P2P_SEND_CONTENT = "307";
     public static final String P2P_TRANSFER_COMPLETE = "308";
+    public static final String P2P_AMOUT_OF_FILES = "309";
 }

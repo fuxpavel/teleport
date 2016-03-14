@@ -100,9 +100,10 @@ public class Client
         JSONObject jsonObject = (JSONObject) p.parse(body);
         return (String) jsonObject.get("ip");
     }
-    public boolean sendFile(String path) throws IOException
+    public boolean sendFile(List<String> paths) throws IOException
     {
-        sender.send(path);
+
+        sender.send(paths);
         return true;
     }
 

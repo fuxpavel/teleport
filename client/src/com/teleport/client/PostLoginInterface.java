@@ -3,6 +3,7 @@ package com.teleport.client;
 import asg.cliche.Command;
 import org.json.simple.parser.ParseException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class PostLoginInterface
@@ -55,10 +56,14 @@ public class PostLoginInterface
     }
 
     @Command
-    public void send(String path) throws IOException
-    {
+    public void send(String... paths)throws IOException{
+        List<String> p = new ArrayList<String>();
+        for(String path : paths)
+        {
+            p.add(path);
+        }
         Client client = new Client();
-        client.sendFile(path);
+        client.sendFile(p);
     }
 
     @Command
