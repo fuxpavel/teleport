@@ -71,6 +71,12 @@ public class PostLoginInterface
     {
         Client client = new Client();
         String ip = client.get_sender_ip(sender);
-        client.recvFile(ip);
+        if(!ip.equals("not friends")) {
+            client.recvFile(ip);
+        }
+        else
+        {
+            System.out.println("not friends");
+        }
     }
 }
