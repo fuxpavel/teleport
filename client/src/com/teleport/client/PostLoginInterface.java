@@ -57,9 +57,10 @@ public class PostLoginInterface
     }
 
     @Command
-    public void send(String... paths)throws IOException{
+    public void send(String... paths) throws IOException
+    {
         List<String> p = new ArrayList<String>();
-        for(String path : paths)
+        for (String path : paths)
         {
             p.add(path);
         }
@@ -72,7 +73,8 @@ public class PostLoginInterface
     {
         Client client = new Client();
         String ip = client.get_sender_ip(sender);
-        if(!ip.equals("not friends")) {
+        if (!ip.equals("not friends"))
+        {
             client.recvFile(ip);
         }
         else

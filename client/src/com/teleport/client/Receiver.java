@@ -54,10 +54,10 @@ public class Receiver
                         out.write((P2P_ANS_CONNECT_REQUEST + "-" + P2P_POSITIVE_ANS + "--").getBytes());
                         out.flush();
 
-                        FileOutputStream fos = new FileOutputStream("D:\\Users\\user-pc\\Desktop\\" + filename);
+                        FileOutputStream fos = new FileOutputStream(filename);
                         while ((len = in.read(buf)) > 0)
                         {
-                            fos.write(buf);
+                            fos.write(buf, 0, len);
                         }
                         fos.close();
                         sock.close();

@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.teleport.client.ServerInfo.*;
+
 public class Signing
 {
     private Register registerHandler;
@@ -37,8 +39,6 @@ public class Signing
 
     private class Register
     {
-        private static final String ADDRESS = "127.0.0.1";
-        private static final String PORT = "8000";
         private static final String SERVER_URL = "http://" + ADDRESS + ":" + PORT + "/api/register";
 
         public HttpResponse post(String username, String password) throws IOException
@@ -58,8 +58,6 @@ public class Signing
 
     private class Login
     {
-        private static final String ADDRESS = "127.0.0.1";
-        private static final String PORT = "8000";
         private static final String SERVER_URL = "http://" + ADDRESS + ":" + PORT + "/api/login";
 
         public HttpResponse post(String username, String password) throws IOException

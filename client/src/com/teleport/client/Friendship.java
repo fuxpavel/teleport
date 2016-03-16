@@ -13,6 +13,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.teleport.client.ServerInfo.ADDRESS;
+import static com.teleport.client.ServerInfo.PORT;
+
 public class Friendship
 {
     private FriendsAdder friendsAdder;
@@ -62,8 +65,6 @@ public class Friendship
 
     private class FriendsAdder
     {
-        private static final String ADDRESS = "127.0.0.1";
-        private static final String PORT = "8000";
         private static final String SERVER_URL = "http://" + ADDRESS + ":" + PORT + "/api/friendship/";
 
         public HttpResponse post(String friend) throws IOException
@@ -83,8 +84,6 @@ public class Friendship
 
     private class RequestResponder
     {
-        private static final String ADDRESS = "127.0.0.1";
-        private static final String PORT = "8000";
         private static final String SERVER_URL = "http://" + ADDRESS + ":" + PORT + "/api/friendship/response";
 
         public HttpResponse post(String friend, boolean status) throws IOException
@@ -105,8 +104,6 @@ public class Friendship
 
     private class RequestRetriever
     {
-        private static final String ADDRESS = "127.0.0.1";
-        private static final String PORT = "8000";
         private static final String SERVER_URL = "http://" + ADDRESS + ":" + PORT + "/api/friendship/response";
 
         public HttpResponse get() throws IOException
@@ -119,8 +116,6 @@ public class Friendship
 
     private class FriendsRetriever
     {
-        private static final String ADDRESS = "127.0.0.1";
-        private static final String PORT = "8000";
         private static final String SERVER_URL = "http://" + ADDRESS + ":" + PORT + "/api/friendship";
 
         public HttpResponse get() throws IOException
@@ -133,8 +128,6 @@ public class Friendship
 
     private class SwitchIP
     {
-        private static final String ADDRESS = "127.0.0.1";
-        private static final String PORT = "8000";
         private static final String SERVER_URL = "http://" + ADDRESS + ":" + PORT + "/api/switch-ip";
 
         public HttpResponse post(String sender) throws IOException
