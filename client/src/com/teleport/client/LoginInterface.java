@@ -7,6 +7,7 @@ import asg.cliche.ShellFactory;
 import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
+import java.util.List;
 
 
 public class LoginInterface implements ShellDependent
@@ -40,7 +41,8 @@ public class LoginInterface implements ShellDependent
         }
     }
 
-    public void send(String path) throws IOException
+    @Command
+    public void send(List<String> path) throws IOException
     {
         client.sendFile(path);
     }

@@ -4,6 +4,7 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 import static com.teleport.client.Protocol.*;
 
@@ -15,53 +16,64 @@ public class Sender
     private static String size(long size1)
     {
         float size = size1;
-        if (size > 1000000)
+
+        if (size > 1048576)
         {
-            if (size > 1000000000)
+            if (size > 1073741824)
             {
-                return String.format("%.1f", size / 1000000000) + " GB";
+                return String.format("%.1f", size / 1073741824) + " GB";
             }
             else
             {
-                return String.format("%.1f", size / 1000000) + " MB";
+                return String.format("%.1f", size / 1048576) + " MB";
             }
 
         }
-        return String.format("%.1f", size / 1000) + " KB";
+        return String.format("%.1f", size / 1024) + " KB";
     }
 
-    public boolean send(String path) throws IOException
+    public boolean send(List<String> paths) throws IOException
     {
-        try (ServerSocket serverSock = new ServerSocket(PORT))
+        boolean first = true;
+        for (String path : paths)
         {
-            try (Socket sock = serverSock.accept())
+            try (ServerSocket serverSock = new ServerSocket(PORT))
             {
-                File myFile = new File(path);
-                BufferedInputStream in1 = new BufferedInputStream(new FileInputStream(myFile));
-                InputStream in = sock.getInputStream();
-                OutputStream out = sock.getOutputStream();
-                byte[] buf = new byte[BUF_SIZE];
-                int count;
-                String filename = path.substring(path.lastIndexOf("\\") + 1);
-                out.write(
-                        (P2P_CONNECT_REQUEST + "-" + filename + "-" + size(myFile.length()) + "--").getBytes("UTF-8"));
-                out.flush();
-                in.read(buf);
-
-                if (new String(buf, StandardCharsets.UTF_8).substring(0, 9)
-                                                           .equals(P2P_ANS_CONNECT_REQUEST + "-" + P2P_POSITIVE_ANS +
-                                                                   "--"))
+                try (Socket sock = serverSock.accept())
                 {
-                    while ((count = in1.read(buf)) > 0)
+                    File myFile = new File(path);
+                    BufferedInputStream in1 = new BufferedInputStream(new FileInputStream(myFile));
+                    InputStream in = sock.getInputStream();
+                    OutputStream out = sock.getOutputStream();
+                    byte[] buf = new byte[BUF_SIZE];
+                    if (first)
                     {
-                        out.write(buf, 0, count);
+                        out.write((P2P_CONNECT_REQUEST + "-" + P2P_AMOUT_OF_FILES + "-" + paths.size() + "--")
+                                          .getBytes("UTF-8"));
                         out.flush();
+                        first = false;
                     }
-                    sock.close();
-                }
-                else
-                {
-                    sock.close();
+
+                    int count;
+                    String filename = path.substring(path.lastIndexOf("\\") + 1);
+                    out.write((P2P_SEND_FILE + "-" + filename + "-" + size(myFile.length()) + "--").getBytes("UTF-8"));
+                    out.flush();
+                    in.read(buf);
+
+                    if (new String(buf, StandardCharsets.UTF_8).substring(0, 9).equals(P2P_ANS_CONNECT_REQUEST + "-" +
+                                                                                       P2P_POSITIVE_ANS + "--"))
+                    {
+                        while ((count = in1.read(buf)) > 0)
+                        {
+                            out.write(buf, 0, count);
+                            out.flush();
+                        }
+                        sock.close();
+                    }
+                    else
+                    {
+                        sock.close();
+                    }
                 }
             }
         }

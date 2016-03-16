@@ -93,12 +93,12 @@ public class Client
         String body = EntityUtils.toString(response.getEntity());
         JSONParser p = new JSONParser();
         JSONObject jsonObject = (JSONObject) p.parse(body);
-        return (String) jsonObject.get("ip");
+        return (String) jsonObject.get("msg");
     }
 
-    public boolean sendFile(String path) throws IOException
+    public boolean sendFile(List<String> paths) throws IOException
     {
-        sender.send(path);
+        sender.send(paths);
         return true;
     }
 

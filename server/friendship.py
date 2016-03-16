@@ -74,7 +74,12 @@ class SwitchIP(object):
         userdata = json.loads(req.stream.read())
         receiver = req.get_header('Authorization')
         sender = userdata['sender']
-        ip = self.db.get_user_ip(self.db.get_token_by_username(sender))
-        resp.body = json.dumps({'ip': ip})
+        f = get_friendship_db()
+        if f.check_friendship(sender, self.db.get_username_by_token(receiver)):
+            ip = self.db.get_user_ip(self.db.get_token_by_username(sender))
+            resp.body = json.dumps({'msg': ip})
+        else:
+            resp.body = json.dumps({'msg': 'not friends'})
+
         resp.content_type = 'application/json'
         resp.status = falcon.HTTP_200

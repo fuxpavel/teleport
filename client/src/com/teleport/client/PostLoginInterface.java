@@ -4,6 +4,7 @@ import asg.cliche.Command;
 import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class PostLoginInterface
@@ -56,10 +57,14 @@ public class PostLoginInterface
     }
 
     @Command
-    public void send(String path) throws IOException
-    {
+    public void send(String... paths)throws IOException{
+        List<String> p = new ArrayList<String>();
+        for(String path : paths)
+        {
+            p.add(path);
+        }
         Client client = new Client();
-        client.sendFile(path);
+        client.sendFile(p);
     }
 
     @Command
@@ -67,6 +72,12 @@ public class PostLoginInterface
     {
         Client client = new Client();
         String ip = client.get_sender_ip(sender);
-        client.recvFile(ip);
+        if(!ip.equals("not friends")) {
+            client.recvFile(ip);
+        }
+        else
+        {
+            System.out.println("not friends");
+        }
     }
 }

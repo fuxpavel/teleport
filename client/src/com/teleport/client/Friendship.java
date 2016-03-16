@@ -10,6 +10,7 @@ import org.json.simple.JSONObject;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Friendship
@@ -21,6 +22,7 @@ public class Friendship
     private HttpClient httpClient;
     private Authorization authorizationHandler;
     private SwitchIP senderIP;
+    private List<String> friends;
 
     public Friendship(Authorization authorizationHandler) throws IOException
     {

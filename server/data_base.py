@@ -150,7 +150,6 @@ class FriendRequest(Base):
             session.commit()
         except:
             return False
-        print "delete:",reply, sender
         return True
 
     def send_friend_request(self, sender, reply, engine=None):
