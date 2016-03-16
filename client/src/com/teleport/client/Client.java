@@ -8,13 +8,8 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class Client
 {
@@ -56,7 +51,7 @@ public class Client
         String body = EntityUtils.toString(response.getEntity());
         JSONArray arr = (JSONArray) new JSONParser().parse(body);
         ArrayList<String> friends = new ArrayList<>();
-        for (Object obj: arr)
+        for (Object obj : arr)
         {
             friends.add(obj.toString());
         }
@@ -77,7 +72,7 @@ public class Client
         String body = EntityUtils.toString(response.getEntity());
         JSONArray arr = (JSONArray) new JSONParser().parse(body);
         ArrayList<String> friends = new ArrayList<>();
-        for (Object obj: arr)
+        for (Object obj : arr)
         {
             friends.add(obj.toString());
         }
@@ -96,10 +91,11 @@ public class Client
     {
         HttpResponse response = ipHandler.getSenderIP(sender);
         String body = EntityUtils.toString(response.getEntity());
-        JSONParser p =new JSONParser();
+        JSONParser p = new JSONParser();
         JSONObject jsonObject = (JSONObject) p.parse(body);
         return (String) jsonObject.get("msg");
     }
+
     public boolean sendFile(List<String> paths) throws IOException
     {
         sender.send(paths);

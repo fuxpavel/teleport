@@ -5,6 +5,7 @@ import asg.cliche.Shell;
 import asg.cliche.ShellDependent;
 import asg.cliche.ShellFactory;
 import org.json.simple.parser.ParseException;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -30,16 +31,15 @@ public class LoginInterface implements ShellDependent
     {
         if (client.login(username, password))
         {
-            ShellFactory.createSubshell("PostLoginInterface", shell, "teleport-client", new PostLoginInterface())
-                    .commandLoop();
             System.out.println("Logged in successfully");
+            ShellFactory.createSubshell("PostLoginInterface", shell, "teleport-client", new PostLoginInterface())
+                        .commandLoop();
         }
         else
         {
             System.out.println("Could not login");
         }
     }
-
 
     @Command
     public void send(List<String> path) throws IOException

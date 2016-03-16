@@ -18,5 +18,5 @@ api.add_route('/api/friendship/response', friendship_response_res)
 api.add_route('/api/switch-ip', switch_ip_res)
 
 if __name__ == '__main__':
-    httpd = simple_server.make_server('127.0.0.1', 8000, api)
+    httpd = simple_server.make_server('', 8000, api)
     httpd.serve_forever()
