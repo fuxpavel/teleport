@@ -74,6 +74,8 @@ public class Sender
                     {
                         sock.close();
                     }
+
+                    in.close();
                 }
             }
         }

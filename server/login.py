@@ -8,15 +8,18 @@ class Login(object):
         self.db = get_user_db()
 
     def on_post(self, req, resp):
-        print req.env['HTTP_CONNECTION']
-        print req.headers
         userdata = json.loads(req.stream.read())
+        ip=  req.env['REMOTE_ADDR']
+        print ip
         username = userdata['username']
         password = userdata['password']
 
         token = self.db.login_user(username, password)
         if token:
-            status = 'success'
+            if self.db.set_user_ip(token, ip):
+                status = 'success'
+            else:
+                status = 'failure'
         else:
             status = 'failure'
 
@@ -31,11 +34,7 @@ class Register(object):
         self.db = get_user_db()
 
     def on_post(self, req, resp):
-        print req.headers
-        print req.env['HTTP_CONNECTION']
-
         userdata = json.loads(req.stream.read())
-        print userdata
         username = userdata['username']
         password = userdata['password']
 
