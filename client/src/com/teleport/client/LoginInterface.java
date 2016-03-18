@@ -41,6 +41,18 @@ public class LoginInterface implements ShellDependent
         }
     }
 
+    @Command
+    public void send(List<String> path) throws IOException
+    {
+        client.sendFile(path);
+    }
+
+    @Command
+    public void receive(String ip) throws IOException
+    {
+        client.recvFile(ip);
+    }
+
     private Shell shell;
     private Client client;
 
