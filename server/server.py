@@ -1,6 +1,8 @@
 import login
 import friendship
 import falcon
+from wsgiref import simple_server
+import platform
 
 api = application = falcon.API()
 
@@ -15,3 +17,7 @@ api.add_route('/api/register', register_res)
 api.add_route('/api/friendship', friendship_res)
 api.add_route('/api/friendship/response', friendship_response_res)
 api.add_route('/api/switch-ip', switch_ip_res)
+
+if platform.system() == 'Windows' and __name__ == '__main__':
+    httpd = simple_server.make_server('', 8000, api)
+    httpd.serve_forever()
