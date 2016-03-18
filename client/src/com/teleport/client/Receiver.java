@@ -19,6 +19,7 @@ public class Receiver
 
     public boolean receive(String ip) throws IOException
     {
+        long startTime = System.currentTimeMillis();
         int amout_of_files = 1;
         String[] input;
         boolean first = true;
@@ -71,6 +72,9 @@ public class Receiver
                 }
             }
         }
+        long endTime   = System.currentTimeMillis();
+        long totalTime = endTime - startTime;
+        System.out.println(totalTime);
         return true;
     }
 }
