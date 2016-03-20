@@ -127,6 +127,16 @@ class FriendRequest(Base):
             lst.append(i.sender)
         return lst
 
+    def check_pending_request(self, sender, engine=None):
+        session = get_session(engine)
+        db = User
+        sender = db.get_username_by_token(sender, engine)
+        pending = session.query(FriendRequest).filter_by(sender=sender).all()
+        lst = []
+        for i in pending:
+            lst.append(i.reply)
+        return lst
+
     def confirm_request(self, sender, reply, engine=None):
         session = get_session(engine)
         db = Friendship()
