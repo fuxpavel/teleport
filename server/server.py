@@ -2,7 +2,6 @@ import login
 import friendship
 import falcon
 from wsgiref import simple_server
-import platform
 
 api = application = falcon.API()
 
@@ -11,13 +10,13 @@ register_res = login.Register()
 friendship_res = friendship.Friendship()
 friendship_response_res = friendship.FriendshipResponse()
 switch_ip_res = friendship.SwitchIP()
+un_confirmed_request_res = friendship
 
 api.add_route('/api/login', login_res)
 api.add_route('/api/register', register_res)
 api.add_route('/api/friendship', friendship_res)
 api.add_route('/api/friendship/response', friendship_response_res)
-api.add_route('/api/switch-ip', switch_ip_res)
-
-if platform.system() == 'Windows' and __name__ == '__main__':
+api.add_route('/api/switch-ip', switch_ip_res)s
+if __name__ == '__main__':
     httpd = simple_server.make_server('', 8000, api)
     httpd.serve_forever()

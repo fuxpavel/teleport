@@ -6,12 +6,15 @@ import asg.cliche.ShellDependent;
 import asg.cliche.ShellFactory;
 import org.json.simple.parser.ParseException;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.util.List;
 
 
-public class LoginInterface implements ShellDependent
+public class A extends JPanel
 {
+
+
     @Command
     public void register(String username, String password) throws IOException, ParseException
     {
