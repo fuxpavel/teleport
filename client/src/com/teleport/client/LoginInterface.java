@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.List;
 
 
-public class A extends JPanel
+public class LoginInterface
 {
 
 
