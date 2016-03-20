@@ -1,0 +1,9 @@
+server/*
+!server/*.py
+!server/Makefile
+client/*
+!/client/src
+!/client/client.jar
+client/src/META-INF/*
+!client/lib
+
