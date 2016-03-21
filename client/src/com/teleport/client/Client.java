@@ -1,15 +1,20 @@
 package com.teleport.client;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Client
 {
@@ -45,17 +50,14 @@ public class Client
         return json.get("status").equals("success");
     }
 
-    public List<String> getFriendRequests() throws IOException, ParseException
+    public Map<String, String> getFriendRequests() throws IOException, ParseException
     {
         HttpResponse response = friendshipHandler.getFriendRequests();
         String body = EntityUtils.toString(response.getEntity());
-        JSONArray arr = (JSONArray) new JSONParser().parse(body);
-        ArrayList<String> friends = new ArrayList<>();
-        for (Object obj : arr)
-        {
-            friends.add(obj.toString());
-        }
-        return friends;
+        List<String> list = new ArrayList<String>();
+        Map<String, String> retMap = new Gson().fromJson(body, new TypeToken<HashMap<String, Object>>() {}.getType());
+
+        return retMap;
     }
 
     public boolean addFriends(String friend) throws IOException, ParseException

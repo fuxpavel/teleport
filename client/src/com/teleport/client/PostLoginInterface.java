@@ -6,6 +6,7 @@ import org.json.simple.parser.ParseException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class PostLoginInterface
 {
@@ -19,8 +20,13 @@ public class PostLoginInterface
     @Command
     public void getFriendRequests() throws IOException, ParseException
     {
-        List<String> friends = client.getFriendRequests();
-        friends.forEach(System.out::println);
+        Map<String, String> friends = client.getFriendRequests();
+        List list = new ArrayList(friends.values());
+        for(Object friend : list)
+        {
+            System.out.println(friend.toString().substring(1,friend.toString().length()-1));
+        }
+
     }
 
     @Command

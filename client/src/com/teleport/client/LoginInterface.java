@@ -23,7 +23,6 @@ public class LoginInterface implements ShellDependent
         {
             System.out.println("Could not register");
         }
-
     }
 
     @Command
