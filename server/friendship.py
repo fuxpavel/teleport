@@ -62,8 +62,8 @@ class FriendshipResponse(object):
         reply = req.get_header('Authorization')
         my_waiting = self.db.check_waiting_request(reply)
         other_pending = self.db.check_pending_request(reply)
-        print json.dumps({"waiting": my_waiting, "pending": other_pending})
         resp.body = json.dumps({"waiting": my_waiting, "pending": other_pending})
+        print json.dumps({"waiting": my_waiting, "pending": other_pending})
         resp.content_type = 'application/json'
         resp.status = falcon.HTTP_200
 
