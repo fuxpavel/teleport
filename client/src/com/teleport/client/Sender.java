@@ -41,7 +41,8 @@ public class Sender
             {
                 try (Socket sock = serverSock.accept())
                 {
-                    File myFile = new File(path);
+                    String compress = Compress.zipFile(path);
+                    File myFile = new File(compress);
                     BufferedInputStream in1 = new BufferedInputStream(new FileInputStream(myFile));
                     InputStream in = sock.getInputStream();
                     OutputStream out = sock.getOutputStream();
@@ -55,7 +56,7 @@ public class Sender
                     }
 
                     int count;
-                    String filename = path.substring(path.lastIndexOf("\\") + 1);
+                    String filename = compress.substring(compress.lastIndexOf("\\") + 1);
                     out.write((P2P_SEND_FILE + "-" + filename + "-" + size(myFile.length()) + "--").getBytes("UTF-8"));
                     out.flush();
                     in.read(buf);
