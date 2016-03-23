@@ -10,11 +10,8 @@ import javax.swing.*;
 import java.io.IOException;
 import java.util.List;
 
-
-public class LoginInterface
+public class LoginInterface implements ShellDependent
 {
-
-
     @Command
     public void register(String username, String password) throws IOException, ParseException
     {
