@@ -9,46 +9,85 @@ import java.util.zip.ZipOutputStream;
 
 public class Compress
 {
-    public static String zipFile(String input)
+    public static boolean CheckAlreadyCompress(String input)
     {
-        try
+        return !(input.substring(input.lastIndexOf(".")).equals(".zip"));
+    }
+
+    public static String ParseFileName(String inputFile)
+    {
+        File file = new File(inputFile);
+        if (CheckAlreadyCompress(inputFile))
         {
-
-            String zipFilePath = input.substring(0, input.lastIndexOf(".")) + ".zip";
-            File inputFile = new File(input);
-            // Wrap a FileOutputStream around a ZipOutputStream
-            // to store the zip stream to a file. Note that this is
-            // not absolutely necessary
-            FileOutputStream fileOutputStream = new FileOutputStream(zipFilePath);
-            ZipOutputStream zipOutputStream = new ZipOutputStream(fileOutputStream);
-
-            // a ZipEntry represents a file entry in the zip archive
-            // We name the ZipEntry after the original file's name
-            ZipEntry zipEntry = new ZipEntry(inputFile.getName());
-            zipOutputStream.putNextEntry(zipEntry);
-
-            FileInputStream fileInputStream = new FileInputStream(inputFile);
-            byte[] buf = new byte[1024];
-            int bytesRead;
-
-            // Read the input file by chucks of 1024 bytes
-            // and write the read bytes to the zip stream
-            while ((bytesRead = fileInputStream.read(buf)) > 0)
+            if (file.isFile())
             {
-                zipOutputStream.write(buf, 0, bytesRead);
+                return inputFile.substring(0, inputFile.lastIndexOf(".")) + ".zip";
             }
-
-            // close ZipEntry to store the stream to the file
-            zipOutputStream.closeEntry();
-
-            zipOutputStream.close();
-            fileOutputStream.close();
-            return zipFilePath;
-
-        } catch (IOException e)
-        {
-            e.printStackTrace();
+            else if (file.isDirectory())
+            {
+                return inputFile + ".zip";
+            }
         }
-        return new String();
+        return null;
+    }
+
+    public static void Compression(String inputPath) throws IOException
+    {
+        FileOutputStream fileOutputStream = null;
+        String outputCompressFile = ParseFileName(inputPath);
+        fileOutputStream = new FileOutputStream(outputCompressFile);
+        ZipOutputStream zipOutputStream = new ZipOutputStream(fileOutputStream);
+
+        File inputFile = new File(inputPath);
+
+        if (inputFile.isFile())
+        {
+            compressFile(inputFile, "", zipOutputStream);
+        }
+        else if (inputFile.isDirectory())
+        {
+            compressFolder(zipOutputStream, inputFile, "");
+        }
+        zipOutputStream.close();
+    }
+
+    public static void compressFolder(ZipOutputStream zipOutputStream, File inputFolder, String parentName) throws IOException
+    {
+        String myname = parentName + inputFolder.getName() + "\\";
+        ZipEntry folderZipEntry = new ZipEntry(myname);
+        zipOutputStream.putNextEntry(folderZipEntry);
+        System.out.println(myname);
+        File[] dir = inputFolder.listFiles();
+        for (File file : dir)
+        {
+            if (file.exists())
+            {
+                if (file.isFile())
+                {
+                    compressFile(file, myname, zipOutputStream);
+                }
+                else if (file.isDirectory())
+                {
+                    compressFolder(zipOutputStream, file, myname);
+                }
+            }
+        }
+        zipOutputStream.closeEntry();
+    }
+
+    public static void compressFile(File inputFile, String parentName, ZipOutputStream zipOutputStream) throws IOException
+    {
+        ZipEntry zipEntry = new ZipEntry(parentName + inputFile.getName());
+        zipOutputStream.putNextEntry(zipEntry);
+        FileInputStream fileInputStream = new FileInputStream(inputFile);
+        System.out.println((zipEntry.getCompressedSize()));
+        byte[] buf = new byte[1024];
+        int bytesRead;
+
+        while ((bytesRead = fileInputStream.read(buf)) > 0)
+        {
+            zipOutputStream.write(buf, 0, bytesRead);
+        }
+        zipOutputStream.closeEntry();
     }
 }
