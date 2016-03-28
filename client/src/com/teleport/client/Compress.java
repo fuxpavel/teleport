@@ -31,7 +31,7 @@ public class Compress
         return null;
     }
 
-    public static void Compression(String inputPath) throws IOException
+    public static String Compression(String inputPath) throws IOException
     {
         FileOutputStream fileOutputStream = null;
         String outputCompressFile = ParseFileName(inputPath);
@@ -49,6 +49,7 @@ public class Compress
             compressFolder(zipOutputStream, inputFile, "");
         }
         zipOutputStream.close();
+        return outputCompressFile;
     }
 
     public static void compressFolder(ZipOutputStream zipOutputStream, File inputFolder, String parentName) throws IOException
