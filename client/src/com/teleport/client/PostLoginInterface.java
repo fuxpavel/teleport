@@ -4,8 +4,7 @@ import asg.cliche.Command;
 import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class PostLoginInterface
 {
@@ -19,8 +18,12 @@ public class PostLoginInterface
     @Command
     public void getFriendRequests() throws IOException, ParseException
     {
-        List<String> friends = client.getFriendRequests();
-        friends.forEach(System.out::println);
+        Map<String, List<String>> friends = client.getFriendRequests();
+        Iterator t = friends.values().iterator();
+        for (String key : friends.keySet())
+        {
+            System.out.println(key.toString()+": "+t.next().toString());
+        }
     }
 
     @Command
@@ -64,14 +67,12 @@ public class PostLoginInterface
         {
             p.add(path);
         }
-        Client client = new Client();
         client.sendFile(p);
     }
 
     @Command
     public void receive(String sender) throws IOException, ParseException
     {
-        Client client = new Client();
         String ip = client.get_sender_ip(sender);
         if (!ip.equals("not friends"))
         {

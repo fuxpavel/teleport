@@ -129,7 +129,7 @@ class FriendRequest(Base):
 
     def check_pending_request(self, sender, engine=None):
         session = get_session(engine)
-        db = User
+        db = User()
         sender = db.get_username_by_token(sender, engine)
         pending = session.query(FriendRequest).filter_by(sender=sender).all()
         lst = []

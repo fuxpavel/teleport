@@ -8,8 +8,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class Client
 {
@@ -45,17 +44,16 @@ public class Client
         return json.get("status").equals("success");
     }
 
-    public List<String> getFriendRequests() throws IOException, ParseException
+    public Map<String, List<String>> getFriendRequests() throws IOException, ParseException
     {
         HttpResponse response = friendshipHandler.getFriendRequests();
         String body = EntityUtils.toString(response.getEntity());
-        JSONArray arr = (JSONArray) new JSONParser().parse(body);
-        ArrayList<String> friends = new ArrayList<>();
-        for (Object obj : arr)
-        {
-            friends.add(obj.toString());
-        }
-        return friends;
+        String tempJson = body.replaceAll("[{}:\" ]", "");
+        HashMap<String, List<String>> jsonHash = new HashMap<String,List<String>>();
+        String[] parts = tempJson.split("[\\[\\]]");
+        jsonHash.put(parts[0], Arrays.asList(parts[1].split(",")));
+        jsonHash.put(parts[2].replace(",", ""),parts.length > 3 ? Arrays.asList(parts[3].split(",")) : new ArrayList<>());
+        return jsonHash;
     }
 
     public boolean addFriends(String friend) throws IOException, ParseException

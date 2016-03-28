@@ -6,7 +6,6 @@ import asg.cliche.ShellDependent;
 import asg.cliche.ShellFactory;
 import org.json.simple.parser.ParseException;
 
-import javax.swing.*;
 import java.io.IOException;
 import java.util.List;
 
@@ -23,7 +22,6 @@ public class LoginInterface implements ShellDependent
         {
             System.out.println("Could not register");
         }
-
     }
 
     @Command

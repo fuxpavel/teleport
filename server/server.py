@@ -11,7 +11,6 @@ register_res = login.Register()
 friendship_res = friendship.Friendship()
 friendship_response_res = friendship.FriendshipResponse()
 switch_ip_res = friendship.SwitchIP()
-un_confirmed_request_res = friendship
 
 api.add_route('/api/login', login_res)
 api.add_route('/api/register', register_res)
