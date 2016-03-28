@@ -41,7 +41,7 @@ public class Sender
             {
                 try (Socket sock = serverSock.accept())
                 {
-                    String compress = Compress.zipFile(path);
+                    String compress = Compress.Compression(path);
                     File myFile = new File(compress);
                     BufferedInputStream in1 = new BufferedInputStream(new FileInputStream(myFile));
                     InputStream in = sock.getInputStream();
