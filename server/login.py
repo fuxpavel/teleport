@@ -23,8 +23,7 @@ class Login(object):
         else:
             status = 'failure'
 
-        resp.body = '{"username": "%s", "password": "%s", "token": "%s", "status": "%s"}' % (
-        username, password, token, status)
+        resp.body = '{"token": "%s", "status": "%s"}' % (token, status)
         resp.content_type = 'application/json'
         resp.status = falcon.HTTP_200
 
@@ -43,6 +42,6 @@ class Register(object):
         else:
             status = 'failure'
 
-        resp.body = '{"username": "%s", "password": "%s", "status": "%s"}' % (username, password, status)
+        resp.body = '{"status": "%s"}' % status
         resp.content_type = 'application/json'
         resp.status = falcon.HTTP_201
