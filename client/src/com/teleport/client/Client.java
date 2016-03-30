@@ -4,6 +4,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
@@ -48,17 +49,30 @@ public class Client
     {
         HttpResponse response = friendshipHandler.getFriendRequests();
         String body = EntityUtils.toString(response.getEntity());
-        String tempJson = body.replaceAll("[{}:\" ]", "");
-        HashMap<String, List<String>> jsonHash = new HashMap<String,List<String>>();
-        String[] parts = tempJson.split("[\\[\\]]");
-        jsonHash.put(parts[0], Arrays.asList(parts[1].split(",")));
-        jsonHash.put(parts[2].replace(",", ""),parts.length > 3 ? Arrays.asList(parts[3].split(",")) : new ArrayList<>());
-        return jsonHash;
+        Map<String, List<String>> map = new HashMap<>();
+        JSONObject json = (JSONObject) JSONValue.parse(body);
+
+        for (Object key : json.keySet())
+        {
+            map.put((String) key, (List<String>) json.get(key));
+        }
+
+        return map;
     }
 
-    public boolean addFriends(String friend) throws IOException, ParseException
+    public List<String> getIncomingFriendRequests() throws IOException, ParseException
     {
-        HttpResponse response = friendshipHandler.addFriends(friend);
+        return getFriendRequests().get("incoming");
+    }
+
+    public List<String> getOutgoingFriendRequests() throws IOException, ParseException
+    {
+        return getFriendRequests().get("outgoins");
+    }
+
+    public boolean addFriend(String friend) throws IOException, ParseException
+    {
+        HttpResponse response = friendshipHandler.addFriend(friend);
         String body = EntityUtils.toString(response.getEntity());
         JSONObject json = (JSONObject) (new JSONParser().parse(body));
         return json.get("status").equals("success");

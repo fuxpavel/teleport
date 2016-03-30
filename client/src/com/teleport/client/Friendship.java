@@ -38,7 +38,7 @@ public class Friendship
         senderIP = new SwitchIP();
     }
 
-    public HttpResponse addFriends(String friend) throws IOException
+    public HttpResponse addFriend(String friend) throws IOException
     {
         return friendsAdder.post(friend);
     }

@@ -8,11 +8,16 @@ import java.util.*;
 
 public class PostLoginInterface
 {
+    private static final String friendshipQuerierThreadName = "FriendshipQuerierThread";
+
     private Client client;
+    private FriendshipQuerier friendshipQuerier;
 
     public PostLoginInterface() throws IOException
     {
         client = new Client();
+        friendshipQuerier = new FriendshipQuerier(friendshipQuerierThreadName);
+        friendshipQuerier.start();
     }
 
     @Command
@@ -29,7 +34,7 @@ public class PostLoginInterface
     @Command
     public void addFriend(String friend) throws IOException, ParseException
     {
-        if (client.addFriends(friend))
+        if (client.addFriend(friend))
         {
             System.out.println("Request sent");
         }
