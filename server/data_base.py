@@ -41,6 +41,14 @@ class User(Base):
             return False
         return True
 
+    def username_like(self, name, engine=None):
+        username = []
+        session = get_session(engine)
+        names = session.query(User).filter(User.username.like(name+'%')).all()
+        for name in names:
+            username.append(name.username)
+        return username
+
     def login_user(self, username, password, engine=None):
         info = self.check_exist_user_username(username, engine)
         if info and info[0].password == password:
@@ -117,23 +125,23 @@ class FriendRequest(Base):
         engine = engine if engine else get_engine()
         Base.metadata.create_all(engine)
 
-    def check_waiting_request(self, reply, engine=None):
+    def check_incoming_request(self, reply, engine=None):
         session = get_session(engine)
         db = User()
         reply = db.get_username_by_token(reply, engine)
-        waiting = session.query(FriendRequest).filter_by(reply=reply).all()
+        incoming = session.query(FriendRequest).filter_by(reply=reply).all()
         lst = []
-        for i in waiting:
+        for i in incoming:
             lst.append(i.sender)
         return lst
 
-    def check_pending_request(self, sender, engine=None):
+    def check_outgoing_request(self, sender, engine=None):
         session = get_session(engine)
         db = User()
         sender = db.get_username_by_token(sender, engine)
-        pending = session.query(FriendRequest).filter_by(sender=sender).all()
+        outgoing = session.query(FriendRequest).filter_by(sender=sender).all()
         lst = []
-        for i in pending:
+        for i in outgoing:
             lst.append(i.reply)
         return lst
 
