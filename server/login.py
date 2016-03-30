@@ -9,7 +9,7 @@ class Login(object):
 
     def on_post(self, req, resp):
         userdata = json.loads(req.stream.read())
-        ip=  req.env['REMOTE_ADDR']
+        ip = req.env['REMOTE_ADDR']
         print ip
         username = userdata['username']
         password = userdata['password']

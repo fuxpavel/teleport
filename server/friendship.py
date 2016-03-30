@@ -20,7 +20,7 @@ class Friendship(object):
 
         resp.body = '{"sender": "%s", "reply":"%s", "status": "%s"}' % (sender, reply, status)
         resp.content_type = 'application/json'
-        resp.status = falcon.HTTP_200
+        resp.status = falcon.HTTP_201
 
     def on_get(self, req, resp):
         reply = req.get_header('Authorization')
@@ -56,15 +56,28 @@ class FriendshipResponse(object):
 
         resp.body = '{"sender": "%s", "reply":"%s", "status": "%s"}' % (sender, reply, status)
         resp.content_type = 'application/json'
-        resp.status = falcon.HTTP_200
+        resp.status = falcon.HTTP_201
 
     def on_get(self, req, resp):
         reply = req.get_header('Authorization')
-        my_waiting = self.db.check_waiting_request(reply)
-        other_pending = self.db.check_pending_request(reply)
-        resp.body = json.dumps({"waiting": my_waiting, "pending": other_pending})
+        incoming = self.db.check_incoming_request(reply)
+        outgoing = self.db.check_outgoing_request(reply)
+        resp.body = json.dumps({"incoming": incoming, "outgoing": outgoing})
         resp.content_type = 'application/json'
         resp.status = falcon.HTTP_200
+
+
+class Username(object):
+    def __init__(self):
+        self.db = get_user_db()
+
+    def on_post(self, req, resp):
+        userdata = json.loads(req.stream.read())
+        receiver = req.get_header('Authorization')
+        usernames = self.db.username_like(userdata['name'])
+        resp.body = json.dumps(usernames)
+        resp.content_type = 'application/json'
+        resp.status = falcon.HTTP_201
 
 
 class SwitchIP(object):
@@ -83,4 +96,4 @@ class SwitchIP(object):
             resp.body = json.dumps({'msg': 'not friends'})
 
         resp.content_type = 'application/json'
-        resp.status = falcon.HTTP_200
+        resp.status = falcon.HTTP_201
