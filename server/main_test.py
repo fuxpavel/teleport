@@ -1,6 +1,6 @@
 from sqlalchemy import *
 from data_base import *
-
+User().register_user("alex-is-stupid","12")
 db = Friendship()
 db.init_data_base()
 db.create_friendship("9", "10")

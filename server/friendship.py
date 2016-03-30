@@ -18,7 +18,7 @@ class Friendship(object):
         else:
             status = 'failure'
 
-        resp.body = '{"sender": "%s", "reply":"%s", "status": "%s"}' % (sender, reply, status)
+        resp.body = '{"status": "%s"}' % status
         resp.content_type = 'application/json'
         resp.status = falcon.HTTP_201
 
@@ -54,7 +54,7 @@ class FriendshipResponse(object):
         else:
             status = 'failure'
 
-        resp.body = '{"sender": "%s", "reply":"%s", "status": "%s"}' % (sender, reply, status)
+        resp.body = '{"status": "%s"}' % status
         resp.content_type = 'application/json'
         resp.status = falcon.HTTP_201
 
