@@ -9,15 +9,19 @@ import java.util.*;
 public class PostLoginInterface
 {
     private static final String friendshipQuerierThreadName = "FriendshipQuerierThread";
+    private static final String transferQuerierThreadName = "TransferQuerierThread";
 
     private Client client;
     private FriendshipQuerier friendshipQuerier;
+    private TransferQuerier transferQuerier;
 
     public PostLoginInterface() throws IOException
     {
         client = new Client();
         friendshipQuerier = new FriendshipQuerier(friendshipQuerierThreadName);
         friendshipQuerier.start();
+        transferQuerier = new TransferQuerier(transferQuerierThreadName);
+        transferQuerier.start();
     }
 
     @Command

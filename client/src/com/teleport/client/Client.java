@@ -67,7 +67,7 @@ public class Client
 
     public List<String> getOutgoingFriendRequests() throws IOException, ParseException
     {
-        return getFriendRequests().get("outgoins");
+        return getFriendRequests().get("outgoing");
     }
 
     public boolean addFriend(String friend) throws IOException, ParseException
