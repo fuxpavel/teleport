@@ -1,6 +1,8 @@
 from sqlalchemy import *
 from data_base import *
 
-
-db = Friendship()
-db.create_friendship("251","9")
+dbb = User()
+dbb.register_user("45","45")
+a = dbb.login_user("45","45")
+db = FriendRequest()
+db.send_friend_request(a,"username1")
