@@ -4,7 +4,7 @@
 <?import java.lang.*?>
 <?import javafx.scene.control.*?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller1">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.MainPageController">
    <bottom>
       <GridPane BorderPane.alignment="CENTER">
         <columnConstraints>
@@ -21,7 +21,7 @@
       </GridPane>
    </bottom>
    <left>
-      <ListView fx:id="lstViewContacts" onMouseClicked="#ChoseUsername" prefHeight="332.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+      <ListView fx:id="lstViewContacts" onMouseClicked="#ChoseUsernameToSend" prefHeight="332.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
    </left>
    <center>
       <Button fx:id="butInbox" onAction="#SwitchScreen" mnemonicParsing="false" prefHeight="47.0" prefWidth="46.0" text="Inbox" textAlignment="CENTER" BorderPane.alignment="CENTER" />

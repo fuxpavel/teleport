@@ -9,7 +9,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
-        Controller c = new Controller();
+        LoginRegisterController c = new LoginRegisterController();
         c.Login(primaryStage);
     }
 
