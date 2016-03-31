@@ -10,7 +10,7 @@ import org.json.simple.JSONObject;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
+ 
 import static sample.ServerInfo.*;
 
 public class Signing

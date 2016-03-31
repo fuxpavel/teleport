@@ -1,5 +1,6 @@
 package sample;
 
+
 public final class Protocol
 {
     public static final String P2P_CONNECT_REQUEST = "301";

@@ -3,6 +3,7 @@ import json
 from db_accessor import *
 
 
+
 class Friendship(object):
     def __init__(self):
         self.db = get_friend_request_db()

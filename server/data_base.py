@@ -4,6 +4,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 import random
 
+
 Base = declarative_base()
 DB_URL = 'sqlite:///Teleport_DB.db'
 

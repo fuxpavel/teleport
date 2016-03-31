@@ -3,6 +3,7 @@ import json
 from db_accessor import get_user_db
 
 
+
 class Login(object):
     def __init__(self):
         self.db = get_user_db()

@@ -10,6 +10,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import java.io.IOException;
 
+
 public class LoginRegisterController
 {
     private LoginInterface log;

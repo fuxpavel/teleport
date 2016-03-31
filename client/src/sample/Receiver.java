@@ -7,7 +7,6 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
-
 import static sample.Protocol.*;
 
 
