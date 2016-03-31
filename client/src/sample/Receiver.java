@@ -1,4 +1,4 @@
-package com.teleport.client;
+package sample;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -7,8 +7,7 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
-
-import static com.teleport.client.Protocol.*;
+import static sample.Protocol.*;
 
 
 public class Receiver

@@ -1,5 +1,4 @@
-package com.teleport.client;
-
+package sample;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -10,11 +9,10 @@ import org.json.simple.JSONObject;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import static com.teleport.client.ServerInfo.ADDRESS;
-import static com.teleport.client.ServerInfo.PORT;
+import static sample.ServerInfo.ADDRESS;
+import static sample.ServerInfo.PORT;
 
 public class Friendship
 {
@@ -25,7 +23,7 @@ public class Friendship
     private HttpClient httpClient;
     private Authorization authorizationHandler;
     private SwitchIP senderIP;
-    private List<String> friends;
+    private AddFriend addFriend;
 
     public Friendship(Authorization authorizationHandler) throws IOException
     {
@@ -36,6 +34,7 @@ public class Friendship
         requestResponder = new RequestResponder();
         friendsRetriever = new FriendsRetriever();
         senderIP = new SwitchIP();
+        addFriend = new AddFriend();
     }
 
     public HttpResponse addFriends(String friend) throws IOException
@@ -61,6 +60,11 @@ public class Friendship
     public HttpResponse getSenderIP(String sender) throws IOException
     {
         return senderIP.post(sender);
+    }
+
+    public HttpResponse getUsernameList(String name) throws IOException
+    {
+        return addFriend.post(name);
     }
 
     private class FriendsAdder
@@ -122,6 +126,23 @@ public class Friendship
         {
             HttpGet request = new HttpGet(SERVER_URL);
             request.addHeader("Authorization", authorizationHandler.getToken());
+            return httpClient.execute(request);
+        }
+    }
+
+    private class AddFriend
+    {
+        private static final String SERVER_URL = "http://" + ADDRESS + ":" + PORT + "/api/username";
+        public HttpResponse post(String name) throws IOException
+        {
+            Map<String, String> map = new HashMap<>();
+            map.put("name", name);
+            JSONObject sendData = new JSONObject(map);
+            HttpPost request = new HttpPost(SERVER_URL);
+            request.addHeader("Authorization", authorizationHandler.getToken());
+            request.setHeader("Content-Type", "application/json");
+            StringEntity params = new StringEntity(sendData.toJSONString());
+            request.setEntity(params);
             return httpClient.execute(request);
         }
     }

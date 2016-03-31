@@ -1,4 +1,5 @@
-package com.teleport.client;
+package sample;
+
 
 public final class Protocol
 {

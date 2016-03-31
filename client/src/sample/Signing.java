@@ -1,4 +1,4 @@
-package com.teleport.client;
+package sample;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.teleport.client.ServerInfo.*;
+import static sample.ServerInfo.*;
 
 public class Signing
 {

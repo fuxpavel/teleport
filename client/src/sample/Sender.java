@@ -1,4 +1,4 @@
-package com.teleport.client;
+package sample;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -6,7 +6,7 @@ import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import static com.teleport.client.Protocol.*;
+import static sample.Protocol.*;
 
 public class Sender
 {
@@ -75,6 +75,8 @@ public class Sender
                     {
                         sock.close();
                     }
+
+                    in.close();
                 }
             }
         }

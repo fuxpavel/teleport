@@ -1,8 +1,7 @@
-package com.teleport.client;
+package sample;
 
-import asg.cliche.Command;
+
 import org.json.simple.parser.ParseException;
-
 import java.io.IOException;
 import java.util.*;
 
@@ -15,51 +14,52 @@ public class PostLoginInterface
         client = new Client();
     }
 
-    @Command
-    public void getFriendRequests() throws IOException, ParseException
+    public String getFriendRequests() throws IOException, ParseException
     {
+        String temp = "";
         Map<String, List<String>> friends = client.getFriendRequests();
         Iterator t = friends.values().iterator();
         for (String key : friends.keySet())
         {
-            System.out.println(key.toString()+": "+t.next().toString());
+            temp = temp + key.toString()+": "+t.next().toString();
         }
+        return temp;
     }
 
-    @Command
-    public void addFriend(String friend) throws IOException, ParseException
+    public String addFriend(String friend) throws IOException, ParseException
     {
         if (client.addFriends(friend))
         {
-            System.out.println("Request sent");
+            return "Request sent";
         }
         else
         {
-            System.out.println("Couldn't send request");
+            return "Couldn't send request";
         }
     }
 
-    @Command
-    public void respondToRequest(String friend, boolean status) throws IOException, ParseException
+    public String respondToRequest(String friend, boolean status) throws IOException, ParseException
     {
         if (client.respondToRequest(friend, status))
         {
-            System.out.println("Responded successfully");
+            return "Responded successfully";
         }
         else
         {
-            System.out.println("Couldn't respond");
+            return "Couldn't respond";
         }
     }
 
-    @Command
-    public void getFriends() throws IOException, ParseException
+    public List<String> getUsername(String name) throws IOException, ParseException
     {
-        List<String> friends = client.getFriends();
-        friends.forEach(System.out::println);
+        return client.getUsernameList(name);
     }
 
-    @Command
+    public List<String> getFriends() throws IOException, ParseException
+    {
+        return client.getFriends();
+    }
+
     public void send(String... paths) throws IOException
     {
         List<String> p = new ArrayList<String>();
@@ -71,7 +71,6 @@ public class PostLoginInterface
         client.sendFile(p);
     }
 
-    @Command
     public void receive(String sender) throws IOException, ParseException
     {
         Client client = new Client();

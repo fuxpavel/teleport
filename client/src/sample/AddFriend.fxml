@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<Pane fx:id="another" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.MainPageController">
+   <children>
+      <TextField fx:id="txtSearch" layoutX="214.0" layoutY="60.0" onKeyReleased="#SearchFriend" />
+      <ListView fx:id="lstViewUsername" layoutX="188.0" layoutY="117.0" onMouseClicked="#PushedButton" prefHeight="200.0" prefWidth="200.0" />
+      <Label fx:id="lblMsg" layoutX="484.0" layoutY="149.0" />
+      <Button fx:id="butSend" layoutX="441.0" layoutY="200.0" mnemonicParsing="false" onAction="#SendFriendRequest" text="Send" visible="false" />
+   </children>
+</Pane>
