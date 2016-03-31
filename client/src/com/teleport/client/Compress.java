@@ -57,7 +57,6 @@ public class Compress
         String myname = parentName + inputFolder.getName() + "\\";
         ZipEntry folderZipEntry = new ZipEntry(myname);
         zipOutputStream.putNextEntry(folderZipEntry);
-        System.out.println(myname);
         File[] dir = inputFolder.listFiles();
         for (File file : dir)
         {

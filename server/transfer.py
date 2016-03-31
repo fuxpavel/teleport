@@ -8,17 +8,17 @@ class Transfer(object):
         self.dbt = get_transfers_db()
 
     def on_post(self, req, resp):
-        sender = req.get_header('Authorization')
+        user = req.get_header('Authorization')
         data = action = json.loads(req.stream.read())
-        receiver = data['receiver']
+        other_user = data['user']
         action = data['action']
         if action == 'begin':
-            if self.dbt.add_transfer(sender, receiver):
+            if self.dbt.add_transfer(user, other_user):
                 status = 'success'
             else:
                 status = 'failure'
         elif action == 'end':
-            if self.dbt.end_transfer(sender, receiver):
+            if self.dbt.end_transfer(user, other_user):
                 status = 'success'
             else:
                 status = 'failure'
@@ -29,7 +29,6 @@ class Transfer(object):
         resp.content_type = 'application/json'
         resp.status = falcon.HTTP_201
 
-
     def on_get(self, req, resp):
         user = req.get_header('Authorization')
         incoming = self.dbt.get_incoming_transfers(user)
@@ -37,6 +36,7 @@ class Transfer(object):
         resp.body = json.dumps({"incoming": incoming, "outgoing": outgoing})
         resp.content_type = 'application/json'
         resp.status = falcon.HTTP_200
+
 
 class SwitchIP(object):
     def __init__(self):
@@ -49,9 +49,9 @@ class SwitchIP(object):
         f = get_friendship_db()
         if f.check_friendship(sender, self.db.get_username_by_token(receiver)):
             ip = self.db.get_user_ip(self.db.get_token_by_username(sender))
-            resp.body = json.dumps({'msg': ip})
+            resp.body = json.dumps({'ip': ip})
         else:
-            resp.body = json.dumps({'msg': 'not friends'})
+            resp.body = json.dumps({'ip': 'failure'})
 
         resp.content_type = 'application/json'
         resp.status = falcon.HTTP_201

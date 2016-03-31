@@ -10,7 +10,6 @@ import org.junit.runners.MethodSorters;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.Assert.assertTrue;
 
@@ -51,9 +50,8 @@ public class TestFriendship
         boolean status = client.addFriend(friend);
 
         List<String> friends = client.getFriends();
-        Map<String, List<String>> res = client.getFriendRequests();
-        List<String> incoming = res.get("incoming");
-        List<String> outgoing = res.get("outgoing");
+        List<String> incoming = client.getIncomingFriendRequests();
+        List<String> outgoing = client.getOutgoingFriendRequests();
 
         assertTrue(!status && friends.size() == 0 && incoming.size() == 0 && outgoing.size() == 0);
     }
@@ -71,30 +69,35 @@ public class TestFriendship
         boolean status1 = client.addFriend(friend);
 
         List<String> friends1 = client.getFriends();
-        Map<String, List<String>> res1 = client.getFriendRequests();
-        List<String> incoming1 = res1.get("incoming");
-        List<String> outgoing1 = res1.get("outgoing");
+        List<String> incoming1 = client.getIncomingFriendRequests();
+        List<String> outgoing1 = client.getOutgoingFriendRequests();
 
         client.login(friend, friendPassword);
 
         List<String> friends2 = client.getFriends();
-        Map<String, List<String>> res2 = client.getFriendRequests();
-        List<String> incoming2 = res2.get("incoming");
-        List<String> outgoing2 = res2.get("outgoing");
+        List<String> incoming2 = client.getIncomingFriendRequests();
+        List<String> outgoing2 = client.getOutgoingFriendRequests();
 
         boolean status2 = client.respondToRequest(username, false);
 
         client.login(friend, friendPassword);
 
         List<String> friends3 = client.getFriends();
-        Map<String, List<String>> res3 = client.getFriendRequests();
-        List<String> incoming3 = res3.get("incoming");
-        List<String> outgoing3 = res3.get("outgoing");
+        List<String> incoming3 = client.getIncomingFriendRequests();
+        List<String> outgoing3 = client.getOutgoingFriendRequests();
 
-        assertTrue(status1 && friends1.size() == 0 && incoming1.size() == 0 && outgoing1.size() == 1 &&
-                   outgoing1.contains(friend) && friends2.size() == 0 && incoming2.size() == 1 &&
-                   incoming2.contains(username) && outgoing2.size() == 0 && status2 && friends3.size() == 0 &&
-                   incoming3.size() == 0 && outgoing3.size() == 0);
+        client.login(username, password);
+
+        List<String> friends4 = client.getFriends();
+        List<String> incoming4 = client.getIncomingFriendRequests();
+        List<String> outgoing4 = client.getOutgoingFriendRequests();
+
+
+        assertTrue(status1 && friends1.isEmpty() && incoming1.isEmpty() && outgoing1.size() == 1 &&
+                   outgoing1.contains(friend) && friends2.isEmpty() && incoming2.size() == 1 &&
+                   incoming2.contains(username) && outgoing2.isEmpty() && status2 && friends3.isEmpty() &&
+                   incoming3.isEmpty() && outgoing3.isEmpty() && friends4.isEmpty() && incoming4.isEmpty() &&
+                   outgoing4.isEmpty());
     }
 
     @Test
@@ -110,31 +113,30 @@ public class TestFriendship
         boolean status1 = client.addFriend(friend);
 
         List<String> friends1 = client.getFriends();
-        Map<String, List<String>> res1 = client.getFriendRequests();
-        List<String> incoming1 = res1.get("incoming");
-        List<String> outgoing1 = res1.get("outgoing");
+        List<String> incoming1 = client.getIncomingFriendRequests();
+        List<String> outgoing1 = client.getOutgoingFriendRequests();
+
 
         client.login(friend, friendPassword);
 
         List<String> friends2 = client.getFriends();
-        Map<String, List<String>> res2 = client.getFriendRequests();
-        List<String> incoming2 = res2.get("incoming");
-        List<String> outgoing2 = res2.get("outgoing");
+        List<String> incoming2 = client.getIncomingFriendRequests();
+        List<String> outgoing2 = client.getOutgoingFriendRequests();
+
 
         boolean status2 = client.respondToRequest(username, true);
 
         List<String> friends3 = client.getFriends();
-        Map<String, List<String>> res3 = client.getFriendRequests();
-        List<String> incoming3 = res3.get("incoming");
-        List<String> outgoing3 = res3.get("outgoing");
+        List<String> incoming3 = client.getIncomingFriendRequests();
+        List<String> outgoing3 = client.getOutgoingFriendRequests();
 
 
         client.login(username, password);
 
         List<String> friends4 = client.getFriends();
-        Map<String, List<String>> res4 = client.getFriendRequests();
-        List<String> incoming4 = res4.get("incoming");
-        List<String> outgoing4 = res4.get("outgoing");
+        List<String> incoming4 = client.getIncomingFriendRequests();
+        List<String> outgoing4 = client.getOutgoingFriendRequests();
+
 
         assertTrue(status1 && friends1.isEmpty() && incoming1.isEmpty() && outgoing1.size() == 1 &&
                    outgoing1.contains(friend) && friends2.isEmpty() && incoming2.size() == 1 &&

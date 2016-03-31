@@ -27,12 +27,10 @@ public class PostLoginInterface
     @Command
     public void getFriendRequests() throws IOException, ParseException
     {
-        Map<String, List<String>> friends = client.getFriendRequests();
-        Iterator t = friends.values().iterator();
-        for (String key : friends.keySet())
-        {
-            System.out.println(key.toString()+": "+t.next().toString());
-        }
+        List<String> incoming = client.getIncomingFriendRequests();
+        List<String> outgoing = client.getOutgoingFriendRequests();
+        System.out.println("incoming: " + incoming);
+        System.out.println("outgoing: " + outgoing);
     }
 
     @Command
@@ -69,27 +67,33 @@ public class PostLoginInterface
     }
 
     @Command
-    public void send(String... paths) throws IOException
+    public void send(String receiver, String... paths) throws IOException, ParseException
     {
-        List<String> p = new ArrayList<String>();
+        List<String> p = new ArrayList<>();
         for (String path : paths)
         {
             p.add(path);
         }
-        client.sendFile(p);
+        if (client.sendFile(receiver, p))
+        {
+            System.out.println("Success");
+        }
+        else
+        {
+            System.out.println("Failure");
+        }
     }
 
     @Command
     public void receive(String sender) throws IOException, ParseException
     {
-        String ip = client.get_sender_ip(sender);
-        if (!ip.equals("not friends"))
+        if (client.recvFile(sender))
         {
-            client.recvFile(ip);
+            System.out.println("Success");
         }
         else
         {
-            System.out.println("not friends");
+            System.out.println("Failure");
         }
     }
 }

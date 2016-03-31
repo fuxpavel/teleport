@@ -10,7 +10,6 @@ import org.json.simple.JSONObject;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static com.teleport.client.ServerInfo.ADDRESS;
@@ -18,57 +17,65 @@ import static com.teleport.client.ServerInfo.PORT;
 
 public class Transfer
 {
-    private TransferHandler transferHandler;
+    private TransferTracker transferTracker;
     private TransferRetriever transferRetriever;
     private HttpClient httpClient;
     private Authorization authorizationHandler;
-    private SwitchIP senderIP;
-    private List<String> friends;
+    private SwitchIP switchIP;
 
     public Transfer(Authorization authorizationHandler) throws IOException
     {
         httpClient = HttpClientBuilder.create().build();
         this.authorizationHandler = authorizationHandler;
-        friendsAdder = new FriendsAdder();
-         = new RequestRetriever();
-        requestResponder = new RequestResponder();
-        friendsRetriever = new FriendsRetriever();
-        senderIP = new SwitchIP();
+        transferTracker = new TransferTracker();
+        transferRetriever = new TransferRetriever();
+        switchIP = new SwitchIP();
     }
 
-    public HttpResponse addFriend(String friend) throws IOException
+    public HttpResponse beginTransfer(String receiver) throws IOException
     {
-        return friendsAdder.post(friend);
+        return transferTracker.postBegin(receiver);
     }
 
-    public HttpResponse getFriendRequests() throws IOException
+    public HttpResponse endTransfer(String receiver) throws IOException
     {
-        return requestsRetriever.get();
-    }
-
-    public HttpResponse respondToRequest(String friend, boolean status) throws IOException
-    {
-        return requestResponder.post(friend, status);
+        return transferTracker.postEnd(receiver);
     }
 
     public HttpResponse getTransfers() throws IOException
     {
-        return friendsRetriever.get();
+        return transferRetriever.get();
     }
 
     public HttpResponse getSenderIP(String sender) throws IOException
     {
-        return senderIP.post(sender);
+        return switchIP.post(sender);
     }
 
-    private class TransferHandler
+    private class TransferTracker
     {
-        private static final String SERVER_URL = "http://" + ADDRESS + ":" + PORT + "/api/friendship/";
+        private static final String SERVER_URL = "http://" + ADDRESS + ":" + PORT + "/api/transfer/";
 
-        public HttpResponse post(String friend) throws IOException
+        public HttpResponse postBegin(String receiver) throws IOException
         {
             Map<String, String> map = new HashMap<>();
-            map.put("reply", friend);
+            map.put("user", receiver);
+            map.put("action", "begin");
+            JSONObject sendData = new JSONObject(map);
+
+            HttpPost request = new HttpPost(SERVER_URL);
+            request.addHeader("Authorization", authorizationHandler.getToken());
+            request.setHeader("Content-Type", "application/json");
+            StringEntity params = new StringEntity(sendData.toJSONString());
+            request.setEntity(params);
+            return httpClient.execute(request);
+        }
+
+        public HttpResponse postEnd(String receiver) throws IOException
+        {
+            Map<String, String> map = new HashMap<>();
+            map.put("user", receiver);
+            map.put("action", "end");
             JSONObject sendData = new JSONObject(map);
 
             HttpPost request = new HttpPost(SERVER_URL);
@@ -82,12 +89,30 @@ public class Transfer
 
     private class TransferRetriever
     {
-        private static final String SERVER_URL = "http://" + ADDRESS + ":" + PORT + "/api/friendship/response";
+        private static final String SERVER_URL = "http://" + ADDRESS + ":" + PORT + "/api/transfer";
 
         public HttpResponse get() throws IOException
         {
             HttpGet request = new HttpGet(SERVER_URL);
             request.addHeader("Authorization", authorizationHandler.getToken());
+            return httpClient.execute(request);
+        }
+    }
+
+    private class SwitchIP
+    {
+        private static final String SERVER_URL = "http://" + ADDRESS + ":" + PORT + "/api/switch-ip";
+
+        public HttpResponse post(String sender) throws IOException
+        {
+            Map<String, String> map = new HashMap<>();
+            map.put("sender", sender);
+            JSONObject sendData = new JSONObject(map);
+            HttpPost request = new HttpPost(SERVER_URL);
+            request.addHeader("Authorization", authorizationHandler.getToken());
+            request.setHeader("Content-Type", "application/json");
+            StringEntity params = new StringEntity(sendData.toJSONString());
+            request.setEntity(params);
             return httpClient.execute(request);
         }
     }

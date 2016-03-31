@@ -108,12 +108,6 @@ class User(Base):
         else:
             return False
 
-    def print_db(self, engine=None):
-        session = get_session(engine)
-        info = session.query(User).all()
-        for i in info:
-            print str(i.id) + ")", i.username, i.password, i.ip, i.token
-
 
 class FriendRequest(Base):
     __tablename__ = 'FriendRequest'
@@ -197,12 +191,6 @@ class FriendRequest(Base):
         else:
             return False
 
-    def print_connection(self, engine=None):
-        session = get_session(engine)
-        info = session.query(FriendRequest).all()
-        for i in info:
-            print i.sender, "<---->", i.reply
-
 
 class Friendship(Base):
     __tablename__ = 'Friendship'
@@ -254,12 +242,6 @@ class Friendship(Base):
             lst.append(i.friend1)
         return lst
 
-    def print_connection(self, engine=None):
-        session = get_session(engine)
-        info = session.query(Friendship).all()
-        for i in info:
-            print i.friend1, "<-->", i.friend2
-
 
 class Tranfsers(Base):
     __tablename__ = 'Transfers'
@@ -271,34 +253,39 @@ class Tranfsers(Base):
         engine = engine if engine else get_engine()
         Base.metadata.create_all(engine)
 
-    def add_transfer(self, sender, receiver, engine=None):
+    def add_transfer(self, sender_token, receiver_name, engine=None):
+        session = get_session(engine)
+        users_table = User()
+        friendships_table = Friendship()
+        transfers_table = Tranfsers()
+
+        if users_table.check_exist_user_token(sender_token, engine) and \
+                users_table.check_exist_user_username(receiver_name, engine) and sender_token != receiver_name:
+            sender_name = users_table.get_username_by_token(sender_token, engine)
+            if friendships_table.check_friendship(sender_name, receiver_name, engine):
+                if not transfers_table.check_transfer(sender_token, receiver_name):
+                    new_transfer = Tranfsers(sender=sender_name, receiver=receiver_name)
+                    session.add(new_transfer)
+                    try:
+                        session.commit()
+                    except:
+                        return False
+                return True
+            else:
+                return False
+        else:
+            return False
+
+    def end_transfer(self, sender_token, receiver, engine=None):
         session = get_session(engine)
         users_table = User()
         transfers_table = Tranfsers()
 
-        if users_table.check_exist_user_token(sender, engine) and \
-                users_table.check_exist_user_username(receiver, engine) and sender != receiver:
-            sender = users_table.get_username_by_token()
-            if not transfers_table.check_transfer(sender, receiver):
-                new_transfer = Tranfsers(sedner=sender, receiver=receiver)
-                session.add(new_transfer)
-                try:
-                    session.commit()
-                except:
-                    return False
-            return True
-        return False
-
-    def end_transfer(self, sender, receiver, engine=None):
-        session = get_session(engine)
-        users_table = User()
-        transfers_table = Tranfsers()
-
-        if users_table.check_exist_user_token(sender, engine) and \
-                users_table.check_exist_user_username(receiver, engine) and sender != receiver:
-            sender = users_table.get_username_by_token()
-            if transfers_table.check_transfer(sender, receiver):
-                session.query(Tranfsers).filter_by(sender=sender, receiver=receiver).delete()
+        if users_table.check_exist_user_token(sender_token, engine) and \
+                users_table.check_exist_user_username(receiver, engine) and sender_token != receiver:
+            sender_name = users_table.get_username_by_token(sender_token, engine)
+            if transfers_table.check_transfer(sender_token, receiver):
+                session.query(Tranfsers).filter_by(sender=sender_name, receiver=receiver).delete()
                 try:
                     session.commit()
                 except:
