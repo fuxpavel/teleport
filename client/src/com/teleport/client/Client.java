@@ -4,18 +4,22 @@ import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Client
 {
     private Authorization authorizationHandler;
     private Signing signingHandler;
     private Friendship friendshipHandler;
-    private Friendship ipHandler;
+    private Transfer transferHandler;
     private Sender sender = new Sender();
     private Receiver recv = new Receiver();
 
@@ -24,7 +28,7 @@ public class Client
         authorizationHandler = new Authorization();
         signingHandler = new Signing();
         friendshipHandler = new Friendship(authorizationHandler);
-        ipHandler = new Friendship(authorizationHandler);
+        transferHandler = new Transfer(authorizationHandler);
     }
 
     public boolean register(String username, String password) throws IOException, ParseException
@@ -44,21 +48,71 @@ public class Client
         return json.get("status").equals("success");
     }
 
-    public Map<String, List<String>> getFriendRequests() throws IOException, ParseException
+    private Map<String, List<String>> getFriendRequests() throws IOException, ParseException
     {
         HttpResponse response = friendshipHandler.getFriendRequests();
         String body = EntityUtils.toString(response.getEntity());
-        String tempJson = body.replaceAll("[{}:\" ]", "");
-        HashMap<String, List<String>> jsonHash = new HashMap<String,List<String>>();
-        String[] parts = tempJson.split("[\\[\\]]");
-        jsonHash.put(parts[0], Arrays.asList(parts[1].split(",")));
-        jsonHash.put(parts[2].replace(",", ""),parts.length > 3 ? Arrays.asList(parts[3].split(",")) : new ArrayList<>());
-        return jsonHash;
+        Map<String, List<String>> map = new HashMap<>();
+        JSONObject json = (JSONObject) JSONValue.parse(body);
+
+        for (Object key : json.keySet())
+        {
+            map.put((String) key, (List<String>) json.get(key));
+        }
+
+        return map;
     }
 
-    public boolean addFriends(String friend) throws IOException, ParseException
+    public List<String> getIncomingFriendRequests() throws IOException, ParseException
     {
-        HttpResponse response = friendshipHandler.addFriends(friend);
+        return getFriendRequests().get("incoming");
+    }
+
+    public List<String> getOutgoingFriendRequests() throws IOException, ParseException
+    {
+        return getFriendRequests().get("outgoing");
+    }
+
+    public List<String> getUsernameList(String name) throws IOException, ParseException
+    {
+        HttpResponse response = friendshipHandler.getUsernameList(name);
+        String body = EntityUtils.toString(response.getEntity());
+        JSONArray arr = (JSONArray) new JSONParser().parse(body);
+        ArrayList<String> username = new ArrayList<>();
+        for (Object obj : arr)
+        {
+            username.add(obj.toString());
+        }
+        return username;
+    }
+
+    private Map<String, List<String>> getTransfers() throws IOException, ParseException
+    {
+        HttpResponse response = transferHandler.getTransfers();
+        String body = EntityUtils.toString(response.getEntity());
+        Map<String, List<String>> map = new HashMap<>();
+        JSONObject json = (JSONObject) JSONValue.parse(body);
+        for (Object key : json.keySet())
+        {
+            map.put((String) key, (List<String>) json.get(key));
+        }
+
+        return map;
+    }
+
+    public List<String> getIncomingTransfers() throws IOException, ParseException
+    {
+        return getTransfers().get("incoming");
+    }
+
+    public List<String> getOutgoingTransfers() throws IOException, ParseException
+    {
+        return getTransfers().get("outgoing");
+    }
+
+    public boolean addFriend(String friend) throws IOException, ParseException
+    {
+        HttpResponse response = friendshipHandler.addFriend(friend);
         String body = EntityUtils.toString(response.getEntity());
         JSONObject json = (JSONObject) (new JSONParser().parse(body));
         return json.get("status").equals("success");
@@ -87,22 +141,40 @@ public class Client
 
     public String get_sender_ip(String sender) throws IOException, ParseException
     {
-        HttpResponse response = ipHandler.getSenderIP(sender);
+        HttpResponse response = transferHandler.getSenderIP(sender);
         String body = EntityUtils.toString(response.getEntity());
-        JSONParser p = new JSONParser();
-        JSONObject jsonObject = (JSONObject) p.parse(body);
-        return (String) jsonObject.get("msg");
+        JSONObject json = (JSONObject) (new JSONParser().parse(body));
+        return ((String) json.get("ip"));
     }
 
-    public boolean sendFile(List<String> paths) throws IOException
+    public boolean sendFile(String receiver, List<String> paths) throws IOException, ParseException
     {
-        sender.send(paths);
-        return true;
+        HttpResponse response = transferHandler.beginTransfer(receiver);
+        String body = EntityUtils.toString(response.getEntity());
+        JSONObject json = (JSONObject) (new JSONParser().parse(body));
+        if (json.get("status").equals("success"))
+        {
+            sender.send(paths);
+            transferHandler.endTransfer(receiver);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
-    public boolean recvFile(String ip) throws IOException
+    public boolean recvFile(String sender) throws IOException, ParseException
     {
-        recv.receive(ip);
-        return true;
+        String ip = get_sender_ip(sender);
+        if (!ip.equals("failure"))
+        {
+            recv.receive(get_sender_ip(sender));
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 }

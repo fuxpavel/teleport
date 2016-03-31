@@ -12,6 +12,8 @@ public class Sender
 {
     private static final int PORT = 10113;
     private static final int BUF_SIZE = 1024;
+    private int fileSize;
+    private int currentSize;
 
     private static String size(long size1)
     {
@@ -32,8 +34,19 @@ public class Sender
         return String.format("%.1f", size / 1024) + " KB";
     }
 
+    public int GetFileSize()
+    {
+        return fileSize;
+    }
+
+    public int GetCurrentSize()
+    {
+        return currentSize;
+    }
+
     public boolean send(List<String> paths) throws IOException
     {
+        currentSize = 0;
         boolean first = true;
         for (String path : paths)
         {
@@ -57,7 +70,8 @@ public class Sender
 
                     int count;
                     String filename = compress.substring(compress.lastIndexOf("\\") + 1);
-                    out.write((P2P_SEND_FILE + "-" + filename + "-" + size(myFile.length()) + "--").getBytes("UTF-8"));
+                    fileSize = Integer.parseInt(size(myFile.length()));
+                    out.write((P2P_SEND_FILE + "-" + filename + "-" + fileSize + "--").getBytes("UTF-8"));
                     out.flush();
                     in.read(buf);
 
@@ -67,6 +81,7 @@ public class Sender
                         while ((count = in1.read(buf)) > 0)
                         {
                             out.write(buf, 0, count);
+                            currentSize = currentSize + count;
                             out.flush();
                         }
                         sock.close();
@@ -75,6 +90,8 @@ public class Sender
                     {
                         sock.close();
                     }
+
+                    in.close();
                 }
             }
         }

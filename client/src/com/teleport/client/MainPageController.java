@@ -1,5 +1,4 @@
-package sample;
-
+package com.teleport.client;
 
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
@@ -85,7 +84,7 @@ public class MainPageController implements Initializable
         lstViewUsername.setItems(FXCollections.observableList(log.getUsername(txtSearch.getText())));
     }
 
-    public void ChoseUsernameToSend(MouseEvent mouseEvent) throws IOException
+    public void ChoseUsernameToSend(MouseEvent mouseEvent) throws IOException, ParseException
     {
         if(lstViewContacts != null && lstViewContacts.getItems().size() > 0 && mouseEvent.getButton().equals(MouseButton.PRIMARY))
         {
@@ -98,7 +97,7 @@ public class MainPageController implements Initializable
                 File file = fileChooser.showOpenDialog(stage);
                 if (file != null)
                 {
-                    log.send(file.getPath());
+                    log.send(lstViewContacts.getSelectionModel().getSelectedItem().toString(), file.getPath());
                 }
             }
         }

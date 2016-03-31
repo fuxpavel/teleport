@@ -1,4 +1,4 @@
-package sample;
+package com.teleport.client;
 
 import org.json.simple.parser.ParseException;
 import java.io.IOException;
@@ -21,10 +21,10 @@ public class FriendshipQuerier implements Runnable
         try
         {
             client = new Client();
-            incoming = client.getIncomingFriendRequests();
-            outgoing = client.getOutgoingFriendRequests();
+            incoming = new ArrayList<>();
+            outgoing = new ArrayList<>();
         }
-        catch (IOException | ParseException e)
+        catch (IOException e)
         {
             System.out.println(e.getMessage());
         }

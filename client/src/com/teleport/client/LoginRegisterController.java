@@ -1,4 +1,4 @@
-package sample;
+package com.teleport.client;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;

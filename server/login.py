@@ -1,6 +1,6 @@
 import falcon
 import json
-from db_accessor import get_user_db
+from db_accessor import *
 
 
 

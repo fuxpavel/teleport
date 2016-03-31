@@ -8,81 +8,92 @@ import java.util.*;
 
 public class PostLoginInterface
 {
+    private static final String friendshipQuerierThreadName = "FriendshipQuerierThread";
+    private static final String transferQuerierThreadName = "TransferQuerierThread";
+
     private Client client;
+    private FriendshipQuerier friendshipQuerier;
+    private TransferQuerier transferQuerier;
 
     public PostLoginInterface() throws IOException
     {
         client = new Client();
+        friendshipQuerier = new FriendshipQuerier(friendshipQuerierThreadName);
+        friendshipQuerier.start();
+        transferQuerier = new TransferQuerier(transferQuerierThreadName);
+        transferQuerier.start();
     }
 
-    @Command
     public void getFriendRequests() throws IOException, ParseException
     {
-        Map<String, List<String>> friends = client.getFriendRequests();
-        Iterator t = friends.values().iterator();
-        for (String key : friends.keySet())
-        {
-            System.out.println(key.toString()+": "+t.next().toString());
-        }
+        List<String> incoming = client.getIncomingFriendRequests();
+        List<String> outgoing = client.getOutgoingFriendRequests();
+        System.out.println("incoming: " + incoming);
+        System.out.println("outgoing: " + outgoing);
     }
 
-    @Command
-    public void addFriend(String friend) throws IOException, ParseException
+    public String addFriend(String friend) throws IOException, ParseException
     {
-        if (client.addFriends(friend))
+        if (client.addFriend(friend))
         {
-            System.out.println("Request sent");
+            return "Request sent";
         }
         else
         {
-            System.out.println("Couldn't send request");
+            return "Couldn't send request";
         }
     }
 
-    @Command
-    public void respondToRequest(String friend, boolean status) throws IOException, ParseException
+    public String respondToRequest(String friend, boolean status) throws IOException, ParseException
     {
         if (client.respondToRequest(friend, status))
         {
-            System.out.println("Responded successfully");
+            return "Responded successfully";
         }
         else
         {
-            System.out.println("Couldn't respond");
+            return "Couldn't respond";
         }
     }
 
-    @Command
-    public void getFriends() throws IOException, ParseException
+
+    public List<String> getFriends() throws IOException, ParseException
     {
-        List<String> friends = client.getFriends();
-        friends.forEach(System.out::println);
+        return client.getFriends();
     }
 
-    @Command
-    public void send(String... paths) throws IOException
+    public List<String> getUsername(String name) throws IOException, ParseException
     {
-        List<String> p = new ArrayList<String>();
+        return client.getUsernameList(name);
+    }
+
+
+    public String send(String receiver, String... paths) throws IOException, ParseException
+    {
+        List<String> p = new ArrayList<>();
         for (String path : paths)
         {
             p.add(path);
         }
-        Client client = new Client();
-        client.sendFile(p);
-    }
-
-    @Command
-    public void receive(String sender) throws IOException, ParseException
-    {
-        Client client = new Client();
-        String ip = client.get_sender_ip(sender);
-        if (!ip.equals("not friends"))
+        if (client.sendFile(receiver, p))
         {
-            client.recvFile(ip);
+             return "Success";
         }
         else
         {
-            System.out.println("not friends");
+            return "Failure";
+        }
+    }
+
+    public String receive(String sender) throws IOException, ParseException
+    {
+        if (client.recvFile(sender))
+        {
+            return "Success";
+        }
+        else
+        {
+            return "Failure";
         }
     }
 }
