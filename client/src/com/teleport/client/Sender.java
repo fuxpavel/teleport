@@ -70,8 +70,8 @@ public class Sender
 
                     int count;
                     String filename = compress.substring(compress.lastIndexOf("\\") + 1);
-                    fileSize = Integer.parseInt(size(myFile.length()));
-                    out.write((P2P_SEND_FILE + "-" + filename + "-" + fileSize + "--").getBytes("UTF-8"));
+                    fileSize = (int)myFile.length();
+                    out.write((P2P_SEND_FILE + "-" + filename + "-" + size(myFile.length()) + "--").getBytes("UTF-8"));
                     out.flush();
                     in.read(buf);
 

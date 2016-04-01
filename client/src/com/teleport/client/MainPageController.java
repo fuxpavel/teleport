@@ -14,7 +14,12 @@ import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.json.simple.parser.ParseException;
-
+import javafx.application.Application;
+import javafx.concurrent.Task;
+import javafx.scene.*;
+import javafx.scene.control.*;
+import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -28,6 +33,7 @@ public class MainPageController implements Initializable
     @FXML private Button butInbox;
     @FXML private Label lblMsg;
     @FXML private Button butSend;
+    @FXML private ProgressBar pbSendFile;
 
     private PostLoginInterface log;
 

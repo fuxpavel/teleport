@@ -4,7 +4,6 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 import random
 
-
 Base = declarative_base()
 DB_URL = 'sqlite:///Teleport_DB.db'
 
@@ -281,11 +280,10 @@ class Tranfsers(Base):
         session = get_session(engine)
         users_table = User()
         transfers_table = Tranfsers()
-
         if users_table.check_exist_user_token(sender_token, engine) and \
                 users_table.check_exist_user_username(receiver, engine) and sender_token != receiver:
             sender_name = users_table.get_username_by_token(sender_token, engine)
-            if transfers_table.check_transfer(sender_token, receiver):
+            if transfers_table.check_transfer(sender_name, receiver):
                 session.query(Tranfsers).filter_by(sender=sender_name, receiver=receiver).delete()
                 try:
                     session.commit()

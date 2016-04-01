@@ -28,7 +28,7 @@ public class Compress
                 return inputFile + ".zip";
             }
         }
-        return null;
+        return inputFile;
     }
 
     public static String Compression(String inputPath) throws IOException
@@ -80,7 +80,6 @@ public class Compress
         ZipEntry zipEntry = new ZipEntry(parentName + inputFile.getName());
         zipOutputStream.putNextEntry(zipEntry);
         FileInputStream fileInputStream = new FileInputStream(inputFile);
-        System.out.println((zipEntry.getCompressedSize()));
         byte[] buf = new byte[1024];
         int bytesRead;
 

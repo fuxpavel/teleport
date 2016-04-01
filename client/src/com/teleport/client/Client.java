@@ -1,5 +1,7 @@
 package com.teleport.client;
 
+import javafx.concurrent.Task;
+import javafx.scene.control.ProgressBar;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
 import org.json.simple.JSONArray;
@@ -155,6 +157,26 @@ public class Client
         if (json.get("status").equals("success"))
         {
             sender.send(paths);
+  /*          Task<Void> task = new Task<Void>()
+            {
+                @Override public Void call()
+                {
+                    while (sender.GetCurrentSize() < sender.GetFileSize())
+                    {
+                        updateProgress(sender.GetCurrentSize(),sender.GetFileSize());
+                    }
+                    System.out.println("finish");
+                    return null;
+                }
+            };
+*/
+            //ProgressBar updProg = new ProgressBar();
+            //updProg.progressProperty().bind(task.progressProperty());
+            //ProgressBarSendFile p = new ProgressBarSendFile(paths);
+            //p.run();
+            //Thread th = new Thread(task);
+           // th.setDaemon(true);
+            //th.start();
             transferHandler.endTransfer(receiver);
             return true;
         }

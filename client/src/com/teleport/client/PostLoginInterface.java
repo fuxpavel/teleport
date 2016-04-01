@@ -67,7 +67,6 @@ public class PostLoginInterface
         return client.getUsernameList(name);
     }
 
-
     public String send(String receiver, String... paths) throws IOException, ParseException
     {
         List<String> p = new ArrayList<>();

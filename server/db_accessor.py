@@ -6,7 +6,6 @@ _dbfr = None
 _dbf = None
 _dbt = None
 
-
 def get_user_db():
     global _dbu
     if not _dbu:
