@@ -41,6 +41,7 @@ public class MainPageController implements Initializable
     {
         log = new PostLoginInterface();
         lstViewUsername = new ListView();
+        pbSendFile = new ProgressBar();
     }
 
     public void MainPage(Stage stage) throws IOException
@@ -103,7 +104,7 @@ public class MainPageController implements Initializable
                 File file = fileChooser.showOpenDialog(stage);
                 if (file != null)
                 {
-                    log.send(lstViewContacts.getSelectionModel().getSelectedItem().toString(), file.getPath());
+                    log.send(lstViewContacts.getSelectionModel().getSelectedItem().toString(), pbSendFile, file.getPath());
                 }
             }
         }

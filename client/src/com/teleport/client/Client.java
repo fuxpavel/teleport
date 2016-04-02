@@ -1,6 +1,5 @@
 package com.teleport.client;
 
-import javafx.concurrent.Task;
 import javafx.scene.control.ProgressBar;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
@@ -149,34 +148,16 @@ public class Client
         return ((String) json.get("ip"));
     }
 
-    public boolean sendFile(String receiver, List<String> paths) throws IOException, ParseException
+    public boolean sendFile(String receiver, ProgressBar pbBar, List<String> paths) throws IOException, ParseException
     {
         HttpResponse response = transferHandler.beginTransfer(receiver);
         String body = EntityUtils.toString(response.getEntity());
         JSONObject json = (JSONObject) (new JSONParser().parse(body));
         if (json.get("status").equals("success"))
         {
-            sender.send(paths);
-  /*          Task<Void> task = new Task<Void>()
-            {
-                @Override public Void call()
-                {
-                    while (sender.GetCurrentSize() < sender.GetFileSize())
-                    {
-                        updateProgress(sender.GetCurrentSize(),sender.GetFileSize());
-                    }
-                    System.out.println("finish");
-                    return null;
-                }
-            };
-*/
-            //ProgressBar updProg = new ProgressBar();
-            //updProg.progressProperty().bind(task.progressProperty());
-            //ProgressBarSendFile p = new ProgressBarSendFile(paths);
-            //p.run();
-            //Thread th = new Thread(task);
-           // th.setDaemon(true);
-            //th.start();
+                SendFiles sender = new SendFiles(paths);
+                sender.start();
+                new ProgressBarSend(sender, pbBar).start();
             transferHandler.endTransfer(receiver);
             return true;
         }

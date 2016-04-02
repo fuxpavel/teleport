@@ -35,20 +35,22 @@ public class Compress
     {
         FileOutputStream fileOutputStream = null;
         String outputCompressFile = ParseFileName(inputPath);
-        fileOutputStream = new FileOutputStream(outputCompressFile);
-        ZipOutputStream zipOutputStream = new ZipOutputStream(fileOutputStream);
-
-        File inputFile = new File(inputPath);
-
-        if (inputFile.isFile())
+        System.out.println(inputPath);
+        System.out.println(outputCompressFile);
+        if(CheckAlreadyCompress(inputPath))
         {
-            compressFile(inputFile, "", zipOutputStream);
+            fileOutputStream = new FileOutputStream(outputCompressFile);
+            ZipOutputStream zipOutputStream = new ZipOutputStream(fileOutputStream);
+            File inputFile = new File(inputPath);
+            if (inputFile.isFile())
+            {
+                compressFile(inputFile, "", zipOutputStream);
+            } else if (inputFile.isDirectory())
+            {
+                compressFolder(zipOutputStream, inputFile, "");
+            }
+            zipOutputStream.close();
         }
-        else if (inputFile.isDirectory())
-        {
-            compressFolder(zipOutputStream, inputFile, "");
-        }
-        zipOutputStream.close();
         return outputCompressFile;
     }
 

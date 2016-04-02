@@ -1,6 +1,8 @@
 package com.teleport.client;
 
 import asg.cliche.Command;
+import javafx.scene.control.ProgressBar;
+import javafx.stage.Stage;
 import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
@@ -67,14 +69,14 @@ public class PostLoginInterface
         return client.getUsernameList(name);
     }
 
-    public String send(String receiver, String... paths) throws IOException, ParseException
+    public String send(String receiver, ProgressBar progressBar, String... paths) throws IOException, ParseException
     {
         List<String> p = new ArrayList<>();
         for (String path : paths)
         {
             p.add(path);
         }
-        if (client.sendFile(receiver, p))
+        if (client.sendFile(receiver, progressBar, p))
         {
              return "Success";
         }
