@@ -1,34 +1,39 @@
 import falcon
 import json
-from db_accessor import get_db
+from db_accessor import get_user_db
+
 
 class Login(object):
     def __init__(self):
-        self.db = get_db()
+        self.db = get_user_db()
 
     def on_post(self, req, resp):
-        body = req.stream.read()
-        userdata = json.loads(body)
+        userdata = json.loads(req.stream.read())
+        ip = req.env['REMOTE_ADDR']
+        print ip
         username = userdata['username']
         password = userdata['password']
 
-        if self.db.login_user(username, password):
-            status = 'success'
+        token = self.db.login_user(username, password)
+        if token:
+            if self.db.set_user_ip(token, ip):
+                status = 'success'
+            else:
+                status = 'failure'
         else:
             status = 'failure'
 
-        resp.body = '{"username": "%s", "password": "%s", "status": "%s"}' % (username, password, status)
+        resp.body = '{"token": "%s", "status": "%s"}' % (token, status)
         resp.content_type = 'application/json'
         resp.status = falcon.HTTP_200
 
 
 class Register(object):
     def __init__(self):
-        self.db = get_db()
+        self.db = get_user_db()
 
     def on_post(self, req, resp):
-        body = req.stream.read()
-        userdata = json.loads(body)
+        userdata = json.loads(req.stream.read())
         username = userdata['username']
         password = userdata['password']
 
@@ -37,9 +42,6 @@ class Register(object):
         else:
             status = 'failure'
 
-        resp.body = '{"username": "%s", "password": "%s", "status": "%s"}' % (username, password, status)
+        resp.body = '{"status": "%s"}' % status
         resp.content_type = 'application/json'
-        resp.status = falcon.HTTP_200
-
-
-
+        resp.status = falcon.HTTP_201
