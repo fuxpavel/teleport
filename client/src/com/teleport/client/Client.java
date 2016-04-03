@@ -21,7 +21,7 @@ public class Client
     private Signing signingHandler;
     private Friendship friendshipHandler;
     private Transfer transferHandler;
-    private Sender sender = new Sender();
+    //private Sender sender = new Sender();
     private Receiver recv = new Receiver();
 
     public Client() throws IOException
@@ -155,11 +155,11 @@ public class Client
         JSONObject json = (JSONObject) (new JSONParser().parse(body));
         if (json.get("status").equals("success"))
         {
-                SendFiles sender = new SendFiles(paths);
-                sender.start();
+            SendFiles sender = new SendFiles(paths);
+            sender.start();
             pbBar.setProgress(0);
             pbBar.setStyle("-fx-accent: blue;");
-                new ProgressBarSend(sender, pbBar).start();
+            new ProgressBarSend(sender, pbBar).start();
             transferHandler.endTransfer(receiver);
             return true;
         }
@@ -176,8 +176,7 @@ public class Client
         {
             recv.receive(get_sender_ip(sender));
             return true;
-        }
-        else
+        } else
         {
             return false;
         }

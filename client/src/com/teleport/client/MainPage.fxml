@@ -24,7 +24,7 @@
       <ListView fx:id="lstViewContacts" onMouseClicked="#ChoseUsernameToSend" prefHeight="332.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
    </left>
    <center>
-      <Button fx:id="butInbox" onAction="#SwitchScreen" mnemonicParsing="false" prefHeight="47.0" prefWidth="46.0" text="Inbox" textAlignment="CENTER" BorderPane.alignment="CENTER" />
+      <Button fx:id="butInbox" mnemonicParsing="false" onAction="#SwitchScreen" prefHeight="47.0" prefWidth="46.0" text="Inbox" textAlignment="CENTER" BorderPane.alignment="CENTER" />
    </center>
    <top>
       <MenuBar fx:id="MenuBar" BorderPane.alignment="CENTER">
@@ -47,4 +47,7 @@
         </menus>
       </MenuBar>
    </top>
+   <right>
+      <Button fx:id="butRefresh" mnemonicParsing="false" onAction="#RefreshPage" text="Refresh" BorderPane.alignment="CENTER" />
+   </right>
 </BorderPane>

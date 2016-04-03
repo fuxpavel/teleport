@@ -28,6 +28,7 @@ public class MainPageController implements Initializable
     @FXML private Label lblMsg;
     @FXML private Button butSend;
     @FXML private ProgressBar pbSendFile;
+    @FXML private Button butRefresh;
 
     private PostLoginInterface log;
 
@@ -45,6 +46,11 @@ public class MainPageController implements Initializable
         stage.setTitle("MainPage");
         stage.setScene(scene);
         stage.show();
+    }
+
+    @FXML public void RefreshPage() throws IOException, ParseException
+    {
+        lstViewContacts.setItems(FXCollections.observableList(log.getFriends()));
     }
 
     @FXML public void AddFriend(ActionEvent event) throws Exception
