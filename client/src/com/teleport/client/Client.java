@@ -157,6 +157,8 @@ public class Client
         {
                 SendFiles sender = new SendFiles(paths);
                 sender.start();
+            pbBar.setProgress(0);
+            pbBar.setStyle("-fx-accent: blue;");
                 new ProgressBarSend(sender, pbBar).start();
             transferHandler.endTransfer(receiver);
             return true;

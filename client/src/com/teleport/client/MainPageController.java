@@ -14,12 +14,6 @@ import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.json.simple.parser.ParseException;
-import javafx.application.Application;
-import javafx.concurrent.Task;
-import javafx.scene.*;
-import javafx.scene.control.*;
-import javafx.scene.layout.StackPane;
-import javafx.stage.Stage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -80,9 +74,9 @@ public class MainPageController implements Initializable
         butSend.setVisible(true);
     }
 
-    @FXML protected void SwitchScreen(ActionEvent e)throws IOException
+    @FXML protected void SwitchScreen(ActionEvent e) throws IOException
     {
-        InboxController c =new InboxController();
+        InboxController c = new InboxController();
         c.Inbox();
     }
 
@@ -93,9 +87,9 @@ public class MainPageController implements Initializable
 
     public void ChoseUsernameToSend(MouseEvent mouseEvent) throws IOException, ParseException
     {
-        if(lstViewContacts != null && lstViewContacts.getItems().size() > 0 && mouseEvent.getButton().equals(MouseButton.PRIMARY))
+        if (lstViewContacts != null && lstViewContacts.getItems().size() > 0 && mouseEvent.getButton().equals(MouseButton.PRIMARY))
         {
-            if(mouseEvent.getClickCount() == 2)
+            if (mouseEvent.getClickCount() == 2)
             {
                 Stage stage = (Stage) butInbox.getScene().getWindow();
                 FileChooser fileChooser = new FileChooser();
@@ -112,17 +106,15 @@ public class MainPageController implements Initializable
 
     @Override public void initialize(URL url, ResourceBundle rb)
     {
-        if(url.toString().contains("MainPage"))
+        if (url.toString().contains("MainPage"))
         {
             try
             {
                 lstViewContacts.setItems(FXCollections.observableList(log.getFriends()));
-            } catch (ParseException e)
+            }
+            catch (ParseException | IOException e)
             {
-                e.printStackTrace();
-            } catch (IOException e)
-            {
-                e.printStackTrace();
+                lblMsg.setText("Error in initialize");
             }
         }
     }

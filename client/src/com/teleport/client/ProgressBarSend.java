@@ -36,6 +36,10 @@ class ProgressBarSend extends Thread
     public void changeBar()
     {
         pb.setProgress(Float.parseFloat(a[0])/Float.parseFloat(a[1]));
+        if((Float.parseFloat(a[0])/Float.parseFloat(a[1]))==1.0)
+        {
+            pb.setStyle("-fx-accent: green;");
+        }
     }
 }
 

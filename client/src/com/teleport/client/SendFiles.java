@@ -1,14 +1,9 @@
 package com.teleport.client;
 
-import javafx.concurrent.Task;
-import javafx.scene.control.ProgressBar;
-import org.json.simple.parser.ParseException;
-
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
@@ -17,41 +12,38 @@ import static com.teleport.client.Protocol.P2P_POSITIVE_ANS;
 
 public class SendFiles extends Thread
 {
-    private static final int delay = 15000; //in milliseconds
-
-    private String name;
-    private Sender sender;
     private List<String> paths;
     private static final int PORT = 10113;
     private static final int BUF_SIZE = 1024;
     static final int MAXQUEUE = 5;
+    private static int BYTES2GB = 1073741824;
+    private static int BYTES2MB = 1048576;
+    private static int BYTES2KB = 1024;
     private Vector messages = new Vector();
     private int currentSize;
     private int fileSize;
 
     public SendFiles(List<String> path)
     {
-        this.name = "Sender";
-        sender = new Sender();
         paths = path;
     }
     private static String size(long size1)
     {
         float size = size1;
 
-        if (size > 1048576)
+        if (size > BYTES2MB)
         {
-            if (size > 1073741824)
+            if (size > BYTES2GB)
             {
-                return String.format("%.1f", size / 1073741824) + " GB";
+                return String.format("%.1f", size / BYTES2GB) + " GB";
             }
             else
             {
-                return String.format("%.1f", size / 1048576) + " MB";
+                return String.format("%.1f", size / BYTES2MB) + " MB";
             }
 
         }
-        return String.format("%.1f", size / 1024) + " KB";
+        return String.format("%.1f", size / BYTES2KB) + " KB";
     }
 
     public int GetFileSize()
