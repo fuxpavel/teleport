@@ -35,7 +35,6 @@ public class Compress
     {
         FileOutputStream fileOutputStream = null;
         String outputCompressFile = ParseFileName(inputPath);
-        System.out.println(inputPath);
         System.out.println(outputCompressFile);
         if(CheckAlreadyCompress(inputPath))
         {

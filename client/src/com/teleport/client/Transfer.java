@@ -62,7 +62,6 @@ public class Transfer
             map.put("user", receiver);
             map.put("action", "begin");
             JSONObject sendData = new JSONObject(map);
-
             HttpPost request = new HttpPost(SERVER_URL);
             request.addHeader("Authorization", authorizationHandler.getToken());
             request.setHeader("Content-Type", "application/json");

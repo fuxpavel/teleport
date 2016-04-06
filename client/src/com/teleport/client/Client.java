@@ -1,6 +1,8 @@
 package com.teleport.client;
 
+import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.text.Text;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
 import org.json.simple.JSONArray;
@@ -148,7 +150,7 @@ public class Client
         return ((String) json.get("ip"));
     }
 
-    public boolean sendFile(String receiver, ProgressBar pbBar, List<String> paths) throws IOException, ParseException
+    public boolean sendFile(String receiver, ProgressBar pbBar,Text lbl, List<String> paths) throws IOException, ParseException
     {
         HttpResponse response = transferHandler.beginTransfer(receiver);
         String body = EntityUtils.toString(response.getEntity());
@@ -158,8 +160,9 @@ public class Client
             SendFiles sender = new SendFiles(paths);
             sender.start();
             pbBar.setProgress(0);
+            lbl.setText("");
             pbBar.setStyle("-fx-accent: blue;");
-            new ProgressBarSend(sender, pbBar).start();
+            new ProgressBarSend(receiver, sender,lbl, pbBar).start();
             transferHandler.endTransfer(receiver);
             return true;
         }
@@ -169,14 +172,21 @@ public class Client
         }
     }
 
-    public boolean recvFile(String sender) throws IOException, ParseException
+    public boolean recvFile(String sender, ProgressBar pbBar,Text lbl, boolean chose) throws IOException, ParseException
     {
         String ip = get_sender_ip(sender);
         if (!ip.equals("failure"))
         {
-            recv.receive(get_sender_ip(sender));
+            SendFiles receuver = new SendFiles(ip, chose);
+            receuver.start();
+            pbBar.setProgress(0);
+            lbl.setText("");
+            pbBar.setStyle("-fx-accent: blue;");
+            new ProgressBarSend(" ", receuver,lbl, pbBar).start();
+            //recv.receive(get_sender_ip(sender), chose);
             return true;
-        } else
+        }
+        else
         {
             return false;
         }

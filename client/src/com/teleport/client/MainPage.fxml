@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
+<?import javafx.scene.text.*?>
 <?import javafx.scene.layout.*?>
 <?import java.lang.*?>
 <?import javafx.scene.control.*?>
@@ -16,16 +18,13 @@
         </rowConstraints>
          <children>
             <ProgressBar fx:id="pbSendFile" prefHeight="18.0" prefWidth="431.0" progress="0.0" GridPane.columnIndex="1" />
-            <Label fx:id="lblSendFile" />
+            <Text fx:id="lblSendFile" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="163.13671875" />
          </children>
       </GridPane>
    </bottom>
    <left>
       <ListView fx:id="lstViewContacts" onMouseClicked="#ChoseUsernameToSend" prefHeight="332.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
    </left>
-   <center>
-      <Button fx:id="butInbox" mnemonicParsing="false" onAction="#SwitchScreen" prefHeight="47.0" prefWidth="46.0" text="Inbox" textAlignment="CENTER" BorderPane.alignment="CENTER" />
-   </center>
    <top>
       <MenuBar fx:id="MenuBar" BorderPane.alignment="CENTER">
         <menus>
@@ -50,4 +49,31 @@
    <right>
       <Button fx:id="butRefresh" mnemonicParsing="false" onAction="#RefreshPage" text="Refresh" BorderPane.alignment="CENTER" />
    </right>
+   <center>
+      <GridPane alignment="CENTER" BorderPane.alignment="CENTER">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <Button fx:id="butInbox" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#SwitchScreen" prefHeight="47.0" prefWidth="46.0" text="Inbox" textAlignment="CENTER" GridPane.columnIndex="1">
+               <opaqueInsets>
+                  <Insets top="10.0" />
+               </opaqueInsets>
+            </Button>
+            <VBox prefHeight="95.0" prefWidth="172.0">
+               <children>
+                  <Text fx:id="lblIncoming" strokeType="OUTSIDE" strokeWidth="0.0" />
+                  <Button fx:id="butReceive" mnemonicParsing="false" onAction="#ReceiveFile" text="Receive" visible="false" />
+                  <Button fx:id="butDenial" mnemonicParsing="false" onAction="#ReceiveFile" text="Denial" visible="false" />
+               </children>
+            </VBox>
+         </children>
+      </GridPane>
+   </center>
 </BorderPane>

@@ -1,5 +1,7 @@
 package com.teleport.client;
 
+import com.sun.org.apache.xerces.internal.util.TeeXMLDocumentFilterImpl;
+import javafx.scene.text.Text;
 import org.json.simple.parser.ParseException;
 
 import java.io.IOException;

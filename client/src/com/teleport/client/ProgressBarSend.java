@@ -1,18 +1,27 @@
 package com.teleport.client;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.effect.FloatMap;
+import javafx.scene.text.Text;
 
 class ProgressBarSend extends Thread
 {
     SendFiles sender;
     ProgressBar pb;
     String[] a;
-    ProgressBarSend(SendFiles p, ProgressBar bar)
+    Text lblSendFile;
+    String receiver;
+    int num;
+
+    ProgressBarSend(String recv, SendFiles p, Text lbl, ProgressBar bar)
     {
+        num =0;
         sender = p;
         pb = bar;
+        receiver = recv;
+        lblSendFile = lbl;
     }
 
     @Override
@@ -24,7 +33,19 @@ class ProgressBarSend extends Thread
             {
                 String message = sender.getMessage();
                 a = message.split(" ");
-                changeBar();
+                float p = Float.parseFloat(a[0])/Float.parseFloat(a[1]);
+                pb.setProgress(p);
+                if(Integer.parseInt(String.format("%.0f", p*100)) > num +1 || num == 99)
+                {
+                    num++;
+                    lblSendFile.setText("send "+sender.GetFileName()+" to "+receiver+"| "+String.format("%.0f", p * 100)+"%");
+                    //System.out.println(String.format("%.0f", p * 100));
+                }
+                if((Float.parseFloat(a[0])/Float.parseFloat(a[1]))==1.0)
+                {
+                    pb.setStyle("-fx-accent: green;");
+                    //lblSendFile.setText("");
+                }
             }
         }
         catch (InterruptedException e)
@@ -35,11 +56,7 @@ class ProgressBarSend extends Thread
     @FXML
     public void changeBar()
     {
-        pb.setProgress(Float.parseFloat(a[0])/Float.parseFloat(a[1]));
-        if((Float.parseFloat(a[0])/Float.parseFloat(a[1]))==1.0)
-        {
-            pb.setStyle("-fx-accent: green;");
-        }
+
     }
 }
 

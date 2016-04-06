@@ -16,18 +16,28 @@ public class SendFiles extends Thread
     private static final int PORT = 10113;
     private static final int BUF_SIZE = 1024;
     static final int MAXQUEUE = 5;
+    private String fileName;
     private static int BYTES2GB = 1073741824;
     private static int BYTES2MB = 1048576;
     private static int BYTES2KB = 1024;
     private Vector messages = new Vector();
     private int currentSize;
     private int fileSize;
+    private String ip;
+    private boolean recv;
 
     public SendFiles(List<String> path)
     {
         paths = path;
+        currentSize = 0;
     }
-    private static String size(long size1)
+    public SendFiles(String send, boolean chose)
+    {
+        ip = send;
+        recv = chose;
+        currentSize = 0;
+    }
+    private static String sizeToString(long size1)
     {
         float size = size1;
 
@@ -45,7 +55,22 @@ public class SendFiles extends Thread
         }
         return String.format("%.1f", size / BYTES2KB) + " KB";
     }
-
+    private static int sizeToInt(String size1)
+    {
+        String[] unit = size1.split(" ");
+        if(unit[1].equals("KB"))
+        {
+            return Math.round(Float.parseFloat(unit[0]))*BYTES2KB;
+        }
+        else if (unit[1].equals("MB"))
+        {
+            return Math.round(Float.parseFloat(unit[0]))*BYTES2MB;
+        }
+        else
+        {
+            return Math.round(Float.parseFloat(unit[0]))*BYTES2GB;
+        }
+    }
     public int GetFileSize()
     {
         return fileSize;
@@ -55,12 +80,37 @@ public class SendFiles extends Thread
     {
         return currentSize;
     }
+
+    public String GetFileName()
+    {
+        return fileName;
+    }
+
     @Override
     public void run()
     {
+        if(ip == null)
+        {
+            Sender();
+        }
+        else
+        {
+            Receiver();
+        }
+    }
+    public synchronized void putMessage(String msg) throws InterruptedException
+    {
+        while (messages.size() == MAXQUEUE)
+        {
+            wait();
+        }
+        messages.addElement(msg);
+        notify();
+    }
+    public void Sender()
+    {
         try
         {
-            currentSize = 0;
             boolean first = true;
             for (String path : paths)
             {
@@ -76,16 +126,15 @@ public class SendFiles extends Thread
                         byte[] buf = new byte[BUF_SIZE];
                         if (first)
                         {
-                            out.write((P2P_CONNECT_REQUEST + "-" + P2P_AMOUT_OF_FILES + "-" + paths.size() + "--")
-                                    .getBytes("UTF-8"));
+                            out.write((P2P_CONNECT_REQUEST + "-" + P2P_AMOUT_OF_FILES + "-" + paths.size() + "--").getBytes("UTF-8"));
                             out.flush();
                             first = false;
                         }
 
                         int count;
-                        String filename = compress.substring(compress.lastIndexOf("\\") + 1);
+                        fileName = compress.substring(compress.lastIndexOf("\\") + 1);
                         fileSize = (int)myFile.length();
-                        out.write((P2P_SEND_FILE + "-" + filename + "-" + size(myFile.length()) + "--").getBytes("UTF-8"));
+                        out.write((P2P_SEND_FILE + "-" + fileName + "-" + sizeToString(myFile.length()) + "--").getBytes("UTF-8"));
                         out.flush();
                         in.read(buf);
 
@@ -105,7 +154,6 @@ public class SendFiles extends Thread
                         {
                             sock.close();
                         }
-
                         in.close();
                     }
                     catch (InterruptedException e)
@@ -120,24 +168,75 @@ public class SendFiles extends Thread
             System.out.println(e.getMessage());
         }
     }
-    public synchronized void putMessage(String msg) throws InterruptedException
+    public void Receiver()
     {
-        while (messages.size() == MAXQUEUE)
+        currentSize = 0;
+        int amout_of_files = 1;
+        String[] input;
+        byte[] buf;
+        int len;
+        boolean first = true;
+        for (int i = 0; i < amout_of_files; i++)
         {
-            wait();
+            try (Socket sock = new Socket(ip, PORT))
+            {
+                InputStream in = sock.getInputStream();
+                OutputStream out = sock.getOutputStream();
+                buf = new byte[BUF_SIZE];
+                if (first)
+                {
+                    first = false;
+                    in.read(buf);
+                    input = new String(buf, StandardCharsets.UTF_8).split("-");
+                    if (input[0].equals(P2P_CONNECT_REQUEST) && input[1].equals(P2P_AMOUT_OF_FILES))
+                    {
+                        amout_of_files = Integer.parseInt(input[2]);
+                    }
+                }
+                in.read(buf);
+                input = new String(buf, StandardCharsets.UTF_8).split("-");
+                if (input[0].equals(P2P_SEND_FILE))
+                {
+                    fileName = input[1];
+                    fileSize = sizeToInt(input[2]);
+                    System.out.println("want send you a file " + fileSize + " " + fileName + " do you want to get it? (y/n)");
+                    long startTime = System.currentTimeMillis();
+                    if (recv)
+                    {
+                        buf = new byte[BUF_SIZE];
+                        out.write((P2P_ANS_CONNECT_REQUEST + "-" + P2P_POSITIVE_ANS + "--").getBytes());
+                        out.flush();
+                        FileOutputStream fos = new FileOutputStream(fileName);
+                        while ((len = in.read(buf)) > 0)
+                        {
+                            currentSize = currentSize + len;
+                            putMessage(GetCurrentSize() + " " + GetFileSize());
+                            fos.write(buf, 0, len);
+                        }
+                        fos.close();
+                        sock.close();
+                        long endTime = System.currentTimeMillis();
+                        System.out.println(endTime - startTime);//convert from millisec to min
+                    } else
+                    {
+                        out.write((P2P_ANS_CONNECT_REQUEST + "-" + P2P_REFUSE_ANS + "--").getBytes());
+                        out.flush();
+                        sock.close();
+                    }
+                }
+            }
+            catch (IOException | InterruptedException e)
+            {
+                e.printStackTrace();
+            }
         }
-        messages.addElement(msg);
-        notify();
-        //Later, when the necessary event happens, the thread that is running it calls notify() from a block synchronized on the same object.
     }
-
-    // Called by Consumer
     public synchronized String getMessage() throws InterruptedException
     {
         notify();
         while (messages.size() == 0)
         {
-            wait();//By executing wait() from a synchronized block, a thread gives up its hold on the lock and goes to sleep.
+            wait();
         }
         String message = (String) messages.firstElement();
         messages.removeElement(message);
