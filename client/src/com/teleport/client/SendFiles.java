@@ -210,14 +210,17 @@ public class SendFiles extends Thread
                         while ((len = in.read(buf)) > 0)
                         {
                             currentSize = currentSize + len;
-                            putMessage(GetCurrentSize() + " " + GetFileSize());
                             fos.write(buf, 0, len);
+                            putMessage(GetCurrentSize() + " " + GetFileSize());
                         }
+                        currentSize = fileSize;
+                        putMessage(GetCurrentSize() + " " + GetFileSize());
                         fos.close();
                         sock.close();
                         long endTime = System.currentTimeMillis();
                         System.out.println(endTime - startTime);//convert from millisec to min
-                    } else
+                    }
+                    else
                     {
                         out.write((P2P_ANS_CONNECT_REQUEST + "-" + P2P_REFUSE_ANS + "--").getBytes());
                         out.flush();

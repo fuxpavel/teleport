@@ -41,7 +41,8 @@ class ProgressBarSend extends Thread
                     lblSendFile.setText("send "+sender.GetFileName()+" to "+receiver+"| "+String.format("%.0f", p * 100)+"%");
                     //System.out.println(String.format("%.0f", p * 100));
                 }
-                if((Float.parseFloat(a[0])/Float.parseFloat(a[1]))==1.0)
+                System.out.println(p);
+                if(p==1.0)
                 {
                     pb.setStyle("-fx-accent: green;");
                     //lblSendFile.setText("");
@@ -52,11 +53,6 @@ class ProgressBarSend extends Thread
         {
             e.printStackTrace();
         }
-    }
-    @FXML
-    public void changeBar()
-    {
-
     }
 }
 

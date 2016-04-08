@@ -163,7 +163,7 @@ public class Client
             lbl.setText("");
             pbBar.setStyle("-fx-accent: blue;");
             new ProgressBarSend(receiver, sender,lbl, pbBar).start();
-            transferHandler.endTransfer(receiver);
+            //transferHandler.endTransfer(receiver);
             return true;
         }
         else
