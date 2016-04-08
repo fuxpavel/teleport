@@ -1,29 +1,25 @@
 package com.teleport.client;
 
-import javafx.fxml.FXML;
-import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
-import javafx.scene.effect.FloatMap;
 import javafx.scene.text.Text;
 
 class ProgressBarSend extends Thread
 {
-    SendFiles sender;
-    ProgressBar pb;
+    P2PCommunication sender;
+    ProgressBar progressBar;
     boolean sendSide;
     Text lblSendFile;
     String receiver;
-    int num;
+    int count;
 
-    ProgressBarSend(String recv, SendFiles p, Text lbl, ProgressBar bar, boolean send)
+    ProgressBarSend(String recv, P2PCommunication p, Text lbl, ProgressBar bar, boolean send)
     {
-        num =0;
+        count =0;
         sender = p;
-        pb = bar;
+        progressBar = bar;
         sendSide = send;
         receiver = recv;
         lblSendFile = lbl;
-
     }
 
     @Override
@@ -31,30 +27,28 @@ class ProgressBarSend extends Thread
     {
         try
         {
-            String a[];
+            String info[];
             while (true)
             {
                 String message = sender.getMessage();
-                a = message.split(" ");
-                float p = Float.parseFloat(a[0])/Float.parseFloat(a[1]);
-                pb.setProgress(p);
-                if(Integer.parseInt(String.format("%.0f", p*100)) > num +1 || num == 99)
+                info = message.split(" ");
+                float percent = Float.parseFloat(info[0]) / Float.parseFloat(info[1]);
+                progressBar.setProgress(percent);
+                if (Integer.parseInt(String.format("%.0f", percent * 100)) > count + 1 || count == 99)
                 {
-                    num++;
-                    if(sendSide)
+                    count++;
+                    if (sendSide)
                     {
-                        lblSendFile.setText(" send " + sender.GetFileName() + " to " + receiver + " | " + String.format("%.0f", p * 100) + "%");
-                    }//System.out.println(String.format("%.0f", p * 100));
+                        lblSendFile.setText(" send " + sender.GetFileName() + " to " + receiver + " | " + String.format("%.0f", percent * 100) + "%");
+                    }
                     else
                     {
-                        lblSendFile.setText(" receive " + sender.GetFileName() + " from " + receiver + " | " + String.format("%.0f", p * 100) + "%");
+                        lblSendFile.setText(" receive " + sender.GetFileName() + " from " + receiver + " | " + String.format("%.0f", percent * 100) + "%");
                     }
                 }
-                System.out.println(p);
-                if(p==1.0)
+                if (percent == 1.0)
                 {
-                    pb.setStyle("-fx-accent: green;");
-                    //lblSendFile.setText("");
+                    progressBar.setStyle("-fx-accent: green;");
                 }
             }
         }

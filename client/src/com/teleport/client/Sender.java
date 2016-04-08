@@ -82,7 +82,7 @@ public class Sender
                         {
                             out.write(buf, 0, count);
                             currentSize = currentSize + count;
-                            //new SendFiles().putMessage(GetCurrentSize()+" "+GetFileSize());
+                            //new P2PCommunication().putMessage(GetCurrentSize()+" "+GetFileSize());
                             out.flush();
                         }
                         System.out.println("finish send file");

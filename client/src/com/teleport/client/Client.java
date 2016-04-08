@@ -1,6 +1,5 @@
 package com.teleport.client;
 
-import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.text.Text;
 import org.apache.http.HttpResponse;
@@ -157,13 +156,12 @@ public class Client
         JSONObject json = (JSONObject) (new JSONParser().parse(body));
         if (json.get("status").equals("success"))
         {
-            SendFiles sender = new SendFiles(paths);
+            P2PCommunication sender = new P2PCommunication(paths);
             sender.start();
             pbBar.setProgress(0);
             lbl.setText("");
             pbBar.setStyle("-fx-accent: blue;");
             new ProgressBarSend(receiver, sender,lbl, pbBar, true).start();
-            //transferHandler.endTransfer(receiver);
             return true;
         }
         else
@@ -177,13 +175,12 @@ public class Client
         String ip = get_sender_ip(sender);
         if (!ip.equals("failure"))
         {
-            SendFiles receuver = new SendFiles(ip, chose);
-            receuver.start();
+            P2PCommunication receiver = new P2PCommunication(ip, chose);
+            receiver.start();
             pbBar.setProgress(0);
             lbl.setText("");
             pbBar.setStyle("-fx-accent: blue;");
-            new ProgressBarSend(sender, receuver,lbl, pbBar, false).start();
-            //recv.receive(get_sender_ip(sender), chose);
+            new ProgressBarSend(sender, receiver,lbl, pbBar, false).start();
             return true;
         }
         else
