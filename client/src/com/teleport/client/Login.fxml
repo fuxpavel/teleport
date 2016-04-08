@@ -22,8 +22,8 @@
          <children>
             <Label id="lblPassword" text="Password: " GridPane.rowIndex="1" />
             <Label id="lblUsername" text="Username:" />
-            <TextField fx:id="txtPassword" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            <TextField fx:id="txtUsername" GridPane.columnIndex="1" />
+            <TextField fx:id="txtPassword" onAction="#SubmitLogin" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <TextField fx:id="txtUsername" onAction="#SubmitLogin" GridPane.columnIndex="1" />
             <Label id="lblMsg" blendMode="EXCLUSION" textFill="#d60606" GridPane.rowIndex="2" />
             <Button id="btnSubmit" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#SubmitLogin" text="Submit" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.rowIndex="2" />
             <Label fx:id="lblMsg" GridPane.rowIndex="2" />

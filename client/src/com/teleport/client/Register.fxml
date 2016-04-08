@@ -24,9 +24,9 @@
             <Label id="lblUsername" text="Username:" />
             <Label id="lblPassword" text="Password:" GridPane.rowIndex="1" />
             <Label id="lblConfirmPassword" text="Confirm-Password:" GridPane.rowIndex="2" />
-            <TextField fx:id="txtUsername" GridPane.columnIndex="1" />
-            <TextField fx:id="txtPassword" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            <TextField fx:id="txtConfirmPassword" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <TextField fx:id="txtUsername" onAction="#SubmitRegister" GridPane.columnIndex="1" />
+            <TextField fx:id="txtPassword" onAction="#SubmitRegister" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <TextField fx:id="txtConfirmPassword" onAction="#SubmitRegister" GridPane.columnIndex="1" GridPane.rowIndex="2" />
             <Button id="lblRegister" mnemonicParsing="false" onAction="#SubmitRegister" text="Submit" GridPane.columnIndex="1" GridPane.rowIndex="3" />
             <Label fx:id="lblMsg" GridPane.rowIndex="3" />
          </children>
