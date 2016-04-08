@@ -162,7 +162,7 @@ public class Client
             pbBar.setProgress(0);
             lbl.setText("");
             pbBar.setStyle("-fx-accent: blue;");
-            new ProgressBarSend(receiver, sender,lbl, pbBar).start();
+            new ProgressBarSend(receiver, sender,lbl, pbBar, true).start();
             //transferHandler.endTransfer(receiver);
             return true;
         }
@@ -182,7 +182,7 @@ public class Client
             pbBar.setProgress(0);
             lbl.setText("");
             pbBar.setStyle("-fx-accent: blue;");
-            new ProgressBarSend(" ", receuver,lbl, pbBar).start();
+            new ProgressBarSend(sender, receuver,lbl, pbBar, false).start();
             //recv.receive(get_sender_ip(sender), chose);
             return true;
         }

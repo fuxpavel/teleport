@@ -165,7 +165,7 @@ public class MainPageController implements Initializable
                                 {
                                     n += a;
                                 }
-                                updateMessage(n + " want send u file");
+                                updateMessage(" "+ n + " want send u file");
                                 VisibleButton(true);
                             }
                             else

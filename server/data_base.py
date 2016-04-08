@@ -263,7 +263,7 @@ class Tranfsers(Base):
                 users_table.check_exist_user_username(receiver_name, engine) and sender_token != receiver_name:
             sender_name = users_table.get_username_by_token(sender_token, engine)
             if friendships_table.check_friendship(sender_name, receiver_name, engine):
-                if not transfers_table.check_transfer(sender_token, receiver_name):
+                if not transfers_table.check_transfer(sender_name, receiver_name):
                     new_transfer = Tranfsers(sender=sender_name, receiver=receiver_name)
                     session.add(new_transfer)
                     try:
@@ -280,6 +280,7 @@ class Tranfsers(Base):
         session = get_session(engine)
         users_table = User()
         transfers_table = Tranfsers()
+
         if users_table.check_exist_user_token(sender_token, engine) and \
                 users_table.check_exist_user_username(receiver, engine) and sender_token != receiver:
             sender_name = users_table.get_username_by_token(sender_token, engine)
