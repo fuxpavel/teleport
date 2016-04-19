@@ -26,8 +26,7 @@ public class FriendshipQuerier implements Runnable
         }
         catch (IOException e)
         {
-            System.out.println("error in cotr friendship thread");
-            System.out.println(e.getMessage());
+            e.getMessage();
         }
     }
 
@@ -51,8 +50,7 @@ public class FriendshipQuerier implements Runnable
             }
             catch (IOException | ParseException | InterruptedException e)
             {
-                System.out.println("error in thread friendship");
-                System.out.println(e.getMessage());
+                e.getMessage();
             }
         }
     }

@@ -47,10 +47,6 @@ public class LoginRegisterController
     @FXML protected void SwitchScreen(ActionEvent e)throws IOException
     {
         Stage stage = (Stage) butSwitch.getScene().getWindow();
-        if(stage == null)
-        {
-            System.out.println("stage is null in swich screen");
-        }
         if(((Button)e.getSource()).getText().equals("Register"))
         {
             Register(stage);
@@ -64,10 +60,6 @@ public class LoginRegisterController
     @FXML protected void SubmitLogin(ActionEvent e) throws IOException, org.json.simple.parser.ParseException
     {
         String status = log.login(txtUsername.getText(), txtPassword.getText());
-        if(lblMsg == null)
-        {
-            System.out.println("lbl msg in submit login ks null");
-        }
         lblMsg.setText(status);
         lblMsg.setTextFill(Color.FIREBRICK);
         if(status.equals("Logged in successfully"))
@@ -79,10 +71,6 @@ public class LoginRegisterController
     @FXML protected void SubmitRegister(ActionEvent e) throws IOException, org.json.simple.parser.ParseException
     {
         String status = log.register(txtUsername.getText(), txtPassword.getText());
-        if(lblMsg == null)
-        {
-            System.out.println("lblmsg is nul in submit register");
-        }
         lblMsg.setText(status);
         lblMsg.setTextFill(Color.FIREBRICK);
     }

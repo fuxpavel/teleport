@@ -56,10 +56,6 @@ public class InboxController implements Initializable
     {
         String friend = lstIncoming.getSelectionModel().getSelectedItem().toString();
         String status = log.respondToRequest(friend, event.getSource().toString().contains("Confirm"));
-        if(lblMsg == null)
-        {
-            System.out.println("lbl is null in inbox");
-        }
         lblMsg.setText(status);
         lblMsg.setTextFill(Color.FIREBRICK);
     }
@@ -73,9 +69,7 @@ public class InboxController implements Initializable
         }
         catch (ParseException | IOException  e)
         {
-            System.out.println("error in inbox init");
             e.printStackTrace();
-
         }
     }
 }

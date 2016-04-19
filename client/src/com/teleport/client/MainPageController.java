@@ -176,7 +176,6 @@ public class MainPageController implements Initializable
                                     for (String newSender : newIncoming)
                                     {
                                         senderName = newSender;
-                                        System.out.println(senderName);
                                     }
                                     updateMessage(" " + senderName + " want send u file");
                                     VisibleButton(true);

@@ -6,13 +6,11 @@ import org.apache.http.util.EntityUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Vector;
 
 import static com.teleport.client.Protocol.*;
 
@@ -21,12 +19,10 @@ public class P2PCommunication extends Thread
     private List<String> paths;
     private static final int PORT = 10113;
     private static final int BUF_SIZE = 1024;
-    static final int MAXQUEUE = 5;
     private String fileName;
     private static int BYTES2GB = 1073741824;
     private static int BYTES2MB = 1048576;
     private static int BYTES2KB = 1024;
-    private Vector messages = new Vector();
     private int currentSize;
     private int fileSize;
     private String ip;
@@ -118,7 +114,6 @@ public class P2PCommunication extends Thread
                     for (String path1 : paths)
                     {
                         path = path1;
-                        System.out.println(path);
                     }
                     updateMessage(" zipping...");
                     String compress = Compress.Compression(path);
@@ -173,8 +168,7 @@ public class P2PCommunication extends Thread
                         }
                         catch (IOException e)
                         {
-                            System.out.println("error in socket");
-                            System.out.println(e.getMessage());
+                            e.getMessage();
                         }
                     }
                 }
@@ -250,7 +244,6 @@ public class P2PCommunication extends Thread
                     }
                     catch (IOException | ParseException e)
                     {
-                        System.out.println("eror in receiver");
                         e.printStackTrace();
                     }
                 }
