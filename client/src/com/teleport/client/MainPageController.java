@@ -2,7 +2,6 @@ package com.teleport.client;
 
 import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
-import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -17,12 +16,12 @@ import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.json.simple.parser.ParseException;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+
 
 public class MainPageController implements Initializable
 {
@@ -37,13 +36,13 @@ public class MainPageController implements Initializable
     @FXML private Button butDenial;
     @FXML private Button butReceive;
     @FXML private Text lblIncoming;
-    private String n;
+    private String senderName;
     private PostLoginInterface log;
-
+    private boolean clicked;
     public MainPageController() throws IOException
     {
-        n = "";
         log = new PostLoginInterface();
+        clicked = false;
     }
 
     public void MainPage(Stage stage) throws IOException
@@ -60,13 +59,13 @@ public class MainPageController implements Initializable
         lstViewContacts.setItems(FXCollections.observableList(log.getFriends()));
     }
 
-    @FXML public void AddFriend(ActionEvent event) throws Exception
+    @FXML public void AddFriend() throws Exception
     {
         Stage stage = new Stage();
-        AddFriend(stage);
+        AddFriendScreen(stage);
     }
 
-    public void AddFriend(Stage stage) throws IOException
+    public void AddFriendScreen(Stage stage) throws IOException
     {
         Parent root = FXMLLoader.load(getClass().getResource("AddFriend.fxml"));
         Scene scene = new Scene(root);
@@ -75,7 +74,7 @@ public class MainPageController implements Initializable
         stage.show();
     }
 
-    @FXML protected void SendFriendRequest(ActionEvent e) throws IOException, ParseException
+    @FXML protected void SendFriendRequest() throws IOException, ParseException
     {
         String status = log.addFriend(lstViewUsername.getSelectionModel().getSelectedItem().toString());
         lblMsg.setText(status);
@@ -87,7 +86,7 @@ public class MainPageController implements Initializable
         butSend.setVisible(true);
     }
 
-    @FXML protected void SwitchScreen(ActionEvent e) throws IOException
+    @FXML protected void SwitchScreen() throws IOException
     {
         InboxController c = new InboxController();
         c.Inbox();
@@ -102,18 +101,25 @@ public class MainPageController implements Initializable
     {
         if (lstViewContacts != null && lstViewContacts.getItems().size() > 0 && mouseEvent.getButton().equals(MouseButton.PRIMARY))
         {
-            if (mouseEvent.getClickCount() == 2)
+            if (mouseEvent.getClickCount() == 2 && lstViewContacts.getSelectionModel().getSelectedItem() != null)
             {
                 Stage stage = (Stage) butInbox.getScene().getWindow();
                 FileChooser fileChooser = new FileChooser();
+                fileChooser.setInitialDirectory(javax.swing.filechooser.FileSystemView.getFileSystemView().getHomeDirectory());
                 FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("All Files", "*.*");
                 fileChooser.getExtensionFilters().add(extFilter);
-                File file = fileChooser.showOpenDialog(stage);
-                if (file != null)
+                List<File> files = fileChooser.showOpenMultipleDialog(stage);
+                List<String> paths = new ArrayList<>();
+
+                for (File file : files)
                 {
-                    String receiver = lstViewContacts.getSelectionModel().getSelectedItem().toString();
-                    log.send(receiver, pbSendFile, lblSendFile, file.getPath());
+                    paths.add(file.getPath());
                 }
+                String receiver = lstViewContacts.getSelectionModel().getSelectedItem().toString();
+                //pbSendFile.setProgress(0);
+                lblSendFile.setText("");
+                //pbSendFile.setStyle("-fx-accent: blue;");
+                log.send(receiver, pbSendFile, lblSendFile, paths);
             }
         }
     }
@@ -126,16 +132,20 @@ public class MainPageController implements Initializable
 
     public void ReceiveFile(Event e) throws IOException, ParseException
     {
-        String sender = n;
+        VisibleButton(false);
+        clicked = true;
+        String sender = senderName;
         if (e.getSource().toString().contains("Receive"))
         {
-            log.receive(sender,pbSendFile,lblSendFile, true);
+            lblSendFile.setText("");
+            // pbSendFile.setProgress(0);
+            //pbSendFile.setStyle("-fx-accent: blue;");
+            log.receive(sender, pbSendFile, lblSendFile, true);
         }
         else
         {
-            log.receive(sender,pbSendFile,lblSendFile, false);
+            log.receive(sender, pbSendFile, lblSendFile, false);
         }
-        VisibleButton(false);
     }
 
     @Override
@@ -151,40 +161,44 @@ public class MainPageController implements Initializable
                     @Override
                     public Void call() throws InterruptedException, IOException, ParseException
                     {
+                        List<String> newIncoming;
                         Client client = new Client();
-                        List<String> incoming = client.getIncomingTransfers();
+                        clicked = false;
                         while (true)
                         {
-                            List<String> newIncoming = client.getIncomingTransfers();
-                            List<String> temp = new ArrayList<>(newIncoming);
-                            newIncoming.removeAll(incoming);
+                            newIncoming = client.getIncomingTransfers();
                             if (!newIncoming.isEmpty())
                             {
-                                incoming = temp;
-                                for (String a : newIncoming)
+                                if (!clicked)
                                 {
-                                    n += a;
+                                    for (String newSender : newIncoming)
+                                    {
+                                        senderName = newSender;
+                                        System.out.println(senderName);
+                                    }
+                                    updateMessage(" " + senderName + " want send u file");
+                                    VisibleButton(true);
                                 }
-                                updateMessage(" "+ n + " want send u file");
-                                VisibleButton(true);
                             }
                             else
                             {
                                 updateMessage("");
+                                VisibleButton(false);
                             }
-                            Thread.sleep(15000);
+                            Thread.sleep(5000);
                         }
                     }
                 };
 
                 lblIncoming.textProperty().bind(task.messageProperty());
-                task.setOnSucceeded(e -> {lblIncoming.textProperty().unbind();});
+                task.setOnSucceeded(e -> lblIncoming.textProperty().unbind());
                 Thread thread = new Thread(task);
                 thread.setDaemon(true);
                 thread.start();
             }
             catch (ParseException | IOException e)
             {
+                System.out.println("error in initialize");
                 lblMsg.setText("Error in initialize");
             }
         }

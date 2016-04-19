@@ -9,23 +9,29 @@ class Transfer(object):
 
     def on_post(self, req, resp):
         user = req.get_header('Authorization')
-        data = action = json.loads(req.stream.read())
+        data = json.loads(req.stream.read())
         other_user = data['user']
         action = data['action']
         if action == 'begin':
-            if self.dbt.add_transfer(user, other_user):
+            id = self.dbt.add_transfer(user, other_user)
+            if id != -1:
+                print id
                 status = 'success'
             else:
                 status = 'failure'
+            resp.body = '{"status": "%s", "id": "%s"}' % (status, id)
+
         elif action == 'end':
             if self.dbt.end_transfer(user, other_user):
                 status = 'success'
             else:
                 status = 'failure'
+            resp.body = '{"status": "%s"}' % status
+
         else:
             status = 'failure'
+            resp.body = '{"status": "%s"}' % status
 
-        resp.body = '{"status": "%s"}' % status
         resp.content_type = 'application/json'
         resp.status = falcon.HTTP_201
 
@@ -33,6 +39,7 @@ class Transfer(object):
         user = req.get_header('Authorization')
         incoming = self.dbt.get_incoming_transfers(user)
         outgoing = self.dbt.get_outgoing_transfers(user)
+        print User().get_username_by_token(user),  " : out " , outgoing, " in " , incoming
         resp.body = json.dumps({"incoming": incoming, "outgoing": outgoing})
         resp.content_type = 'application/json'
         resp.status = falcon.HTTP_200

@@ -1,5 +1,6 @@
 package com.teleport.client;
 
+import javafx.concurrent.Task;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.text.Text;
 import org.apache.http.HttpResponse;
@@ -9,7 +10,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,8 +22,7 @@ public class Client
     private Signing signingHandler;
     private Friendship friendshipHandler;
     private Transfer transferHandler;
-    //private Sender sender = new Sender();
-    private Receiver recv = new Receiver();
+    private Task copyWorker;
 
     public Client() throws IOException
     {
@@ -156,12 +155,19 @@ public class Client
         JSONObject json = (JSONObject) (new JSONParser().parse(body));
         if (json.get("status").equals("success"))
         {
-            P2PCommunication sender = new P2PCommunication(paths);
-            sender.start();
-            pbBar.setProgress(0);
-            lbl.setText("");
-            pbBar.setStyle("-fx-accent: blue;");
-            new ProgressBarSend(receiver, sender,lbl, pbBar, true).start();
+            String id = json.get("id").toString();
+            P2PCommunication sender = new P2PCommunication(receiver, paths, id);
+            copyWorker = sender.createWorker();
+            pbBar.progressProperty().unbind();
+            pbBar.progressProperty().bind(copyWorker.progressProperty());
+            new Thread(copyWorker).start();
+            lbl.textProperty().bind(copyWorker.messageProperty());
+            copyWorker.setOnSucceeded(e -> lbl.textProperty().unbind());
+//            pbBar.setProgress(0);
+            //          lbl.setText("");
+            //        pbBar.setStyle("-fx-accent: blue;");
+            //  Progres1sBarSend pb = new Progres1sBa1rSend(receiver, sender,lbl, pbBar, true);
+            // pb.start();
             return true;
         }
         else
@@ -175,12 +181,19 @@ public class Client
         String ip = get_sender_ip(sender);
         if (!ip.equals("failure"))
         {
-            P2PCommunication receiver = new P2PCommunication(ip, chose);
-            receiver.start();
-            pbBar.setProgress(0);
-            lbl.setText("");
-            pbBar.setStyle("-fx-accent: blue;");
-            new ProgressBarSend(sender, receiver,lbl, pbBar, false).start();
+            P2PCommunication receiver = new P2PCommunication(sender, ip, chose, transferHandler);
+            copyWorker = receiver.createWorker();
+            pbBar.progressProperty().unbind();
+            pbBar.progressProperty().bind(copyWorker.progressProperty());
+            lbl.textProperty().bind(copyWorker.messageProperty());
+            copyWorker.setOnSucceeded(e -> lbl.textProperty().unbind());
+
+            new Thread(copyWorker).start();
+            //pbBar.setProgress(0);
+//            lbl.setText("");
+            //          pbBar.setStyle("-fx-accent: blue;");
+            // Pro1gressBarSend pb =  new ProgressB1arSend(sender, receiver,lbl, pbBar, false);
+            //  pb.start();
             return true;
         }
         else

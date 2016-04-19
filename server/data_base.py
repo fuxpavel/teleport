@@ -269,18 +269,22 @@ class Tranfsers(Base):
                     try:
                         session.commit()
                     except:
-                        return False
-                return True
+                        return -1
+                a = session.query(Tranfsers).filter_by(sender=sender_name, receiver=receiver_name).all()
+                if a:
+                    return a[len(a)-1].id
+                else:
+                    return -1
             else:
-                return False
+                return -1
         else:
-            return False
+            return -1
 
     def end_transfer(self, sender_token, receiver, engine=None):
         session = get_session(engine)
-        users_table = User()
-        transfers_table = Tranfsers()
-
+        u =User()
+        print "id ", receiver, " sender ", u.get_username_by_token(sender_token)
+        '''
         if users_table.check_exist_user_token(sender_token, engine) and \
                 users_table.check_exist_user_username(receiver, engine) and sender_token != receiver:
             sender_name = users_table.get_username_by_token(sender_token, engine)
@@ -295,6 +299,14 @@ class Tranfsers(Base):
             else:
                 return False
         return False
+        '''
+        session.query(Tranfsers).filter_by(id=receiver).delete()
+        try:
+            session.commit()
+        except:
+            return False
+        return True
+
 
     def get_incoming_transfers(self, user, engine=None):
         session = get_session(engine)

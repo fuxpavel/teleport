@@ -69,8 +69,8 @@
             <VBox prefHeight="95.0" prefWidth="172.0">
                <children>
                   <Text fx:id="lblIncoming" strokeType="OUTSIDE" strokeWidth="0.0" />
-                  <Button fx:id="butReceive" mnemonicParsing="false" onAction="#ReceiveFile" text="Receive" visible="false" />
-                  <Button fx:id="butDenial" mnemonicParsing="false" onAction="#ReceiveFile" text="Denial" visible="false" />
+                  <Button fx:id="butReceive" mnemonicParsing="false" onAction="#ReceiveFile" text="Receive" visible="true" />
+                  <Button fx:id="butDenial" mnemonicParsing="false" onAction="#ReceiveFile" text="Denial" visible="trie" />
                </children>
             </VBox>
          </children>
