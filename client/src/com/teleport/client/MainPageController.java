@@ -110,16 +110,18 @@ public class MainPageController implements Initializable
                 fileChooser.getExtensionFilters().add(extFilter);
                 List<File> files = fileChooser.showOpenMultipleDialog(stage);
                 List<String> paths = new ArrayList<>();
-
-                for (File file : files)
+                if (files != null)
                 {
-                    paths.add(file.getPath());
+                    for (File file : files)
+                    {
+                        paths.add(file.getPath());
+                    }
+                    String receiver = lstViewContacts.getSelectionModel().getSelectedItem().toString();
+                    //pbSendFile.setProgress(0);
+                    lblSendFile.setText("");
+                    //pbSendFile.setStyle("-fx-accent: blue;");
+                    log.send(receiver, pbSendFile, lblSendFile, paths);
                 }
-                String receiver = lstViewContacts.getSelectionModel().getSelectedItem().toString();
-                //pbSendFile.setProgress(0);
-                lblSendFile.setText("");
-                //pbSendFile.setStyle("-fx-accent: blue;");
-                log.send(receiver, pbSendFile, lblSendFile, paths);
             }
         }
     }

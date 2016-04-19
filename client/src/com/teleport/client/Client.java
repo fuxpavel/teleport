@@ -150,13 +150,8 @@ public class Client
 
     public boolean sendFile(String receiver, ProgressBar pbBar,Text lbl, List<String> paths) throws IOException, ParseException
     {
-        HttpResponse response = transferHandler.beginTransfer(receiver);
-        String body = EntityUtils.toString(response.getEntity());
-        JSONObject json = (JSONObject) (new JSONParser().parse(body));
-        if (json.get("status").equals("success"))
-        {
-            String id = json.get("id").toString();
-            P2PCommunication sender = new P2PCommunication(receiver, paths, id);
+
+            P2PCommunication sender = new P2PCommunication(receiver, paths, transferHandler);
             copyWorker = sender.createWorker();
             pbBar.progressProperty().unbind();
             pbBar.progressProperty().bind(copyWorker.progressProperty());
@@ -169,11 +164,7 @@ public class Client
             //  Progres1sBarSend pb = new Progres1sBa1rSend(receiver, sender,lbl, pbBar, true);
             // pb.start();
             return true;
-        }
-        else
-        {
-            return false;
-        }
+
     }
 
     public boolean recvFile(String sender, ProgressBar pbBar,Text lbl, boolean chose) throws IOException, ParseException

@@ -37,13 +37,14 @@ public class P2PCommunication extends Thread
     String receiver;
 
 
-    public P2PCommunication(String recv, List<String> path, String id)
+    public P2PCommunication(String recv, List<String> path, Transfer transfer)
     {
         //sender
         paths = path;
-        idConnection = id;
+        //idConnection = id;
         currentSize = 0;
         receiver = recv;
+        transferHandler = transfer;
     }
 
     public P2PCommunication(String recv, String send, boolean chose, Transfer transfer)
@@ -119,56 +120,62 @@ public class P2PCommunication extends Thread
                         path = path1;
                         System.out.println(path);
                     }
-                    try (ServerSocket serverSock = new ServerSocket(PORT))
+                    updateMessage(" zipping...");
+                    String compress = Compress.Compression(path);
+                    updateMessage(" finish");
+                    HttpResponse response = transferHandler.beginTransfer(receiver);
+                    String body = EntityUtils.toString(response.getEntity());
+                    JSONObject json = (JSONObject) (new JSONParser().parse(body));
+                    if (json.get("status").equals("success"))
                     {
-                        try (Socket sock = serverSock.accept())
+                        idConnection = json.get("id").toString();
+                        try (ServerSocket serverSock = new ServerSocket(PORT))
                         {
-                            updateMessage(" zipping...");
-                            String compress = Compress.Compression(path);
-                            File myFile = new File(compress);
-                            BufferedInputStream in1 = new BufferedInputStream(new FileInputStream(myFile));
-                            InputStream in = sock.getInputStream();
-                            OutputStream out = sock.getOutputStream();
-                            updateMessage(" finish");
-                            byte[] buf = new byte[BUF_SIZE];
-                            if (first)
+                            try (Socket sock = serverSock.accept())
                             {
-                                out.write((P2P_CONNECT_REQUEST + ":" + P2P_AMOUT_OF_FILES + ":" + paths.size() + ":" + idConnection.toString() + "::").getBytes("UTF-8"));
-                                out.flush();
-                                first = false;
-                            }
-
-                            int count;
-                            fileName = compress.substring(compress.lastIndexOf("\\") + 1);
-                            fileSize = (int) myFile.length();
-                            out.write((P2P_SEND_FILE + ":" + fileName + ":" + sizeToString(myFile.length()) + "::").getBytes("UTF-8"));
-                            out.flush();
-                            in.read(buf);
-
-                            if (new String(buf, StandardCharsets.UTF_8).substring(0, 9).equals(P2P_ANS_CONNECT_REQUEST + ":" + P2P_POSITIVE_ANS + "::"))
-                            {
-                                while ((count = in1.read(buf)) > 0)
+                                File myFile = new File(compress);
+                                BufferedInputStream in1 = new BufferedInputStream(new FileInputStream(myFile));
+                                InputStream in = sock.getInputStream();
+                                OutputStream out = sock.getOutputStream();
+                                byte[] buf = new byte[BUF_SIZE];
+                                if (first)
                                 {
-                                    out.write(buf, 0, count);
-                                    currentSize = currentSize + count;
-                                    updateProgress(GetCurrentSize(), GetFileSize());
-                                    percent = (float) GetCurrentSize() / (float) GetFileSize();
-                                    updateMessage(" send " + GetFileName() + " to " + receiver + " | " + String.format("%.0f", percent * 100) + "%");
+                                    out.write((P2P_CONNECT_REQUEST + ":" + P2P_AMOUT_OF_FILES + ":" + paths.size() + ":" + idConnection.toString() + "::").getBytes("UTF-8"));
                                     out.flush();
+                                    first = false;
                                 }
-                                sock.close();
+
+                                int count;
+                                fileName = compress.substring(compress.lastIndexOf("\\") + 1);
+                                fileSize = (int) myFile.length();
+                                out.write((P2P_SEND_FILE + ":" + fileName + ":" + sizeToString(myFile.length()) + "::").getBytes("UTF-8"));
+                                out.flush();
+                                in.read(buf);
+
+                                if (new String(buf, StandardCharsets.UTF_8).substring(0, 9).equals(P2P_ANS_CONNECT_REQUEST + ":" + P2P_POSITIVE_ANS + "::"))
+                                {
+                                    while ((count = in1.read(buf)) > 0)
+                                    {
+                                        out.write(buf, 0, count);
+                                        currentSize = currentSize + count;
+                                        updateProgress(GetCurrentSize(), GetFileSize());
+                                        percent = (float) GetCurrentSize() / (float) GetFileSize();
+                                        updateMessage(" send " + GetFileName() + " to " + receiver + " | " + String.format("%.0f", percent * 100) + "%");
+                                        out.flush();
+                                    }
+                                    sock.close();
+                                } else
+                                {
+                                    sock.close();
+                                }
+                                in.close();
                             }
-                            else
-                            {
-                                sock.close();
-                            }
-                            in.close();
                         }
-                    }
-                    catch (IOException e)
-                    {
-                        System.out.println("error in socket");
-                        System.out.println(e.getMessage());
+                        catch (IOException e)
+                        {
+                            System.out.println("error in socket");
+                            System.out.println(e.getMessage());
+                        }
                     }
                 }
                 else
