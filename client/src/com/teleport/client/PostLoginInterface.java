@@ -8,16 +8,16 @@ import java.util.*;
 
 public class PostLoginInterface
 {
-    private static final String friendshipQuerierThreadName = "FriendshipQuerierThread";
+    //private static final String friendshipQuerierThreadName = "FriendshipQuerierThread";
 
     private Client client;
-    private FriendshipQuerier friendshipQuerier;
+    //private FriendshipQuerier friendshipQuerier;
 
     public PostLoginInterface() throws IOException
     {
         client = new Client();
-        friendshipQuerier = new FriendshipQuerier(friendshipQuerierThreadName);
-        friendshipQuerier.start();
+       // friendshipQuerier = new FriendshipQuerier(friendshipQuerierThreadName);
+        //friendshipQuerier.start();
     }
 
     public String addFriend(String friend) throws IOException, ParseException

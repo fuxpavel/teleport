@@ -3,6 +3,7 @@ package com.teleport.client;
 import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
 import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -15,6 +16,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import org.json.simple.parser.ParseException;
 import java.io.*;
 import java.net.URL;
@@ -39,10 +41,10 @@ public class MainPageController implements Initializable
     private String senderName;
     private PostLoginInterface log;
     private boolean clicked;
+
     public MainPageController() throws IOException
     {
         log = new PostLoginInterface();
-        clicked = false;
     }
 
     public void MainPage(Stage stage) throws IOException
@@ -54,19 +56,9 @@ public class MainPageController implements Initializable
         stage.show();
     }
 
-    @FXML public void RefreshPage() throws IOException, ParseException
-    {
-        lstViewContacts.setItems(FXCollections.observableList(log.getFriends()));
-    }
-
     @FXML public void AddFriend() throws Exception
     {
         Stage stage = new Stage();
-        AddFriendScreen(stage);
-    }
-
-    public void AddFriendScreen(Stage stage) throws IOException
-    {
         Parent root = FXMLLoader.load(getClass().getResource("AddFriend.fxml"));
         Scene scene = new Scene(root);
         stage.setTitle("Add Friend");
@@ -86,10 +78,24 @@ public class MainPageController implements Initializable
         butSend.setVisible(true);
     }
 
-    @FXML protected void SwitchScreen() throws IOException
+    @FXML protected void SwitchScreenInbox() throws IOException
     {
-        InboxController c = new InboxController();
-        c.Inbox();
+        Parent root = FXMLLoader.load(getClass().getResource("Inbox.fxml"));
+        Scene scene = new Scene(root);
+        Stage stage = new Stage();
+        stage.setTitle("Inbox");
+        stage.setScene(scene);
+        stage.show();
+        stage.setOnCloseRequest(we -> {
+            try
+            {
+                lstViewContacts.setItems(FXCollections.observableList(log.getFriends()));
+            }
+            catch (IOException | ParseException e)
+            {
+                e.printStackTrace();
+            }
+        });
     }
 
     @FXML protected void SearchFriend() throws IOException, ParseException
@@ -110,18 +116,16 @@ public class MainPageController implements Initializable
                 fileChooser.getExtensionFilters().add(extFilter);
                 List<File> files = fileChooser.showOpenMultipleDialog(stage);
                 List<String> paths = new ArrayList<>();
-                if (files != null)
+
+                for (File file : files)
                 {
-                    for (File file : files)
-                    {
-                        paths.add(file.getPath());
-                    }
-                    String receiver = lstViewContacts.getSelectionModel().getSelectedItem().toString();
-                    //pbSendFile.setProgress(0);
-                    lblSendFile.setText("");
-                    //pbSendFile.setStyle("-fx-accent: blue;");
-                    log.send(receiver, pbSendFile, lblSendFile, paths);
+                    paths.add(file.getPath());
                 }
+                String receiver = lstViewContacts.getSelectionModel().getSelectedItem().toString();
+                //pbSendFile.setProgress(0);
+                lblSendFile.setText("");
+                //pbSendFile.setStyle("-fx-accent: blue;");
+                log.send(receiver, pbSendFile, lblSendFile, paths);
             }
         }
     }
@@ -130,19 +134,23 @@ public class MainPageController implements Initializable
     {
         butDenial.setVisible(visible);
         butReceive.setVisible(visible);
+        clicked = !visible;
     }
 
     public void ReceiveFile(Event e) throws IOException, ParseException
     {
-        VisibleButton(false);
-        clicked = true;
+        VisibleButton(true);
         String sender = senderName;
         if (e.getSource().toString().contains("Receive"))
         {
-            lblSendFile.setText("");
-            // pbSendFile.setProgress(0);
-            //pbSendFile.setStyle("-fx-accent: blue;");
-            log.receive(sender, pbSendFile, lblSendFile, true);
+            if (lblSendFile != null && pbSendFile != null)
+            {
+                lblSendFile.setText("");
+                // pbSendFile.setProgress(0);
+                //pbSendFile.setStyle("-fx-accent: blue;");
+                log.receive(sender, pbSendFile, lblSendFile, true);
+            }
+            else System.out.println("in ain page controller 5");
         }
         else
         {
@@ -165,7 +173,6 @@ public class MainPageController implements Initializable
                     {
                         List<String> newIncoming;
                         Client client = new Client();
-                        clicked = false;
                         while (true)
                         {
                             newIncoming = client.getIncomingTransfers();
@@ -177,16 +184,16 @@ public class MainPageController implements Initializable
                                     {
                                         senderName = newSender;
                                     }
-                                    updateMessage(" " + senderName + " want send u file");
-                                    VisibleButton(true);
                                 }
+                                updateMessage(" " + senderName + " want send u file");
+                                VisibleButton(true);
                             }
                             else
                             {
                                 updateMessage("");
                                 VisibleButton(false);
                             }
-                            Thread.sleep(5000);
+                            Thread.sleep(15000);
                         }
                     }
                 };

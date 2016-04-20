@@ -46,9 +46,6 @@
         </menus>
       </MenuBar>
    </top>
-   <right>
-      <Button fx:id="butRefresh" mnemonicParsing="false" onAction="#RefreshPage" text="Refresh" BorderPane.alignment="CENTER" />
-   </right>
    <center>
       <GridPane alignment="CENTER" BorderPane.alignment="CENTER">
         <columnConstraints>
@@ -61,7 +58,7 @@
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <Button fx:id="butInbox" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#SwitchScreen" prefHeight="47.0" prefWidth="46.0" text="Inbox" textAlignment="CENTER" GridPane.columnIndex="1">
+            <Button fx:id="butInbox" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#SwitchScreenInbox" prefHeight="47.0" prefWidth="46.0" text="Inbox" textAlignment="CENTER" GridPane.columnIndex="1">
                <opaqueInsets>
                   <Insets top="10.0" />
                </opaqueInsets>
@@ -70,7 +67,7 @@
                <children>
                   <Text fx:id="lblIncoming" strokeType="OUTSIDE" strokeWidth="0.0" />
                   <Button fx:id="butReceive" mnemonicParsing="false" onAction="#ReceiveFile" text="Receive" visible="true" />
-                  <Button fx:id="butDenial" mnemonicParsing="false" onAction="#ReceiveFile" text="Denial" visible="trie" />
+                  <Button fx:id="butDenial" mnemonicParsing="false" onAction="#ReceiveFile" text="Denial" visible="true" />
                </children>
             </VBox>
          </children>

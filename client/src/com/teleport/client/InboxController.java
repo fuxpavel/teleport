@@ -33,16 +33,6 @@ public class InboxController implements Initializable
         client = new Client();
     }
 
-    public void Inbox() throws IOException
-    {
-        Parent root = FXMLLoader.load(getClass().getResource("Inbox.fxml"));
-        Scene scene = new Scene(root);
-        Stage stage = new Stage();
-        stage.setTitle("Inbox");
-        stage.setScene(scene);
-        stage.show();
-    }
-
     @FXML protected void PushedButton()
     {
         if(lstIncoming.getItems().size() > 0)
@@ -56,6 +46,7 @@ public class InboxController implements Initializable
     {
         String friend = lstIncoming.getSelectionModel().getSelectedItem().toString();
         String status = log.respondToRequest(friend, event.getSource().toString().contains("Confirm"));
+        lstIncoming.setItems(FXCollections.observableArrayList(client.getIncomingFriendRequests()));
         lblMsg.setText(status);
         lblMsg.setTextFill(Color.FIREBRICK);
     }

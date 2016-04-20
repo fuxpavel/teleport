@@ -46,7 +46,7 @@ public class FriendshipQuerier implements Runnable
                     System.out.println("New incoming requests: " + newIncoming);
                 }
                 outgoing = client.getOutgoingFriendRequests();
-                Thread.sleep(delay);
+                Thread.sleep(20000);
             }
             catch (IOException | ParseException | InterruptedException e)
             {
