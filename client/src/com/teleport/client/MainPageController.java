@@ -10,6 +10,9 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
@@ -18,6 +21,8 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import org.json.simple.parser.ParseException;
+
+import java.awt.*;
 import java.io.*;
 import java.net.URL;
 import java.util.ArrayList;
@@ -49,8 +54,11 @@ public class MainPageController implements Initializable
 
     public void MainPage(Stage stage) throws IOException
     {
+        GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+        int width = gd.getDisplayMode().getWidth() - 20;
+        int height = gd.getDisplayMode().getHeight() - 100;
         Parent root = FXMLLoader.load(getClass().getResource("MainPage.fxml"));
-        Scene scene = new Scene(root);
+        Scene scene = new Scene(root, width/2, height);
         stage.setTitle("MainPage");
         stage.setScene(scene);
         stage.show();

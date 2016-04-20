@@ -117,7 +117,7 @@ public class P2PCommunication extends Thread
                     }
                     updateMessage(" zipping...");
                     String compress = Compress.Compression(path);
-                    updateMessage(" finish");
+                    updateMessage(" ready");
                     HttpResponse response = transferHandler.beginTransfer(receiver);
                     String body = EntityUtils.toString(response.getEntity());
                     JSONObject json = (JSONObject) (new JSONParser().parse(body));
@@ -159,7 +159,8 @@ public class P2PCommunication extends Thread
                                         out.flush();
                                     }
                                     sock.close();
-                                } else
+                                }
+                                else
                                 {
                                     sock.close();
                                 }
@@ -235,15 +236,14 @@ public class P2PCommunication extends Thread
                                 out.flush();
                                 sock.close();
                             }
-
-                                HttpResponse response = transferHandler.endTransfer(idConnection);
-                                String body = EntityUtils.toString(response.getEntity());
-                                JSONObject json = (JSONObject) (new JSONParser().parse(body));
-
+                            HttpResponse response = transferHandler.endTransfer(idConnection);
+                            String body = EntityUtils.toString(response.getEntity());
+                            JSONObject json = (JSONObject) (new JSONParser().parse(body));
                         }
                     }
                     catch (IOException | ParseException e)
                     {
+                        updateMessage("Error");
                         e.printStackTrace();
                     }
                 }

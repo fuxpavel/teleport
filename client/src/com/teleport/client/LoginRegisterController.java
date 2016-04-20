@@ -1,16 +1,18 @@
 package com.teleport.client;
 
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+
+import java.awt.*;
 import java.io.IOException;
 
 
@@ -29,16 +31,22 @@ public class LoginRegisterController
     }
     public void Login(Stage stage) throws IOException
     {
+        GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+        int width = gd.getDisplayMode().getWidth() - 20;
+        int height = gd.getDisplayMode().getHeight() - 100;
         Parent root = FXMLLoader.load(getClass().getResource("Login.fxml"));
-        Scene scene = new Scene(root);
+        Scene scene = new Scene(root, width/2, height);
         stage.setTitle("Login");
         stage.setScene(scene);
         stage.show();
     }
     public void Register(Stage stage) throws IOException
     {
+        GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+        int width = gd.getDisplayMode().getWidth() - 20;
+        int height = gd.getDisplayMode().getHeight() - 100;
         Parent root = FXMLLoader.load(getClass().getResource("Register.fxml"));
-        Scene scene = new Scene(root);
+        Scene scene = new Scene(root, width/2, height);
         stage.setTitle("Register");
         stage.setScene(scene);
         stage.show();
@@ -57,7 +65,7 @@ public class LoginRegisterController
         }
     }
 
-    @FXML protected void SubmitLogin(ActionEvent e) throws IOException, org.json.simple.parser.ParseException
+    @FXML protected void SubmitLogin() throws IOException, org.json.simple.parser.ParseException
     {
         String status = log.login(txtUsername.getText(), txtPassword.getText());
         lblMsg.setText(status);
@@ -68,7 +76,7 @@ public class LoginRegisterController
             c.MainPage((Stage) butSwitch.getScene().getWindow());
         }
     }
-    @FXML protected void SubmitRegister(ActionEvent e) throws IOException, org.json.simple.parser.ParseException
+    @FXML protected void SubmitRegister() throws IOException, org.json.simple.parser.ParseException
     {
         String status = log.register(txtUsername.getText(), txtPassword.getText());
         lblMsg.setText(status);

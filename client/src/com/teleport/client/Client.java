@@ -148,26 +148,24 @@ public class Client
         return ((String) json.get("ip"));
     }
 
-    public boolean sendFile(String receiver, ProgressBar pbBar,Text lbl, List<String> paths) throws IOException, ParseException
+    public boolean sendFile(String receiver, ProgressBar pbBar, Text lbl, List<String> paths) throws IOException, ParseException
     {
-
-            P2PCommunication sender = new P2PCommunication(receiver, paths, transferHandler);
-            copyWorker = sender.createWorker();
+        P2PCommunication sender = new P2PCommunication(receiver, paths, transferHandler);
+        copyWorker = sender.createWorker();
+        pbBar.progressProperty().unbind();
+        pbBar.setStyle("-fx-accent: blue;");
+        pbBar.progressProperty().bind(copyWorker.progressProperty());
+        new Thread(copyWorker).start();
+        lbl.textProperty().bind(copyWorker.messageProperty());
+        copyWorker.setOnSucceeded(e -> lbl.textProperty().unbind());
+        copyWorker.setOnSucceeded(e -> {
             pbBar.progressProperty().unbind();
-            pbBar.progressProperty().bind(copyWorker.progressProperty());
-            new Thread(copyWorker).start();
-            lbl.textProperty().bind(copyWorker.messageProperty());
-            copyWorker.setOnSucceeded(e -> lbl.textProperty().unbind());
-//            pbBar.setProgress(0);
-            //          lbl.setText("");
-            //        pbBar.setStyle("-fx-accent: blue;");
-            //  Progres1sBarSend pb = new Progres1sBa1rSend(receiver, sender,lbl, pbBar, true);
-            // pb.start();
-            return true;
-
+            pbBar.setStyle("-fx-accent: green;");
+        });
+        return true;
     }
 
-    public boolean recvFile(String sender, ProgressBar pbBar,Text lbl, boolean chose) throws IOException, ParseException
+    public boolean recvFile(String sender, ProgressBar pbBar, Text lbl, boolean chose) throws IOException, ParseException
     {
         String ip = get_sender_ip(sender);
         if (!ip.equals("failure"))
@@ -175,16 +173,15 @@ public class Client
             P2PCommunication receiver = new P2PCommunication(sender, ip, chose, transferHandler);
             copyWorker = receiver.createWorker();
             pbBar.progressProperty().unbind();
+            pbBar.setStyle("-fx-accent: blue;");
             pbBar.progressProperty().bind(copyWorker.progressProperty());
             lbl.textProperty().bind(copyWorker.messageProperty());
             copyWorker.setOnSucceeded(e -> lbl.textProperty().unbind());
-
+            copyWorker.setOnSucceeded(e -> {
+                pbBar.progressProperty().unbind();
+                pbBar.setStyle("-fx-accent: green;");
+            });
             new Thread(copyWorker).start();
-            //pbBar.setProgress(0);
-//            lbl.setText("");
-            //          pbBar.setStyle("-fx-accent: blue;");
-            // Pro1gressBarSend pb =  new ProgressB1arSend(sender, receiver,lbl, pbBar, false);
-            //  pb.start();
             return true;
         }
         else
