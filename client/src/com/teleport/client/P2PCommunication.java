@@ -11,14 +11,13 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-
 import static com.teleport.client.Protocol.*;
 
 public class P2PCommunication extends Thread
 {
     private List<String> paths;
     private static final int PORT = 10113;
-    private static final int BUF_SIZE = 1024;
+    private static final int BUF_SIZE = 2048;
     private String fileName;
     private static int BYTES2GB = 1073741824;
     private static int BYTES2MB = 1048576;
@@ -29,15 +28,13 @@ public class P2PCommunication extends Thread
     private boolean choose;
     private String idConnection;
     private Transfer transferHandler;
-    float percent;
-    String receiver;
-
+    private float percent;
+    private String receiver;
 
     public P2PCommunication(String recv, List<String> path, Transfer transfer)
     {
         //sender
         paths = path;
-        //idConnection = id;
         currentSize = 0;
         receiver = recv;
         transferHandler = transfer;
@@ -109,6 +106,7 @@ public class P2PCommunication extends Thread
             {
                 if (ip == null)
                 {
+                    //sender
                     String path = "";
                     boolean first = true;
                     for (String path1 : paths)
@@ -175,6 +173,7 @@ public class P2PCommunication extends Thread
                 }
                 else
                 {
+                    //receiver
                     currentSize = 0;
                     int amout_of_files = 1;
                     String[] input;
@@ -212,7 +211,7 @@ public class P2PCommunication extends Thread
                                 buf = new byte[BUF_SIZE];
                                 out.write((P2P_ANS_CONNECT_REQUEST + ":" + P2P_POSITIVE_ANS + "::").getBytes());
                                 out.flush();
-                                FileOutputStream fos = new FileOutputStream(fileName);
+                                FileOutputStream fos = new FileOutputStream(  fileName);
                                 while ((len = in.read(buf)) > 0)
                                 {
                                     currentSize = currentSize + len;

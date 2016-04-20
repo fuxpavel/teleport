@@ -17,6 +17,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -28,7 +29,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
-
 
 public class MainPageController implements Initializable
 {
@@ -111,29 +111,44 @@ public class MainPageController implements Initializable
         lstViewUsername.setItems(FXCollections.observableList(log.getUsername(txtSearch.getText())));
     }
 
-    public void ChoseUsernameToSend(MouseEvent mouseEvent) throws IOException, ParseException
+    public void SendFileBeUsername(MouseEvent mouseEvent) throws IOException, ParseException
     {
-        if (lstViewContacts != null && lstViewContacts.getItems().size() > 0 && mouseEvent.getButton().equals(MouseButton.PRIMARY))
+        if (lstViewContacts != null && lstViewContacts.getItems().size() > 0 && (mouseEvent.getButton().equals(MouseButton.PRIMARY) || mouseEvent.getButton().equals(MouseButton.SECONDARY)))
         {
             if (mouseEvent.getClickCount() == 2 && lstViewContacts.getSelectionModel().getSelectedItem() != null)
             {
-                Stage stage = (Stage) butInbox.getScene().getWindow();
-                FileChooser fileChooser = new FileChooser();
-                fileChooser.setInitialDirectory(javax.swing.filechooser.FileSystemView.getFileSystemView().getHomeDirectory());
-                FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("All Files", "*.*");
-                fileChooser.getExtensionFilters().add(extFilter);
-                List<File> files = fileChooser.showOpenMultipleDialog(stage);
-                List<String> paths = new ArrayList<>();
-
-                for (File file : files)
-                {
-                    paths.add(file.getPath());
-                }
                 String receiver = lstViewContacts.getSelectionModel().getSelectedItem().toString();
-                //pbSendFile.setProgress(0);
                 lblSendFile.setText("");
-                //pbSendFile.setStyle("-fx-accent: blue;");
-                log.send(receiver, pbSendFile, lblSendFile, paths);
+                List<String> paths = new ArrayList<>();
+                Stage stage = (Stage) butInbox.getScene().getWindow();
+                if(mouseEvent.getButton().equals(MouseButton.PRIMARY))
+                {//if send files
+                    FileChooser fileChooser = new FileChooser();
+                    fileChooser.setInitialDirectory(javax.swing.filechooser.FileSystemView.getFileSystemView().getHomeDirectory());
+                    FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("All Files", "*.*");
+                    fileChooser.getExtensionFilters().add(extFilter);
+                    List<File> files = fileChooser.showOpenMultipleDialog(stage);
+                    if(files != null)
+                    {
+                        for (File file : files)
+                        {
+                            paths.add(file.getPath());
+                        }
+                        log.send(receiver, pbSendFile, lblSendFile, paths);
+                    }
+                }
+                else if(mouseEvent.getButton().equals(MouseButton.SECONDARY))
+                {//if send folders
+                    DirectoryChooser directoryChooserChooser = new DirectoryChooser();
+                    directoryChooserChooser.setInitialDirectory(javax.swing.filechooser.FileSystemView.getFileSystemView().getHomeDirectory());
+                    File files = directoryChooserChooser.showDialog(stage);
+                    if(files != null)
+                    {
+                        System.out.println(files.getPath());
+                        paths.add(files.getPath());
+                        log.send(receiver, pbSendFile, lblSendFile, paths);
+                    }
+                }
             }
         }
     }

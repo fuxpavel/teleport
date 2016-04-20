@@ -11,12 +11,20 @@ public class Compress
 {
     public static boolean CheckAlreadyCompress(String input)
     {
-        return !(input.substring(input.lastIndexOf(".")).equals(".zip"));
+        if (input.lastIndexOf(".") > 0)
+        {
+            return !(input.substring(input.lastIndexOf(".")).equals(".zip"));
+        }
+        else
+        {
+            return true;
+        }
     }
 
     public static String ParseFileName(String inputFile)
     {
         File file = new File(inputFile);
+        System.out.println(inputFile);
         if (CheckAlreadyCompress(inputFile))
         {
             if (file.isFile())
@@ -43,7 +51,8 @@ public class Compress
             if (inputFile.isFile())
             {
                 compressFile(inputFile, "", zipOutputStream);
-            } else if (inputFile.isDirectory())
+            }
+            else if (inputFile.isDirectory())
             {
                 compressFolder(zipOutputStream, inputFile, "");
             }
