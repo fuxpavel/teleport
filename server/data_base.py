@@ -41,13 +41,15 @@ class User(Base):
             return False
         return True
 
-    def username_like(self, name, engine=None):
+    def username_like(self, name, reply, engine=None):
         username = []
         session = get_session(engine)
         names = session.query(User).filter(User.username.like(name + '%')).all()
         for name in names:
             username.append(name.username)
-        return username
+        lst = set(username) - set(Friendship().get_friends_list(reply))
+        lst = lst - set(User().get_username_by_token(reply))
+        return list(lst)
 
     def login_user(self, username, password, engine=None):
         info = self.check_exist_user_username(username, engine)
@@ -171,7 +173,7 @@ class FriendRequest(Base):
         if db.check_exist_user_token(sender, engine) and db.check_exist_user_username(reply, engine) and \
                         db.get_username_by_token(sender) != reply:
             sender = db.get_username_by_token(sender, engine)
-            if not f.check_friendship(sender, reply, engine) and not self.check_friend_request(sender, reply, engine):
+            if not f.check_friendship(sender, reply, engine) and not (self.check_friend_request(sender, reply, engine) or self.check_friend_request(reply, sender, engine)):
                 new_request = FriendRequest(sender=sender, reply=reply)
                 session.add(new_request)
                 try:
@@ -282,31 +284,12 @@ class Tranfsers(Base):
 
     def end_transfer(self, sender_token, receiver, engine=None):
         session = get_session(engine)
-        u =User()
-        print "id ", receiver, " sender ", u.get_username_by_token(sender_token)
-        '''
-        if users_table.check_exist_user_token(sender_token, engine) and \
-                users_table.check_exist_user_username(receiver, engine) and sender_token != receiver:
-            sender_name = users_table.get_username_by_token(sender_token, engine)
-            if transfers_table.check_transfer(sender_name, receiver):
-                session.query(Tranfsers).filter_by(sender=sender_name, receiver=receiver).delete()
-                try:
-                    session.commit()
-                except:
-                    return False
-                else:
-                    return True
-            else:
-                return False
-        return False
-        '''
         session.query(Tranfsers).filter_by(id=receiver).delete()
         try:
             session.commit()
         except:
             return False
         return True
-
 
     def get_incoming_transfers(self, user, engine=None):
         session = get_session(engine)

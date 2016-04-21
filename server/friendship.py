@@ -62,6 +62,7 @@ class FriendshipResponse(object):
         reply = req.get_header('Authorization')
         incoming = self.db.check_incoming_request(reply)
         outgoing = self.db.check_outgoing_request(reply)
+        print User().get_username_by_token(reply),  " : outgoing ", outgoing, " incoming ", incoming
         resp.body = json.dumps({"incoming": incoming, "outgoing": outgoing})
         resp.content_type = 'application/json'
         resp.status = falcon.HTTP_200
@@ -73,7 +74,8 @@ class Username(object):
 
     def on_post(self, req, resp):
         userdata = json.loads(req.stream.read())
-        usernames = self.db.username_like(userdata['name'])
+        reply = req.get_header('Authorization')
+        usernames = self.db.username_like(userdata['name'], reply)
         resp.body = json.dumps(usernames)
         resp.content_type = 'application/json'
         resp.status = falcon.HTTP_201

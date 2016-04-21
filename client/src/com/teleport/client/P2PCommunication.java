@@ -169,9 +169,10 @@ public class P2PCommunication extends Thread
                         }
                         catch (IOException e)
                         {
-                            updateMessage("Error");
-                            e.getMessage();
-                            throw new Exception();
+                            updateMessage(e.getMessage());
+                            updateProgress(0,1);
+                            e.printStackTrace();
+                            throw e;
                         }
                     }
                 }
@@ -246,9 +247,10 @@ public class P2PCommunication extends Thread
                     }
                     catch (IOException | ParseException e)
                     {
-                        updateMessage("Error");
+                        updateMessage(e.getMessage());
+                        updateProgress(0,1);
                         e.printStackTrace();
-                        throw new Exception();
+                        throw e;
                     }
                 }
                 return true;

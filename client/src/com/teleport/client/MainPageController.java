@@ -73,11 +73,13 @@ public class MainPageController implements Initializable
 
     @FXML protected void SendFriendRequest() throws IOException, ParseException
     {
-        String status = log.addFriend(lstViewUsername.getSelectionModel().getSelectedItem().toString());
-        lblMsg.setText(status);
-        lblMsg.setTextFill(Color.FIREBRICK);
+        if (lstViewUsername.getSelectionModel().getSelectedItem() != null)
+        {
+            String status = log.addFriend(lstViewUsername.getSelectionModel().getSelectedItem().toString());
+            lblMsg.setText(status);
+            lblMsg.setTextFill(Color.FIREBRICK);
+        }
     }
-
     @FXML protected void PressedButton()
     {
         butSend.setVisible(true);
@@ -222,10 +224,8 @@ public class MainPageController implements Initializable
 
             catch (ParseException | IOException e)
             {
-                System.out.println("error in initialize");
                 lblMsg.setText("Error in initialize");
             }
-
         }
     }
 }

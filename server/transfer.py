@@ -15,7 +15,6 @@ class Transfer(object):
         if action == 'begin':
             id = self.dbt.add_transfer(user, other_user)
             if id != -1:
-                print id
                 status = 'success'
             else:
                 status = 'failure'
@@ -39,7 +38,6 @@ class Transfer(object):
         user = req.get_header('Authorization')
         incoming = self.dbt.get_incoming_transfers(user)
         outgoing = self.dbt.get_outgoing_transfers(user)
-        print User().get_username_by_token(user),  " : out " , outgoing, " in " , incoming
         resp.body = json.dumps({"incoming": incoming, "outgoing": outgoing})
         resp.content_type = 'application/json'
         resp.status = falcon.HTTP_200

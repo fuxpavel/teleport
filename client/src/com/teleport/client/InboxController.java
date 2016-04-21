@@ -1,18 +1,14 @@
 package com.teleport.client;
+
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.paint.Color;
-import javafx.stage.Stage;
 import org.json.simple.parser.ParseException;
-
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -30,7 +26,7 @@ public class InboxController implements Initializable
     public InboxController() throws IOException
     {
         log = new PostLoginInterface();
-        client = new Client();
+        client = log.getClient();
     }
 
     @FXML protected void PressedButton()
@@ -44,11 +40,14 @@ public class InboxController implements Initializable
 
     public void RespondToRequest(ActionEvent event) throws IOException, ParseException
     {
-        String friend = lstIncoming.getSelectionModel().getSelectedItem().toString();
-        String status = log.respondToRequest(friend, event.getSource().toString().contains("Confirm"));
-        lstIncoming.setItems(FXCollections.observableArrayList(client.getIncomingFriendRequests()));
-        lblMsg.setText(status);
-        lblMsg.setTextFill(Color.FIREBRICK);
+        if(lstIncoming.getSelectionModel().getSelectedItem() != null)
+        {
+            String friend = lstIncoming.getSelectionModel().getSelectedItem().toString();
+            String status = log.respondToRequest(friend, event.getSource().toString().contains("Confirm"));
+            lstIncoming.setItems(FXCollections.observableArrayList(client.getIncomingFriendRequests()));
+            lblMsg.setText(status);
+            lblMsg.setTextFill(Color.FIREBRICK);
+        }
     }
 
     @Override public void initialize(URL url, ResourceBundle rb)

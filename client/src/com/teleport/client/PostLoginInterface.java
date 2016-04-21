@@ -20,6 +20,11 @@ public class PostLoginInterface
         //friendshipQuerier.start();
     }
 
+    public Client getClient()
+    {
+        return client;
+    }
+
     public String addFriend(String friend) throws IOException, ParseException
     {
         if (client.addFriend(friend))
