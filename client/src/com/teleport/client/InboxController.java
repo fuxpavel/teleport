@@ -33,7 +33,7 @@ public class InboxController implements Initializable
         client = new Client();
     }
 
-    @FXML protected void PushedButton()
+    @FXML protected void PressedButton()
     {
         if(lstIncoming.getItems().size() > 0)
         {

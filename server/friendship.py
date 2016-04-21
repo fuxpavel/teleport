@@ -62,7 +62,6 @@ class FriendshipResponse(object):
         reply = req.get_header('Authorization')
         incoming = self.db.check_incoming_request(reply)
         outgoing = self.db.check_outgoing_request(reply)
-        print User().get_username_by_token(reply)," : ", "incoming ", incoming, " outgoing ", outgoing
         resp.body = json.dumps({"incoming": incoming, "outgoing": outgoing})
         resp.content_type = 'application/json'
         resp.status = falcon.HTTP_200

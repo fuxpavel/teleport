@@ -54,7 +54,7 @@ public class PostLoginInterface
         return client.getUsernameList(name);
     }
 
-    public String send(String receiver, ProgressBar progressBar, Text lbl, List<String> paths) throws IOException, ParseException
+    public String send(String receiver, ProgressBar progressBar, Text lbl, List<String> paths)
     {
         if (client.sendFile(receiver, progressBar, lbl, paths))
         {

@@ -10,6 +10,7 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.EmptyStackException;
 import java.util.List;
 import static com.teleport.client.Protocol.*;
 
@@ -97,6 +98,7 @@ public class P2PCommunication extends Thread
     {
         return fileName;
     }
+
     public Task createWorker()
     {
         return new Task()
@@ -167,7 +169,9 @@ public class P2PCommunication extends Thread
                         }
                         catch (IOException e)
                         {
+                            updateMessage("Error");
                             e.getMessage();
+                            throw new Exception();
                         }
                     }
                 }
@@ -244,6 +248,7 @@ public class P2PCommunication extends Thread
                     {
                         updateMessage("Error");
                         e.printStackTrace();
+                        throw new Exception();
                     }
                 }
                 return true;

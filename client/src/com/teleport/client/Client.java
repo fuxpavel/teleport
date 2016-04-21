@@ -148,7 +148,7 @@ public class Client
         return ((String) json.get("ip"));
     }
 
-    public boolean sendFile(String receiver, ProgressBar pbBar, Text lbl, List<String> paths) throws IOException, ParseException
+    public boolean sendFile(String receiver, ProgressBar pbBar, Text lbl, List<String> paths)
     {
         P2PCommunication sender = new P2PCommunication(receiver, paths, transferHandler);
         copyWorker = sender.createWorker();
@@ -157,10 +157,19 @@ public class Client
         pbBar.progressProperty().bind(copyWorker.progressProperty());
         new Thread(copyWorker).start();
         lbl.textProperty().bind(copyWorker.messageProperty());
-        copyWorker.setOnSucceeded(e -> lbl.textProperty().unbind());
-        copyWorker.setOnSucceeded(e -> {
+        copyWorker.setOnSucceeded(e ->
+        {
+            lbl.textProperty().unbind();
+            lbl.setText("");
+        });
+        copyWorker.setOnSucceeded(e ->
+        {
             pbBar.progressProperty().unbind();
             pbBar.setStyle("-fx-accent: green;");
+        });
+        copyWorker.setOnFailed(e -> {
+            pbBar.progressProperty().unbind();
+            pbBar.setStyle("-fx-accent: red;");
         });
         return true;
     }
@@ -180,6 +189,10 @@ public class Client
             copyWorker.setOnSucceeded(e -> {
                 pbBar.progressProperty().unbind();
                 pbBar.setStyle("-fx-accent: green;");
+            });
+            copyWorker.setOnFailed(e -> {
+                pbBar.progressProperty().unbind();
+                pbBar.setStyle("-fx-accent: red;");
             });
             new Thread(copyWorker).start();
             return true;

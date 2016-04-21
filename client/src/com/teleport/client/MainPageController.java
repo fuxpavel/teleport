@@ -3,7 +3,6 @@ package com.teleport.client;
 import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
 import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -20,9 +19,7 @@ import javafx.scene.text.Text;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import org.json.simple.parser.ParseException;
-
 import java.awt.*;
 import java.io.*;
 import java.net.URL;
@@ -81,7 +78,7 @@ public class MainPageController implements Initializable
         lblMsg.setTextFill(Color.FIREBRICK);
     }
 
-    @FXML protected void PushedButton()
+    @FXML protected void PressedButton()
     {
         butSend.setVisible(true);
     }
@@ -118,7 +115,6 @@ public class MainPageController implements Initializable
             if (mouseEvent.getClickCount() == 2 && lstViewContacts.getSelectionModel().getSelectedItem() != null)
             {
                 String receiver = lstViewContacts.getSelectionModel().getSelectedItem().toString();
-                lblSendFile.setText("");
                 List<String> paths = new ArrayList<>();
                 Stage stage = (Stage) butInbox.getScene().getWindow();
                 if(mouseEvent.getButton().equals(MouseButton.PRIMARY))
@@ -157,23 +153,16 @@ public class MainPageController implements Initializable
     {
         butDenial.setVisible(visible);
         butReceive.setVisible(visible);
-        clicked = !visible;
     }
 
     public void ReceiveFile(Event e) throws IOException, ParseException
     {
         VisibleButton(true);
+        clicked = false;
         String sender = senderName;
         if (e.getSource().toString().contains("Receive"))
         {
-            if (lblSendFile != null && pbSendFile != null)
-            {
-                lblSendFile.setText("");
-                // pbSendFile.setProgress(0);
-                //pbSendFile.setStyle("-fx-accent: blue;");
-                log.receive(sender, pbSendFile, lblSendFile, true);
-            }
-            else System.out.println("in ain page controller 5");
+            log.receive(sender, pbSendFile, lblSendFile, true);
         }
         else
         {
@@ -196,12 +185,13 @@ public class MainPageController implements Initializable
                     {
                         List<String> newIncoming;
                         Client client = new Client();
+                        clicked = true;
                         while (true)
                         {
                             newIncoming = client.getIncomingTransfers();
                             if (!newIncoming.isEmpty())
                             {
-                                if (!clicked)
+                                if (clicked)
                                 {
                                     for (String newSender : newIncoming)
                                     {
@@ -210,11 +200,13 @@ public class MainPageController implements Initializable
                                 }
                                 updateMessage(" " + senderName + " want send u file");
                                 VisibleButton(true);
+                                clicked = false;
                             }
                             else
                             {
                                 updateMessage("");
                                 VisibleButton(false);
+                                clicked = true;
                             }
                             Thread.sleep(15000);
                         }
@@ -227,11 +219,13 @@ public class MainPageController implements Initializable
                 thread.setDaemon(true);
                 thread.start();
             }
+
             catch (ParseException | IOException e)
             {
                 System.out.println("error in initialize");
                 lblMsg.setText("Error in initialize");
             }
+
         }
     }
 }
