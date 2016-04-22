@@ -2,7 +2,9 @@ package com.teleport.client;
 
 import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
+import javafx.event.ActionEvent;
 import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -11,7 +13,9 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
+import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
@@ -158,6 +162,28 @@ public class MainPageController implements Initializable
                         log.send(receiver, pbSendFile, lblSendFile, paths);
                     }
                 }
+            }
+            else if((mouseEvent.getButton().equals(MouseButton.SECONDARY)) && (mouseEvent.getClickCount() == 1 && lstViewContacts.getSelectionModel().getSelectedItem() != null))
+            {
+                final ContextMenu contextMenu = new ContextMenu();
+                MenuItem remove = new MenuItem("Remove");
+                remove.setOnAction(t -> {
+                    try
+                    {
+                        log.removeFriend(lstViewContacts.getSelectionModel().getSelectedItem().toString());
+                        lstViewContacts.setItems(FXCollections.observableList(log.getFriends()));
+                    }
+                    catch (IOException | ParseException e)
+                    {
+                        e.printStackTrace();
+                    }
+                });
+                contextMenu.getItems().addAll(remove);
+                lstViewContacts.setOnContextMenuRequested(event ->
+                {
+                    contextMenu.show(lstViewContacts, event.getScreenX(), event.getScreenY());
+                    event.consume();
+                });
             }
         }
     }

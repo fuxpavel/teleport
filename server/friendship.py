@@ -3,6 +3,24 @@ import falcon
 from db_accessor import *
 
 
+class RemoveFriendship(object):
+    def __init__(self):
+        self.db = get_friendship_db()
+
+    def on_post(self, req, resp):
+        userdata = json.loads(req.stream.read())
+        user = req.get_header('Authorization')
+        remove = userdata['remove']
+        if self.db.remove_friendship(user, remove):
+            status = 'success'
+        else:
+            status = 'failure'
+
+        resp.body = '{"status": "%s"}' % status
+        resp.content_type = 'application/json'
+        resp.status = falcon.HTTP_201
+
+
 class Friendship(object):
     def __init__(self):
         self.db = get_friend_request_db()

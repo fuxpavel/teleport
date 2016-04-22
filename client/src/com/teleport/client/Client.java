@@ -119,6 +119,14 @@ public class Client
         return getTransfers().get("outgoing");
     }
 
+    public boolean removeFriend(String remove) throws IOException, ParseException
+    {
+        HttpResponse response = friendshipHandler.removeFriend(remove);
+        String body = EntityUtils.toString(response.getEntity());
+        JSONObject json = (JSONObject) (new JSONParser().parse(body));
+        return json.get("status").equals("success");
+    }
+
     public boolean addFriend(String friend) throws IOException, ParseException
     {
         HttpResponse response = friendshipHandler.addFriend(friend);

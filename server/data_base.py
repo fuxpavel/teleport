@@ -216,6 +216,20 @@ class Friendship(Base):
         engine = engine if engine else get_engine()
         Base.metadata.create_all(engine)
 
+    def remove_friendship(self, user, remove, engine=None):
+        session = get_session(engine)
+        username = User().get_username_by_token(user)
+        if session.query(Friendship).filter_by(friend1=username, friend2=remove).all():
+            session.query(Friendship).filter_by(friend1=username, friend2=remove).delete()
+
+        elif session.query(Friendship).filter_by(friend1=remove, friend2=username).all():
+            session.query(Friendship).filter_by(friend1=remove, friend2=username).delete()
+        try:
+            session.commit()
+        except:
+            return False
+        return True
+
     def create_friendship(self, friend1, friend2, engine=None):
         session = get_session(engine)
         db = User()

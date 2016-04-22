@@ -25,6 +25,18 @@ public class PostLoginInterface
         return client;
     }
 
+    public String removeFriend(String remove) throws IOException, ParseException
+    {
+        if (client.removeFriend(remove))
+        {
+            return "Request sent";
+        }
+        else
+        {
+            return "Couldn't send request";
+        }
+    }
+
     public String addFriend(String friend) throws IOException, ParseException
     {
         if (client.addFriend(friend))

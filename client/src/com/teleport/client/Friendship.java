@@ -20,6 +20,7 @@ public class Friendship
     private RequestRetriever requestsRetriever;
     private RequestResponder requestResponder;
     private FriendsRetriever friendsRetriever;
+    private RemoveFriend removeFriend;
     private HttpClient httpClient;
     private Authorization authorizationHandler;
     private AddFriend addFriend;
@@ -30,11 +31,17 @@ public class Friendship
         httpClient = HttpClientBuilder.create().build();
         this.authorizationHandler = authorizationHandler;
         friendsAdder = new FriendsAdder();
+        removeFriend = new RemoveFriend();
         requestsRetriever = new RequestRetriever();
         requestResponder = new RequestResponder();
         friendsRetriever = new FriendsRetriever();
         addFriend = new AddFriend();
         logout = new Logout();
+    }
+
+    public HttpResponse removeFriend(String remove) throws IOException
+    {
+        return removeFriend.post(remove);
     }
 
     public HttpResponse addFriend(String friend) throws IOException
@@ -76,6 +83,25 @@ public class Friendship
             HttpPost request = new HttpPost(SERVER_URL);
             request.addHeader("Authorization", authorizationHandler.getToken());
             request.setHeader("Content-Type", "application/json");
+            return httpClient.execute(request);
+        }
+    }
+
+    private class RemoveFriend
+    {
+        private static final String SERVER_URL = "http://" + ADDRESS + ":" + PORT + "/api/friendship/remove";
+
+        public HttpResponse post(String remove) throws IOException
+        {
+            Map<String, String> map = new HashMap<>();
+            map.put("remove", remove);
+            JSONObject sendData = new JSONObject(map);
+
+            HttpPost request = new HttpPost(SERVER_URL);
+            request.addHeader("Authorization", authorizationHandler.getToken());
+            request.setHeader("Content-Type", "application/json");
+            StringEntity params = new StringEntity(sendData.toJSONString());
+            request.setEntity(params);
             return httpClient.execute(request);
         }
     }
