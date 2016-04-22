@@ -6,6 +6,7 @@ import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -43,6 +44,7 @@ public class MainPageController implements Initializable
     private String senderName;
     private PostLoginInterface log;
     private boolean clicked;
+    private Stage currentStage;
 
     public MainPageController() throws IOException
     {
@@ -59,6 +61,7 @@ public class MainPageController implements Initializable
         stage.setTitle("MainPage");
         stage.setScene(scene);
         stage.show();
+        currentStage = stage;
     }
 
     @FXML public void AddFriend() throws Exception
@@ -83,6 +86,13 @@ public class MainPageController implements Initializable
     @FXML protected void PressedButton()
     {
         butSend.setVisible(true);
+    }
+
+    public void Logout(Event event) throws IOException
+    {
+        ((Stage) butInbox.getScene().getWindow()).hide();
+        Stage stage = new Stage();
+        new LoginRegisterController().Login(stage);
     }
 
     @FXML protected void SwitchScreenInbox() throws IOException

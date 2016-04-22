@@ -1,7 +1,5 @@
 package com.teleport.client;
 
-import asg.cliche.Shell;
-import asg.cliche.ShellDependent;
 import org.json.simple.parser.ParseException;
 import java.io.IOException;
 

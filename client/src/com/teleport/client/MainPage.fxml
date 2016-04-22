@@ -33,7 +33,7 @@
               <MenuItem fx:id="general" mnemonicParsing="false" text="General" />
             </items>
             <items>
-              <MenuItem fx:id="logout" mnemonicParsing="false" text="Logout" />
+              <MenuItem fx:id="logout" mnemonicParsing="false" onAction="#Logout" text="Logout" />
             </items>
 		</Menu>
           <Menu mnemonicParsing="false" text="Profile">

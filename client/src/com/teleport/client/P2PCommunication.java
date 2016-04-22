@@ -169,6 +169,7 @@ public class P2PCommunication extends Thread
                         }
                         catch (IOException e)
                         {
+                            response = transferHandler.endTransfer(idConnection);
                             updateMessage(e.getMessage());
                             updateProgress(0,1);
                             e.printStackTrace();
@@ -247,6 +248,7 @@ public class P2PCommunication extends Thread
                     }
                     catch (IOException | ParseException e)
                     {
+                        HttpResponse response = transferHandler.endTransfer(idConnection);
                         updateMessage(e.getMessage());
                         updateProgress(0,1);
                         e.printStackTrace();
