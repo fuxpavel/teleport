@@ -106,6 +106,14 @@ public class Client
         return getTransfers().get("incoming");
     }
 
+    public boolean logout() throws IOException, ParseException
+    {
+        HttpResponse response = friendshipHandler.logout();
+        String body = EntityUtils.toString(response.getEntity());
+        JSONObject json = (JSONObject) (new JSONParser().parse(body));
+        return json.get("status").equals("success");
+    }
+
     public List<String> getOutgoingTransfers() throws IOException, ParseException
     {
         return getTransfers().get("outgoing");

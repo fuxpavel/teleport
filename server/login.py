@@ -3,6 +3,22 @@ import json
 from db_accessor import *
 
 
+class Logout(object):
+    def __init__(self):
+        self.db = get_user_db()
+
+    def on_post(self, req, resp):
+        user = req.get_header('Authorization')
+        if self.db.logout_user(user):
+            status = 'success'
+        else:
+            status = 'failure'
+
+        resp.body = '{"status": "%s"}' % status
+        resp.content_type = 'application/json'
+        resp.status = falcon.HTTP_201
+
+
 class Login(object):
     def __init__(self):
         self.db = get_user_db()
@@ -24,7 +40,7 @@ class Login(object):
 
         resp.body = '{"token": "%s", "status": "%s"}' % (token, status)
         resp.content_type = 'application/json'
-        resp.status = falcon.HTTP_200
+        resp.status = falcon.HTTP_201
 
 
 class Register(object):

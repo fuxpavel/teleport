@@ -23,6 +23,7 @@ public class Friendship
     private HttpClient httpClient;
     private Authorization authorizationHandler;
     private AddFriend addFriend;
+    private Logout logout;
 
     public Friendship(Authorization authorizationHandler) throws IOException
     {
@@ -33,6 +34,7 @@ public class Friendship
         requestResponder = new RequestResponder();
         friendsRetriever = new FriendsRetriever();
         addFriend = new AddFriend();
+        logout = new Logout();
     }
 
     public HttpResponse addFriend(String friend) throws IOException
@@ -58,6 +60,24 @@ public class Friendship
     public HttpResponse getFriends() throws IOException
     {
         return friendsRetriever.get();
+    }
+
+    public HttpResponse logout() throws IOException
+    {
+        return logout.post();
+    }
+
+    private class Logout
+    {
+        private static final String SERVER_URL = "http://" + ADDRESS + ":" + PORT + "/api/logout";
+
+        public HttpResponse post() throws IOException
+        {
+            HttpPost request = new HttpPost(SERVER_URL);
+            request.addHeader("Authorization", authorizationHandler.getToken());
+            request.setHeader("Content-Type", "application/json");
+            return httpClient.execute(request);
+        }
     }
 
     private class FriendsAdder

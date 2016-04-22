@@ -54,7 +54,20 @@ class User(Base):
     def login_user(self, username, password, engine=None):
         info = self.check_exist_user_username(username, engine)
         if info and info[0].password == password:
-            return self.set_token(username, engine)
+            token = str(random.randint(1, 1000))
+            return self.set_token(username, token, engine)
+        else:
+            return False
+
+    def logout_user(self, token, engine=None):
+        if self.check_exist_user_token(token):
+            if self.set_user_ip(token, None, engine):
+                if not self.set_token(self.get_username_by_token(token), None, engine):
+                    return True
+                else:
+                    return False
+            else:
+                return False
         else:
             return False
 
@@ -72,8 +85,7 @@ class User(Base):
         else:
             return False
 
-    def set_token(self, username, engine=None):
-        token = str(random.randint(1, 1000))
+    def set_token(self, username, token, engine=None):
         session = get_session(engine)
         if session.query(User).filter_by(username=username).update({"token": token}):
             try:

@@ -49,6 +49,18 @@ public class PostLoginInterface
         }
     }
 
+    public boolean logout() throws IOException, ParseException
+    {
+        if (client.logout())
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
     public List<String> getFriends() throws IOException, ParseException
     {
         return client.getFriends();
