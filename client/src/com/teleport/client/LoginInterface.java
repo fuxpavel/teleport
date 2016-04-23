@@ -5,9 +5,9 @@ import java.io.IOException;
 
 public class LoginInterface
 {
-    public String register(String username, String password) throws IOException, ParseException
+    public String register(String username, String password, String confirm) throws IOException, ParseException
     {
-        if (client.register(username, password))
+        if (client.register(username, password, confirm))
         {
             return "Registered successfully";
         }

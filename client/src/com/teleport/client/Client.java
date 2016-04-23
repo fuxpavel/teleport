@@ -32,9 +32,9 @@ public class Client
         transferHandler = new Transfer(authorizationHandler);
     }
 
-    public boolean register(String username, String password) throws IOException, ParseException
+    public boolean register(String username, String password, String confirm) throws IOException, ParseException
     {
-        HttpResponse response = signingHandler.register(username, password);
+        HttpResponse response = signingHandler.register(username, password, confirm);
         String body = EntityUtils.toString(response.getEntity());
         JSONObject json = (JSONObject) (new JSONParser().parse(body));
         return json.get("status").equals("success");

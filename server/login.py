@@ -51,8 +51,9 @@ class Register(object):
         userdata = json.loads(req.stream.read())
         username = userdata['username']
         password = userdata['password']
+        confirm = userdata['confirm']
 
-        if self.db.register_user(username, password):
+        if self.db.register_user(username, password, confirm):
             status = 'success'
         else:
             status = 'failure'

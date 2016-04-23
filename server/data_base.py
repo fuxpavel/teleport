@@ -31,15 +31,18 @@ class User(Base):
         engine = engine if engine else get_engine()
         Base.metadata.create_all(engine)
 
-    def register_user(self, username, password, engine=None):
+    def register_user(self, username, password, confirm, engine=None):
         session = get_session(engine)
-        new_user = User(username=username, password=password)
-        session.add(new_user)
-        try:
-            session.commit()
-        except:
+        if confirm == password:
+            new_user = User(username=username, password=password)
+            session.add(new_user)
+            try:
+                session.commit()
+            except:
+                return False
+            return True
+        else:
             return False
-        return True
 
     def username_like(self, name, reply, engine=None):
         username = []

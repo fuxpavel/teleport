@@ -7,6 +7,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -18,8 +19,8 @@ public class LoginRegisterController
     private LoginInterface log;
     @FXML private Label lblMsg;
     @FXML private TextField txtUsername;
-    @FXML private TextField txtPassword;
-    @FXML private TextField txtConfirmPassword;
+    @FXML private PasswordField txtPassword;
+    @FXML private PasswordField txtConfirmPassword;
     @FXML private Button butSwitch;
 
     public LoginRegisterController() throws IOException
@@ -75,7 +76,7 @@ public class LoginRegisterController
     }
     @FXML protected void SubmitRegister() throws IOException, org.json.simple.parser.ParseException
     {
-        String status = log.register(txtUsername.getText(), txtPassword.getText());
+        String status = log.register(txtUsername.getText(), txtPassword.getText(), txtConfirmPassword.getText());
         lblMsg.setText(status);
         lblMsg.setTextFill(Color.FIREBRICK);
     }
