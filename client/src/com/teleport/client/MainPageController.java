@@ -29,6 +29,7 @@ import java.io.*;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class MainPageController implements Initializable
@@ -170,8 +171,14 @@ public class MainPageController implements Initializable
                 remove.setOnAction(t -> {
                     try
                     {
-                        log.removeFriend(lstViewContacts.getSelectionModel().getSelectedItem().toString());
-                        lstViewContacts.setItems(FXCollections.observableList(log.getFriends()));
+                        String contact = lstViewContacts.getSelectionModel().getSelectedItem().toString();
+                        Alert alert = new Alert(Alert.AlertType.NONE, "Remove '"+contact+"' from your friends list?", ButtonType.APPLY, ButtonType.CANCEL);
+                        Optional<ButtonType> result  = alert.showAndWait();
+                        if (result .get() == ButtonType.APPLY)
+                        {
+                            log.removeFriend(contact);
+                            lstViewContacts.setItems(FXCollections.observableList(log.getFriends()));
+                        }
                     }
                     catch (IOException | ParseException e)
                     {
