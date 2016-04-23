@@ -1,6 +1,7 @@
 package com.teleport.client;
 
 import javafx.concurrent.Task;
+import javafx.util.Pair;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
 import org.json.simple.JSONObject;
@@ -10,6 +11,9 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.EmptyStackException;
 import java.util.List;
 import static com.teleport.client.Protocol.*;
@@ -164,11 +168,16 @@ public class P2PCommunication extends Thread
                                             out.flush();
                                         }
                                         sock.close();
-                                    } else
+                                    }
+                                    else
                                     {
                                         sock.close();
                                     }
                                     in.close();
+                                    if(new Authorization().getZip())
+                                    {
+                                        Files.delete(Paths.get(GetFileName()));
+                                    }
                                 }
                             }
                         }
@@ -223,8 +232,8 @@ public class P2PCommunication extends Thread
                                 buf = new byte[BUF_SIZE];
                                 out.write((P2P_ANS_CONNECT_REQUEST + ":" + P2P_POSITIVE_ANS + "::").getBytes());
                                 out.flush();
-                                System.out.println("path: " + authorizationHandler.getPath() + "\\" + fileName);
-                                FileOutputStream fos = new FileOutputStream(authorizationHandler.getPath() + "\\" + fileName);
+                                String location = authorizationHandler.getPath() + "\\" + fileName;
+                                FileOutputStream fos = new FileOutputStream(location);
                                 while ((len = in.read(buf)) > 0)
                                 {
                                     currentSize = currentSize + len;
@@ -241,6 +250,10 @@ public class P2PCommunication extends Thread
                                 sock.close();
                                 long endTime = System.currentTimeMillis();
                                 System.out.println(endTime - startTime);//convert from millisec to min
+                                if(authorizationHandler.getOpen())
+                                {
+                                    Runtime.getRuntime().exec("explorer.exe /select," + location);
+                                }
                             }
                             else
                             {
