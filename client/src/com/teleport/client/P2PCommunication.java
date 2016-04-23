@@ -31,14 +31,16 @@ public class P2PCommunication extends Thread
     private Transfer transferHandler;
     private float percent;
     private String receiver;
+    private String ip_receiver;
 
-    public P2PCommunication(String recv, List<String> path, Transfer transfer)
+    public P2PCommunication(String recv, List<String> path, Transfer transfer, String ip_recv)
     {
         //sender
         paths = path;
         currentSize = 0;
         receiver = recv;
         transferHandler = transfer;
+        ip_receiver = ip_recv;
     }
 
     public P2PCommunication(String recv, String send, boolean chose, Transfer transfer)
@@ -128,43 +130,46 @@ public class P2PCommunication extends Thread
                         {
                             try (Socket sock = serverSock.accept())
                             {
-                                File myFile = new File(compress);
-                                BufferedInputStream in1 = new BufferedInputStream(new FileInputStream(myFile));
-                                InputStream in = sock.getInputStream();
-                                OutputStream out = sock.getOutputStream();
-                                byte[] buf = new byte[BUF_SIZE];
-                                if (first)
+                                String ip = sock.getRemoteSocketAddress().toString().split(":")[0].replace("/", "");
+                                if (ip.equals(ip_receiver))
                                 {
-                                    out.write((P2P_CONNECT_REQUEST + ":" + P2P_AMOUT_OF_FILES + ":" + paths.size() + ":" + idConnection.toString() + "::").getBytes("UTF-8"));
-                                    out.flush();
-                                    first = false;
-                                }
-
-                                int count;
-                                fileName = compress.substring(compress.lastIndexOf("\\") + 1);
-                                fileSize = (int) myFile.length();
-                                out.write((P2P_SEND_FILE + ":" + fileName + ":" + sizeToString(myFile.length()) + "::").getBytes("UTF-8"));
-                                out.flush();
-                                in.read(buf);
-
-                                if (new String(buf, StandardCharsets.UTF_8).substring(0, 9).equals(P2P_ANS_CONNECT_REQUEST + ":" + P2P_POSITIVE_ANS + "::"))
-                                {
-                                    while ((count = in1.read(buf)) > 0)
+                                    File myFile = new File(compress);
+                                    BufferedInputStream in1 = new BufferedInputStream(new FileInputStream(myFile));
+                                    InputStream in = sock.getInputStream();
+                                    OutputStream out = sock.getOutputStream();
+                                    byte[] buf = new byte[BUF_SIZE];
+                                    if (first)
                                     {
-                                        out.write(buf, 0, count);
-                                        currentSize = currentSize + count;
-                                        updateProgress(GetCurrentSize(), GetFileSize());
-                                        percent = (float) GetCurrentSize() / (float) GetFileSize();
-                                        updateMessage(" send " + GetFileName() + " to " + receiver + " | " + String.format("%.0f", percent * 100) + "%");
+                                        out.write((P2P_CONNECT_REQUEST + ":" + P2P_AMOUT_OF_FILES + ":" + paths.size() + ":" + idConnection.toString() + "::").getBytes("UTF-8"));
                                         out.flush();
+                                        first = false;
                                     }
-                                    sock.close();
+
+                                    int count;
+                                    fileName = compress.substring(compress.lastIndexOf("\\") + 1);
+                                    fileSize = (int) myFile.length();
+                                    out.write((P2P_SEND_FILE + ":" + fileName + ":" + sizeToString(myFile.length()) + "::").getBytes("UTF-8"));
+                                    out.flush();
+                                    in.read(buf);
+
+                                    if (new String(buf, StandardCharsets.UTF_8).substring(0, 9).equals(P2P_ANS_CONNECT_REQUEST + ":" + P2P_POSITIVE_ANS + "::"))
+                                    {
+                                        while ((count = in1.read(buf)) > 0)
+                                        {
+                                            out.write(buf, 0, count);
+                                            currentSize = currentSize + count;
+                                            updateProgress(GetCurrentSize(), GetFileSize());
+                                            percent = (float) GetCurrentSize() / (float) GetFileSize();
+                                            updateMessage(" send " + GetFileName() + " to " + receiver + " | " + String.format("%.0f", percent * 100) + "%");
+                                            out.flush();
+                                        }
+                                        sock.close();
+                                    } else
+                                    {
+                                        sock.close();
+                                    }
+                                    in.close();
                                 }
-                                else
-                                {
-                                    sock.close();
-                                }
-                                in.close();
                             }
                         }
                         catch (IOException e)

@@ -164,9 +164,10 @@ public class Client
         return ((String) json.get("ip"));
     }
 
-    public boolean sendFile(String receiver, ProgressBar pbBar, Text lbl, List<String> paths)
+    public boolean sendFile(String receiver, ProgressBar pbBar, Text lbl, List<String> paths) throws IOException, ParseException
     {
-        P2PCommunication sender = new P2PCommunication(receiver, paths, transferHandler);
+        String ip_recv = get_sender_ip(receiver);
+        P2PCommunication sender = new P2PCommunication(receiver, paths, transferHandler, ip_recv);
         copyWorker = sender.createWorker();
         pbBar.progressProperty().unbind();
         pbBar.setStyle("-fx-accent: blue;");
