@@ -214,10 +214,12 @@ public class P2PCommunication extends Thread
                             long startTime = System.currentTimeMillis();
                             if (choose)
                             {
+                                Authorization authorizationHandler = new Authorization();
                                 buf = new byte[BUF_SIZE];
                                 out.write((P2P_ANS_CONNECT_REQUEST + ":" + P2P_POSITIVE_ANS + "::").getBytes());
                                 out.flush();
-                                FileOutputStream fos = new FileOutputStream(  fileName);
+                                System.out.println("path: " + authorizationHandler.getPath() + "\\" + fileName);
+                                FileOutputStream fos = new FileOutputStream(authorizationHandler.getPath() + "\\" + fileName);
                                 while ((len = in.read(buf)) > 0)
                                 {
                                     currentSize = currentSize + len;

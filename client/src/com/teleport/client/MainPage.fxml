@@ -28,9 +28,9 @@
    <top>
       <MenuBar fx:id="MenuBar" BorderPane.alignment="CENTER">
         <menus>
-          <Menu mnemonicParsing="false" text="Settings">
+          <Menu mnemonicParsing="false" text="General">
             <items>
-              <MenuItem fx:id="general" mnemonicParsing="false" text="General" />
+              <MenuItem fx:id="settings" mnemonicParsing="false" onAction="#OpenSettings" text="Settings" />
             </items>
             <items>
               <MenuItem fx:id="logout" mnemonicParsing="false" onAction="#Logout" text="Logout" />

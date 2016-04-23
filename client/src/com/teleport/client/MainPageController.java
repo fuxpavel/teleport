@@ -2,9 +2,7 @@ package com.teleport.client;
 
 import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
-import javafx.event.ActionEvent;
 import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -15,7 +13,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
-import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
@@ -48,10 +45,12 @@ public class MainPageController implements Initializable
     private String senderName;
     private PostLoginInterface log;
     private boolean clicked;
+    private boolean view;
 
     public MainPageController() throws IOException
     {
         log = new PostLoginInterface();
+        view = true;
     }
 
     public void MainPage(Stage stage) throws IOException
@@ -76,6 +75,15 @@ public class MainPageController implements Initializable
         stage.show();
     }
 
+    @FXML public void OpenSettings() throws IOException
+    {
+        Stage stage = new Stage();
+        Parent root = FXMLLoader.load(getClass().getResource("Settings.fxml"));
+        Scene scene = new Scene(root);
+        stage.setTitle("Settings");
+        stage.setScene(scene);
+        stage.show();
+    }
     @FXML protected void SendFriendRequest() throws IOException, ParseException
     {
         if (lstViewUsername.getSelectionModel().getSelectedItem() != null)
@@ -128,9 +136,10 @@ public class MainPageController implements Initializable
 
     public void SendFileBeUsername(MouseEvent mouseEvent) throws IOException, ParseException
     {
+        //boolean view = true;
         if (lstViewContacts != null && lstViewContacts.getItems().size() > 0 && (mouseEvent.getButton().equals(MouseButton.PRIMARY) || mouseEvent.getButton().equals(MouseButton.SECONDARY)))
         {
-            if (mouseEvent.getClickCount() == 2 && lstViewContacts.getSelectionModel().getSelectedItem() != null)
+            if (mouseEvent.getClickCount() >= 2 && lstViewContacts.getSelectionModel().getSelectedItem() != null)
             {
                 String receiver = lstViewContacts.getSelectionModel().getSelectedItem().toString();
                 List<String> paths = new ArrayList<>();
@@ -164,7 +173,7 @@ public class MainPageController implements Initializable
                     }
                 }
             }
-            else if((mouseEvent.getButton().equals(MouseButton.SECONDARY)) && (mouseEvent.getClickCount() == 1 && lstViewContacts.getSelectionModel().getSelectedItem() != null))
+            else if((mouseEvent.getButton().equals(MouseButton.SECONDARY)) && view && (mouseEvent.getClickCount() == 1 && lstViewContacts.getSelectionModel().getSelectedItem() != null))
             {
                 final ContextMenu contextMenu = new ContextMenu();
                 MenuItem remove = new MenuItem("Remove");
@@ -178,6 +187,7 @@ public class MainPageController implements Initializable
                         {
                             log.removeFriend(contact);
                             lstViewContacts.setItems(FXCollections.observableList(log.getFriends()));
+                            view = true;
                         }
                     }
                     catch (IOException | ParseException e)
@@ -188,6 +198,7 @@ public class MainPageController implements Initializable
                 contextMenu.getItems().addAll(remove);
                 lstViewContacts.setOnContextMenuRequested(event ->
                 {
+                    view = false;
                     contextMenu.show(lstViewContacts, event.getScreenX(), event.getScreenY());
                     event.consume();
                 });
@@ -243,9 +254,10 @@ public class MainPageController implements Initializable
                                     {
                                         senderName = newSender;
                                     }
+
+                                    updateMessage(" " + senderName + " want send u file");
+                                    VisibleButton(true);
                                 }
-                                updateMessage(" " + senderName + " want send u file");
-                                VisibleButton(true);
                                 clicked = false;
                             }
                             else
