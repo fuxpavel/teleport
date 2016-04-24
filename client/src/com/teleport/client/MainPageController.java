@@ -136,10 +136,9 @@ public class MainPageController implements Initializable
 
     public void SendFileBeUsername(MouseEvent mouseEvent) throws IOException, ParseException
     {
-        //boolean view = true;
-        if (lstViewContacts != null && lstViewContacts.getItems().size() > 0 && (mouseEvent.getButton().equals(MouseButton.PRIMARY) || mouseEvent.getButton().equals(MouseButton.SECONDARY)))
+        if (lstViewContacts.getSelectionModel().getSelectedItem() != null && lstViewContacts.getItems().size() > 0 && (mouseEvent.getButton().equals(MouseButton.PRIMARY) || mouseEvent.getButton().equals(MouseButton.SECONDARY)))
         {
-            if (mouseEvent.getClickCount() >= 2 && lstViewContacts.getSelectionModel().getSelectedItem() != null)
+            if (mouseEvent.getClickCount() >= 2)
             {
                 String receiver = lstViewContacts.getSelectionModel().getSelectedItem().toString();
                 List<String> paths = new ArrayList<>();
@@ -167,13 +166,12 @@ public class MainPageController implements Initializable
                     File files = directoryChooserChooser.showDialog(stage);
                     if(files != null)
                     {
-                        System.out.println(files.getPath());
                         paths.add(files.getPath());
                         log.send(receiver, pbSendFile, lblSendFile, paths);
                     }
                 }
             }
-            else if((mouseEvent.getButton().equals(MouseButton.SECONDARY)) && view && (mouseEvent.getClickCount() == 1 && lstViewContacts.getSelectionModel().getSelectedItem() != null))
+            else if((mouseEvent.getButton().equals(MouseButton.SECONDARY)) && view && (mouseEvent.getClickCount() == 1))
             {
                 final ContextMenu contextMenu = new ContextMenu();
                 MenuItem remove = new MenuItem("Remove");
@@ -240,6 +238,8 @@ public class MainPageController implements Initializable
                     @Override
                     public Void call() throws InterruptedException, IOException, ParseException
                     {
+                        String[] msg;
+                        String fileSize = "", fileName = "";
                         List<String> newIncoming;
                         Client client = new Client();
                         clicked = true;
@@ -252,15 +252,16 @@ public class MainPageController implements Initializable
                                 {
                                     for (String newSender : newIncoming)
                                     {
-                                        senderName = newSender;
+                                        msg = newSender.split(":");
+                                        senderName = msg[0];
+                                        fileName = msg[1];
+                                        fileSize = msg[2];
                                     }
-
-                                    updateMessage(" " + senderName + " want send u file");
+                                    updateMessage(senderName + " wand send you " + fileName + " " + fileSize + " do you want to get it?");
                                     VisibleButton(true);
                                 }
                                 clicked = false;
-                            }
-                            else
+                            } else
                             {
                                 updateMessage("");
                                 VisibleButton(false);

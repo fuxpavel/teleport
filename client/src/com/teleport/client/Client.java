@@ -10,7 +10,13 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.SocketTimeoutException;
+import java.nio.file.FileSystemException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -169,22 +175,39 @@ public class Client
         String ip_recv = get_sender_ip(receiver);
         P2PCommunication sender = new P2PCommunication(receiver, paths, transferHandler, ip_recv);
         copyWorker = sender.createWorker();
-        pbBar.progressProperty().unbind();
         pbBar.setStyle("-fx-accent: blue;");
         pbBar.progressProperty().bind(copyWorker.progressProperty());
-        new Thread(copyWorker).start();
         lbl.textProperty().bind(copyWorker.messageProperty());
+        new Thread(copyWorker).start();
         copyWorker.setOnSucceeded(e ->
         {
             lbl.textProperty().unbind();
-            lbl.setText("");
-        });
-        copyWorker.setOnSucceeded(e ->
-        {
-            pbBar.progressProperty().unbind();
             pbBar.setStyle("-fx-accent: green;");
+            try
+            {
+                if(new Authorization().getZip())
+                {
+                    try
+                    {
+                        Files.delete(Paths.get(paths.get(0)));
+                    }
+                    catch (FileNotFoundException e1)
+                    {
+                        lbl.setText("File not found");
+                    }
+                    catch (FileSystemException e1)
+                    {
+                        lbl.setText("Use by other process");
+                    }
+                }
+            }
+            catch (IOException e1)
+            {
+                e1.printStackTrace();
+            }
         });
-        copyWorker.setOnFailed(e -> {
+        copyWorker.setOnFailed(e ->
+        {
             pbBar.progressProperty().unbind();
             pbBar.setStyle("-fx-accent: red;");
         });

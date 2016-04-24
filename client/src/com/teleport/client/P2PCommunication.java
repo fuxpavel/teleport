@@ -10,6 +10,7 @@ import org.json.simple.parser.ParseException;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -121,10 +122,13 @@ public class P2PCommunication extends Thread
                     {
                         path = path1;
                     }
-                    updateMessage(" zipping...");
+                    updateMessage("zipping...");
                     String compress = Compress.Compression(path);
-                    updateMessage(" ready");
-                    HttpResponse response = transferHandler.beginTransfer(receiver);
+                    updateMessage("ready");
+                    File myFile = new File(compress);
+                    fileName = compress.substring(compress.lastIndexOf("\\") + 1);
+                    fileSize = (int) myFile.length();
+                    HttpResponse response = transferHandler.beginTransfer(receiver, fileName, sizeToString(myFile.length()));
                     String body = EntityUtils.toString(response.getEntity());
                     JSONObject json = (JSONObject) (new JSONParser().parse(body));
                     if (json.get("status").equals("success"))
@@ -132,12 +136,12 @@ public class P2PCommunication extends Thread
                         idConnection = json.get("id").toString();
                         try (ServerSocket serverSock = new ServerSocket(PORT))
                         {
+                            serverSock.setSoTimeout(new Authorization().getTimeout()*60000);
                             try (Socket sock = serverSock.accept())
                             {
                                 String ip = sock.getRemoteSocketAddress().toString().split(":")[0].replace("/", "");
                                 if (ip.equals(ip_receiver))
                                 {
-                                    File myFile = new File(compress);
                                     BufferedInputStream in1 = new BufferedInputStream(new FileInputStream(myFile));
                                     InputStream in = sock.getInputStream();
                                     OutputStream out = sock.getOutputStream();
@@ -148,10 +152,7 @@ public class P2PCommunication extends Thread
                                         out.flush();
                                         first = false;
                                     }
-
                                     int count;
-                                    fileName = compress.substring(compress.lastIndexOf("\\") + 1);
-                                    fileSize = (int) myFile.length();
                                     out.write((P2P_SEND_FILE + ":" + fileName + ":" + sizeToString(myFile.length()) + "::").getBytes("UTF-8"));
                                     out.flush();
                                     in.read(buf);
@@ -174,11 +175,23 @@ public class P2PCommunication extends Thread
                                         sock.close();
                                     }
                                     in.close();
+                                    out.close();
+                                    /*
                                     if(new Authorization().getZip())
                                     {
-                                        Files.delete(Paths.get(GetFileName()));
+                                        //do execption
+                                        System.out.println(compress);
+                                        Files.delete(Paths.get(compress));
                                     }
+                                    */
                                 }
+                            }
+                            catch (SocketTimeoutException e)
+                            {
+                                //// FIXME: 24/04/2016   add to inbox. recvier not respones
+                                response = transferHandler.endTransfer(idConnection);
+                                updateMessage(e.getMessage());
+                                updateProgress(0,1);
                             }
                         }
                         catch (IOException e)
@@ -224,8 +237,6 @@ public class P2PCommunication extends Thread
                         {
                             fileName = input[1];
                             fileSize = sizeToInt(input[2]);
-                            System.out.println("want send you a file " + fileSize + " " + fileName + " do you want to get it? (y/n)");
-                            long startTime = System.currentTimeMillis();
                             if (choose)
                             {
                                 Authorization authorizationHandler = new Authorization();
@@ -248,8 +259,6 @@ public class P2PCommunication extends Thread
                                 updateMessage(" receive " + GetFileName() + " from " + receiver + " | " + String.format("%.0f", percent * 100) + "%");
                                 fos.close();
                                 sock.close();
-                                long endTime = System.currentTimeMillis();
-                                System.out.println(endTime - startTime);//convert from millisec to min
                                 if(authorizationHandler.getOpen())
                                 {
                                     Runtime.getRuntime().exec("explorer.exe /select," + location);

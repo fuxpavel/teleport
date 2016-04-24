@@ -15,6 +15,7 @@ public class Authorization
     private String path;
     private boolean zip;
     private boolean open;
+    private int timeout;
 
     public Authorization() throws IOException
     {
@@ -45,6 +46,10 @@ public class Authorization
                 else if (keyValue[0].equals("open"))
                 {
                     this.open = Boolean.parseBoolean(keyValue[1]);
+                }
+                else if(keyValue[0].equals("timeout"))
+                {
+                    this.timeout = Integer.parseInt(keyValue[1]);
                 }
             }
         }
@@ -100,6 +105,23 @@ public class Authorization
             content = content.replaceAll("open\"" + oldOpen, "open\"" + this.open);
             Files.write(file, content.getBytes(StandardCharsets.UTF_8));
         }
+    }
+    public void setTimeout(int newTimeout) throws IOException
+    {
+        Path file = Paths.get(fileName);
+        if (Files.exists(file))
+        {
+            String content = new String(Files.readAllBytes(file), StandardCharsets.UTF_8);
+            int oldTimeout = this.timeout;
+            this.timeout = newTimeout;
+            content = content.replaceAll("timeout\"" + oldTimeout, "timeout\"" + this.timeout);
+            Files.write(file, content.getBytes(StandardCharsets.UTF_8));
+        }
+    }
+
+    public int getTimeout()
+    {
+        return this.timeout;
     }
 
     public boolean getOpen()

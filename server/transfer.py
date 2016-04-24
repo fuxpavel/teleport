@@ -10,10 +10,12 @@ class Transfer(object):
     def on_post(self, req, resp):
         user = req.get_header('Authorization')
         data = json.loads(req.stream.read())
-        other_user = data['user']
         action = data['action']
         if action == 'begin':
-            id = self.dbt.add_transfer(user, other_user)
+            other_user = data['user']
+            file_name = data['fileName']
+            file_size = data['fileSize']
+            id = self.dbt.add_transfer(user, other_user, file_name, file_size)
             if id != -1:
                 status = 'success'
             else:
@@ -21,7 +23,8 @@ class Transfer(object):
             resp.body = '{"status": "%s", "id": "%s"}' % (status, id)
 
         elif action == 'end':
-            if self.dbt.end_transfer(user, other_user):
+            id_connection = data['id']
+            if self.dbt.end_transfer(id_connection):
                 status = 'success'
             else:
                 status = 'failure'

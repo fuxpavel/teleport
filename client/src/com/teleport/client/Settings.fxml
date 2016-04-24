@@ -5,9 +5,9 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="209.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.teleport.client.SettingsController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="232.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.teleport.client.SettingsController">
    <children>
-      <GridPane alignment="CENTER" layoutX="25.0" layoutY="24.0" prefHeight="142.0" prefWidth="546.0">
+      <GridPane alignment="CENTER" layoutX="25.0" layoutY="24.0" prefHeight="60.0" prefWidth="546.0">
         <columnConstraints>
           <ColumnConstraints hgrow="SOMETIMES" maxWidth="268.0" minWidth="10.0" prefWidth="135.0" />
           <ColumnConstraints hgrow="SOMETIMES" maxWidth="374.0" minWidth="10.0" prefWidth="284.0" />
@@ -16,7 +16,6 @@
         <rowConstraints>
             <RowConstraints maxHeight="192.0" minHeight="10.0" prefHeight="15.0" vgrow="SOMETIMES" />
           <RowConstraints maxHeight="192.0" minHeight="10.0" prefHeight="59.0" vgrow="SOMETIMES" />
-          <RowConstraints maxHeight="190.0" minHeight="10.0" prefHeight="122.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
             <VBox alignment="CENTER" GridPane.rowIndex="1">
@@ -30,13 +29,12 @@
                   <Button fx:id="butBrowse" alignment="CENTER" mnemonicParsing="false" onAction="#BrowseActive" text="Browse" textAlignment="CENTER" GridPane.columnIndex="2" GridPane.rowIndex="1" />
                </children>
             </VBox>
-            <VBox alignment="CENTER" GridPane.rowIndex="2">
-               <children>
-                  <CheckBox fx:id="cbxSaveZip" mnemonicParsing="false" onAction="#CheckedSaveZip" text="Save zip file" GridPane.rowIndex="2" />
-               </children>
-            </VBox>
          </children>
       </GridPane>
-      <CheckBox fx:id="cbxOpenPath" layoutX="48.0" layoutY="166.0" mnemonicParsing="false" onAction="#CheckedOpenLocation" prefHeight="17.0" prefWidth="321.0" text="Open in new windown the location of the received file" />
+      <CheckBox fx:id="cbxOpenPath" layoutX="48.0" layoutY="151.0" mnemonicParsing="false" onAction="#CheckedOpenLocation" prefHeight="17.0" prefWidth="321.0" text="Open in new windown the location of the received file" />
+      <VBox alignment="CENTER" layoutX="-23.0" layoutY="130.0" />
+      <CheckBox fx:id="cbxSaveZip" layoutX="48.0" layoutY="110.0" mnemonicParsing="false" onAction="#CheckedSaveZip" text="Delete zip file after sending" />
+      <SplitMenuButton fx:id="ddlTimeout" layoutX="48.0" layoutY="187.0" mnemonicParsing="false" text="Chose timeout">
+      </SplitMenuButton>
    </children>
 </Pane>

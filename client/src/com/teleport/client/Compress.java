@@ -24,7 +24,6 @@ public class Compress
     public static String ParseFileName(String inputFile)
     {
         File file = new File(inputFile);
-        System.out.println(inputFile);
         if (CheckAlreadyCompress(inputFile))
         {
             if (file.isFile())

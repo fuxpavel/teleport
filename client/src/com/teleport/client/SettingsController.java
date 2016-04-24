@@ -1,9 +1,10 @@
 package com.teleport.client;
 
+import javafx.event.ActionEvent;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,6 +20,7 @@ public class SettingsController implements Initializable
     @FXML private CheckBox cbxSaveZip;
     @FXML private CheckBox cbxOpenPath;
     @FXML private Button butBrowse;
+    @FXML private SplitMenuButton ddlTimeout;
     private Authorization authorization;
 
     public SettingsController() throws IOException
@@ -53,8 +55,27 @@ public class SettingsController implements Initializable
     @Override
     public void initialize(URL url, ResourceBundle rb)
     {
+        ddlTimeout.setText("Timeout: "+authorization.getTimeout());
+        MenuItem[] menuItems = new MenuItem[10];
+        for (int i =1;i<= 10; i++)
+        {
+            menuItems[i-1] = new MenuItem(Integer.toString(i));
+            menuItems[i-1].setOnAction(e -> {
+                MenuItem mItem = (MenuItem) e.getSource();
+                try
+                {
+                    authorization.setTimeout(Integer.parseInt(mItem.getText()));
+                    ddlTimeout.setText("Timeout: "+authorization.getTimeout());
+                }
+                catch (IOException e1)
+                {
+                    e1.printStackTrace();
+                }
+            });
+        }
         txtDefaultPath.setText(authorization.getPath());
         cbxSaveZip.setSelected(authorization.getZip());
         cbxOpenPath.setSelected(authorization.getOpen());
+        ddlTimeout.getItems().addAll(menuItems);
     }
 }

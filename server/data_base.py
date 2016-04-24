@@ -51,7 +51,7 @@ class User(Base):
         for name in names:
             username.append(name.username)
         lst = set(username) - set(Friendship().get_friends_list(reply))
-        lst = lst - set(User().get_username_by_token(reply))
+        ##fix. this shit not remove itself from friends list
         return list(lst)
 
     def login_user(self, username, password, engine=None):
@@ -188,7 +188,8 @@ class FriendRequest(Base):
         if db.check_exist_user_token(sender, engine) and db.check_exist_user_username(reply, engine) and \
                         db.get_username_by_token(sender) != reply:
             sender = db.get_username_by_token(sender, engine)
-            if not f.check_friendship(sender, reply, engine) and not (self.check_friend_request(sender, reply, engine) or self.check_friend_request(reply, sender, engine)):
+            if not f.check_friendship(sender, reply, engine) and not (
+                self.check_friend_request(sender, reply, engine) or self.check_friend_request(reply, sender, engine)):
                 new_request = FriendRequest(sender=sender, reply=reply)
                 session.add(new_request)
                 try:
@@ -279,12 +280,14 @@ class Tranfsers(Base):
     id = Column(Integer, primary_key=True)
     sender = Column(String, ForeignKey(User.token))
     receiver = Column(String, ForeignKey(User.token))
+    file_name = Column(String)
+    file_size = Column(String)
 
     def init_data_base(self, engine=None):
         engine = engine if engine else get_engine()
         Base.metadata.create_all(engine)
 
-    def add_transfer(self, sender_token, receiver_name, engine=None):
+    def add_transfer(self, sender_token, receiver_name, file_name, file_size, engine=None):
         session = get_session(engine)
         users_table = User()
         friendships_table = Friendship()
@@ -295,7 +298,8 @@ class Tranfsers(Base):
             sender_name = users_table.get_username_by_token(sender_token, engine)
             if friendships_table.check_friendship(sender_name, receiver_name, engine):
                 if not transfers_table.check_transfer(sender_name, receiver_name):
-                    new_transfer = Tranfsers(sender=sender_name, receiver=receiver_name)
+                    new_transfer = Tranfsers(sender=sender_name, receiver=receiver_name, file_name=file_name,
+                                             file_size=file_size)
                     session.add(new_transfer)
                     try:
                         session.commit()
@@ -303,7 +307,7 @@ class Tranfsers(Base):
                         return -1
                 a = session.query(Tranfsers).filter_by(sender=sender_name, receiver=receiver_name).all()
                 if a:
-                    return a[len(a)-1].id
+                    return a[len(a) - 1].id
                 else:
                     return -1
             else:
@@ -311,9 +315,9 @@ class Tranfsers(Base):
         else:
             return -1
 
-    def end_transfer(self, sender_token, receiver, engine=None):
+    def end_transfer(self, id_transfer, engine=None):
         session = get_session(engine)
-        session.query(Tranfsers).filter_by(id=receiver).delete()
+        session.query(Tranfsers).filter_by(id=id_transfer).delete()
         try:
             session.commit()
         except:
@@ -327,7 +331,7 @@ class Tranfsers(Base):
         incoming = session.query(Tranfsers).filter_by(receiver=user).all()
         lst = []
         for i in incoming:
-            lst += [i.sender]
+            lst += [i.sender + ":" + i.file_size + ":" + i.file_name]
         return lst
 
     def get_outgoing_transfers(self, user, engine=None):

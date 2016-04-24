@@ -32,14 +32,14 @@ public class Transfer
         switchIP = new SwitchIP();
     }
 
-    public HttpResponse beginTransfer(String receiver) throws IOException
+    public HttpResponse beginTransfer(String receiver, String fileName, String fileSize) throws IOException
     {
-        return transferTracker.postBegin(receiver);
+        return transferTracker.postBegin(receiver, fileName, fileSize);
     }
 
-    public HttpResponse endTransfer(String receiver) throws IOException
+    public HttpResponse endTransfer(String idConnection) throws IOException
     {
-        return transferTracker.postEnd(receiver);
+        return transferTracker.postEnd(idConnection);
     }
 
     public HttpResponse getTransfers() throws IOException
@@ -56,11 +56,13 @@ public class Transfer
     {
         private static final String SERVER_URL = "http://" + ADDRESS + ":" + PORT + "/api/transfer/";
 
-        public HttpResponse postBegin(String receiver) throws IOException
+        public HttpResponse postBegin(String receiver, String fileName, String fileSize) throws IOException
         {
             Map<String, String> map = new HashMap<>();
             map.put("user", receiver);
             map.put("action", "begin");
+            map.put("fileName", fileName);
+            map.put("fileSize", fileSize);
             JSONObject sendData = new JSONObject(map);
             HttpPost request = new HttpPost(SERVER_URL);
             request.addHeader("Authorization", authorizationHandler.getToken());
@@ -70,10 +72,10 @@ public class Transfer
             return httpClient.execute(request);
         }
 
-        public HttpResponse postEnd(String receiver) throws IOException
+        public HttpResponse postEnd(String idConnection) throws IOException
         {
             Map<String, String> map = new HashMap<>();
-            map.put("user", receiver);
+            map.put("id", idConnection);
             map.put("action", "end");
             JSONObject sendData = new JSONObject(map);
 
