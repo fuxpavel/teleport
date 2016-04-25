@@ -37,6 +37,11 @@ public class Transfer
         return transferTracker.postBegin(receiver, fileName, fileSize);
     }
 
+    public HttpResponse notPassTransfer(String idConnection) throws IOException
+    {
+        return transferTracker.postNotPass(idConnection);
+    }
+
     public HttpResponse endTransfer(String idConnection) throws IOException
     {
         return transferTracker.postEnd(idConnection);
@@ -77,6 +82,21 @@ public class Transfer
             Map<String, String> map = new HashMap<>();
             map.put("id", idConnection);
             map.put("action", "end");
+            JSONObject sendData = new JSONObject(map);
+
+            HttpPost request = new HttpPost(SERVER_URL);
+            request.addHeader("Authorization", authorizationHandler.getToken());
+            request.setHeader("Content-Type", "application/json");
+            StringEntity params = new StringEntity(sendData.toJSONString());
+            request.setEntity(params);
+            return httpClient.execute(request);
+        }
+
+        public HttpResponse postNotPass(String idConnection) throws IOException
+        {
+            Map<String, String> map = new HashMap<>();
+            map.put("id", idConnection);
+            map.put("action", "not_pass");
             JSONObject sendData = new JSONObject(map);
 
             HttpPost request = new HttpPost(SERVER_URL);

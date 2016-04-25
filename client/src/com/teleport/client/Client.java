@@ -70,6 +70,11 @@ public class Client
         return map;
     }
 
+    public List<String> getNotPassTransfers() throws IOException, ParseException
+    {
+        return getFriendRequests().get("not_pass");
+    }
+
     public List<String> getIncomingFriendRequests() throws IOException, ParseException
     {
         return getFriendRequests().get("incoming");
@@ -103,7 +108,6 @@ public class Client
         {
             map.put((String) key, (List<String>) json.get(key));
         }
-
         return map;
     }
 
@@ -173,45 +177,16 @@ public class Client
     public boolean sendFile(String receiver, ProgressBar pbBar, Text lbl, List<String> paths) throws IOException, ParseException
     {
         String ip_recv = get_sender_ip(receiver);
-        P2PCommunication sender = new P2PCommunication(receiver, paths, transferHandler, ip_recv);
-        copyWorker = sender.createWorker();
-        pbBar.setStyle("-fx-accent: blue;");
-        pbBar.progressProperty().bind(copyWorker.progressProperty());
-        lbl.textProperty().bind(copyWorker.messageProperty());
-        new Thread(copyWorker).start();
-        copyWorker.setOnSucceeded(e ->
+        if (!ip_recv.equals("failure"))
         {
-            lbl.textProperty().unbind();
-            pbBar.setStyle("-fx-accent: green;");
-            try
-            {
-                if(new Authorization().getZip())
-                {
-                    try
-                    {
-                        Files.delete(Paths.get(paths.get(0)));
-                    }
-                    catch (FileNotFoundException e1)
-                    {
-                        lbl.setText("File not found");
-                    }
-                    catch (FileSystemException e1)
-                    {
-                        lbl.setText("Use by other process");
-                    }
-                }
-            }
-            catch (IOException e1)
-            {
-                e1.printStackTrace();
-            }
-        });
-        copyWorker.setOnFailed(e ->
+            P2PCommunication sender = new P2PCommunication(receiver, paths, transferHandler, ip_recv);
+            sender.runSender(pbBar, lbl);
+            return true;
+        }
+        else
         {
-            pbBar.progressProperty().unbind();
-            pbBar.setStyle("-fx-accent: red;");
-        });
-        return true;
+            return false;
+        }
     }
 
     public boolean recvFile(String sender, ProgressBar pbBar, Text lbl, boolean chose) throws IOException, ParseException
@@ -220,21 +195,7 @@ public class Client
         if (!ip.equals("failure"))
         {
             P2PCommunication receiver = new P2PCommunication(sender, ip, chose, transferHandler);
-            copyWorker = receiver.createWorker();
-            pbBar.progressProperty().unbind();
-            pbBar.setStyle("-fx-accent: blue;");
-            pbBar.progressProperty().bind(copyWorker.progressProperty());
-            lbl.textProperty().bind(copyWorker.messageProperty());
-            copyWorker.setOnSucceeded(e -> lbl.textProperty().unbind());
-            copyWorker.setOnSucceeded(e -> {
-                pbBar.progressProperty().unbind();
-                pbBar.setStyle("-fx-accent: green;");
-            });
-            copyWorker.setOnFailed(e -> {
-                pbBar.progressProperty().unbind();
-                pbBar.setStyle("-fx-accent: red;");
-            });
-            new Thread(copyWorker).start();
+            receiver.runReceiver(pbBar, lbl);
             return true;
         }
         else

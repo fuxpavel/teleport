@@ -51,7 +51,7 @@ class User(Base):
         for name in names:
             username.append(name.username)
         lst = set(username) - set(Friendship().get_friends_list(reply))
-        ##fix. this shit not remove itself from friends list
+        lst = lst - {User().get_username_by_token(reply)}
         return list(lst)
 
     def login_user(self, username, password, engine=None):
@@ -282,6 +282,7 @@ class Tranfsers(Base):
     receiver = Column(String, ForeignKey(User.token))
     file_name = Column(String)
     file_size = Column(String)
+    statue = Column(String)
 
     def init_data_base(self, engine=None):
         engine = engine if engine else get_engine()
@@ -299,7 +300,7 @@ class Tranfsers(Base):
             if friendships_table.check_friendship(sender_name, receiver_name, engine):
                 if not transfers_table.check_transfer(sender_name, receiver_name):
                     new_transfer = Tranfsers(sender=sender_name, receiver=receiver_name, file_name=file_name,
-                                             file_size=file_size)
+                                             file_size=file_size, status='begin')
                     session.add(new_transfer)
                     try:
                         session.commit()
@@ -314,6 +315,24 @@ class Tranfsers(Base):
                 return -1
         else:
             return -1
+
+    def get_transfers_not_pass(self, token, engine=None):
+        session = get_session(engine)
+        username = User().get_username_by_token(token)
+        not_pass = session.query(Tranfsers).filter_by(receiver=username, status='not_pass').all()
+        lst = []
+        for i in not_pass:
+            lst += [i.sender + ":" + i.file_size + ":" + i.file_name]
+        return lst
+
+    def transfer_not_pass(self, id_transfer, engine=None):
+        session = get_session(engine)
+        session.query(Tranfsers).filter_by(id=id_transfer).update({"status": "not_pass"})
+        try:
+            session.commit()
+        except:
+            return False
+        return True
 
     def end_transfer(self, id_transfer, engine=None):
         session = get_session(engine)

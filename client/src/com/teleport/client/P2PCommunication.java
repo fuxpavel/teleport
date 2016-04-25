@@ -1,6 +1,8 @@
 package com.teleport.client;
 
 import javafx.concurrent.Task;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.text.Text;
 import javafx.util.Pair;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
@@ -12,6 +14,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileSystemException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -34,9 +37,10 @@ public class P2PCommunication extends Thread
     private boolean choose;
     private String idConnection;
     private Transfer transferHandler;
-    private float percent;
     private String receiver;
     private String ip_receiver;
+    private Task copyWorker;
+    private boolean returnVal;
 
     public P2PCommunication(String recv, List<String> path, Transfer transfer, String ip_recv)
     {
@@ -136,7 +140,7 @@ public class P2PCommunication extends Thread
                         idConnection = json.get("id").toString();
                         try (ServerSocket serverSock = new ServerSocket(PORT))
                         {
-                            serverSock.setSoTimeout(new Authorization().getTimeout()*60000);
+                            serverSock.setSoTimeout(15000);
                             try (Socket sock = serverSock.accept())
                             {
                                 String ip = sock.getRemoteSocketAddress().toString().split(":")[0].replace("/", "");
@@ -156,7 +160,7 @@ public class P2PCommunication extends Thread
                                     out.write((P2P_SEND_FILE + ":" + fileName + ":" + sizeToString(myFile.length()) + "::").getBytes("UTF-8"));
                                     out.flush();
                                     in.read(buf);
-
+                                    float percent;
                                     if (new String(buf, StandardCharsets.UTF_8).substring(0, 9).equals(P2P_ANS_CONNECT_REQUEST + ":" + P2P_POSITIVE_ANS + "::"))
                                     {
                                         while ((count = in1.read(buf)) > 0)
@@ -189,9 +193,11 @@ public class P2PCommunication extends Thread
                             catch (SocketTimeoutException e)
                             {
                                 //// FIXME: 24/04/2016   add to inbox. recvier not respones
-                                response = transferHandler.endTransfer(idConnection);
+                                response = transferHandler.notPassTransfer(idConnection);
                                 updateMessage(e.getMessage());
                                 updateProgress(0,1);
+                                Thread.sleep(15000);
+                                updateMessage("");
                             }
                         }
                         catch (IOException e)
@@ -245,6 +251,7 @@ public class P2PCommunication extends Thread
                                 out.flush();
                                 String location = authorizationHandler.getPath() + "\\" + fileName;
                                 FileOutputStream fos = new FileOutputStream(location);
+                                float percent;
                                 while ((len = in.read(buf)) > 0)
                                 {
                                     currentSize = currentSize + len;
@@ -287,5 +294,75 @@ public class P2PCommunication extends Thread
                 return true;
             }
         };
+    }
+
+    public boolean runSender(ProgressBar pbBar, Text lbl)
+    {
+        copyWorker = this.createWorker();
+        pbBar.setStyle("-fx-accent: blue;");
+        pbBar.progressProperty().bind(copyWorker.progressProperty());
+        lbl.textProperty().bind(copyWorker.messageProperty());
+        new Thread(copyWorker).start();
+        copyWorker.setOnSucceeded(e ->
+        {
+            returnVal = true;
+            lbl.textProperty().unbind();
+            pbBar.setStyle("-fx-accent: green;");
+            try
+            {
+                if (new Authorization().getZip())
+                {
+                    try
+                    {
+                        Files.delete(Paths.get(paths.get(0)));
+                    }
+                    catch (FileNotFoundException e1)
+                    {
+                        lbl.setText("File not found");
+                    }
+                    catch (FileSystemException e1)
+                    {
+                        lbl.setText("Use by other process");
+                    }
+                }
+            }
+            catch (IOException e1)
+            {
+                e1.printStackTrace();
+            }
+        });
+        copyWorker.setOnFailed(e ->
+        {
+            returnVal = false;
+            lbl.textProperty().unbind();
+            lbl.setText("");
+            pbBar.progressProperty().unbind();
+            pbBar.setStyle("-fx-accent: red;");
+        });
+        return returnVal;
+    }
+
+    public boolean runReceiver(ProgressBar pbBar, Text lbl)
+    {
+        copyWorker = this.createWorker();
+        pbBar.progressProperty().unbind();
+        pbBar.setStyle("-fx-accent: blue;");
+        pbBar.progressProperty().bind(copyWorker.progressProperty());
+        lbl.textProperty().bind(copyWorker.messageProperty());
+        copyWorker.setOnSucceeded(e ->
+        {
+            returnVal = true;
+            lbl.textProperty().unbind();
+            pbBar.progressProperty().unbind();
+            pbBar.setStyle("-fx-accent: green;");
+        });
+        copyWorker.setOnFailed(e ->
+        {
+            returnVal = false;
+            pbBar.progressProperty().unbind();
+            pbBar.setStyle("-fx-accent: red;");
+        });
+        new Thread(copyWorker).start();
+        return returnVal;
     }
 }
