@@ -13,6 +13,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
@@ -31,17 +32,28 @@ import java.util.ResourceBundle;
 
 public class MainPageController implements Initializable
 {
-    @FXML private ListView lstViewContacts;
-    @FXML private ListView lstViewUsername;
-    @FXML private TextField txtSearch;
-    @FXML private Button butInbox;
-    @FXML private Label lblMsg;
-    @FXML private Text lblSendFile;
-    @FXML private Button butSend;
-    @FXML private ProgressBar pbSendFile;
-    @FXML private Button butDenial;
-    @FXML private Button butReceive;
-    @FXML private Text lblIncoming;
+    @FXML
+    private ListView lstViewContacts;
+    @FXML
+    private ListView lstViewUsername;
+    @FXML
+    private TextField txtSearch;
+    @FXML
+    private Button butInbox;
+    @FXML
+    private Label lblMsg;
+    @FXML
+    private Text lblSendFile;
+    @FXML
+    private Button butSend;
+    @FXML
+    private ProgressBar pbSendFile;
+    @FXML
+    private Button butDenial;
+    @FXML
+    private Button butReceive;
+    @FXML
+    private Text lblIncoming;
     private String senderName;
     private PostLoginInterface log;
     private boolean clicked;
@@ -59,13 +71,14 @@ public class MainPageController implements Initializable
         int width = gd.getDisplayMode().getWidth() - 20;
         int height = gd.getDisplayMode().getHeight() - 100;
         Parent root = FXMLLoader.load(getClass().getResource("MainPage.fxml"));
-        Scene scene = new Scene(root, width/2, height);
+        Scene scene = new Scene(root, width / 2, height);
         stage.setTitle("MainPage");
         stage.setScene(scene);
         stage.show();
     }
 
-    @FXML public void AddFriend() throws Exception
+    @FXML
+    public void AddFriend() throws Exception
     {
         Stage stage = new Stage();
         Parent root = FXMLLoader.load(getClass().getResource("AddFriend.fxml"));
@@ -75,7 +88,8 @@ public class MainPageController implements Initializable
         stage.show();
     }
 
-    @FXML public void OpenSettings() throws IOException
+    @FXML
+    public void OpenSettings() throws IOException
     {
         Stage stage = new Stage();
         Parent root = FXMLLoader.load(getClass().getResource("Settings.fxml"));
@@ -84,7 +98,9 @@ public class MainPageController implements Initializable
         stage.setScene(scene);
         stage.show();
     }
-    @FXML protected void SendFriendRequest() throws IOException, ParseException
+
+    @FXML
+    protected void SendFriendRequest() throws IOException, ParseException
     {
         if (lstViewUsername.getSelectionModel().getSelectedItem() != null)
         {
@@ -94,14 +110,15 @@ public class MainPageController implements Initializable
         }
     }
 
-    @FXML protected void PressedButton()
+    @FXML
+    protected void PressedButton()
     {
         butSend.setVisible(true);
     }
 
     public void Logout() throws IOException, ParseException
     {
-        if(log.logout())
+        if (log.logout())
         {
             butInbox.getScene().getWindow().hide();
             Stage stage = new Stage();
@@ -109,7 +126,8 @@ public class MainPageController implements Initializable
         }
     }
 
-    @FXML protected void SwitchScreenInbox() throws IOException
+    @FXML
+    protected void SwitchScreenInbox() throws IOException
     {
         Parent root = FXMLLoader.load(getClass().getResource("Inbox.fxml"));
         Scene scene = new Scene(root);
@@ -129,7 +147,8 @@ public class MainPageController implements Initializable
         });
     }
 
-    @FXML protected void SearchFriend() throws IOException, ParseException
+    @FXML
+    protected void SearchFriend() throws IOException, ParseException
     {
         lstViewUsername.setItems(FXCollections.observableList(log.getUsername(txtSearch.getText())));
     }
@@ -143,14 +162,14 @@ public class MainPageController implements Initializable
                 String receiver = lstViewContacts.getSelectionModel().getSelectedItem().toString();
                 List<String> paths = new ArrayList<>();
                 Stage stage = (Stage) butInbox.getScene().getWindow();
-                if(mouseEvent.getButton().equals(MouseButton.PRIMARY))
+                if (mouseEvent.getButton().equals(MouseButton.PRIMARY))
                 {//if send files
                     FileChooser fileChooser = new FileChooser();
                     fileChooser.setInitialDirectory(javax.swing.filechooser.FileSystemView.getFileSystemView().getHomeDirectory());
                     FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("All Files", "*.*");
                     fileChooser.getExtensionFilters().add(extFilter);
                     List<File> files = fileChooser.showOpenMultipleDialog(stage);
-                    if(files != null)
+                    if (files != null)
                     {
                         for (File file : files)
                         {
@@ -158,48 +177,32 @@ public class MainPageController implements Initializable
                         }
                         log.send(receiver, pbSendFile, lblSendFile, paths);
                     }
-                }
-                else if(mouseEvent.getButton().equals(MouseButton.SECONDARY))
+                } else if (mouseEvent.getButton().equals(MouseButton.SECONDARY))
                 {//if send folders
                     DirectoryChooser directoryChooserChooser = new DirectoryChooser();
                     directoryChooserChooser.setInitialDirectory(javax.swing.filechooser.FileSystemView.getFileSystemView().getHomeDirectory());
                     File files = directoryChooserChooser.showDialog(stage);
-                    if(files != null)
+                    if (files != null)
                     {
                         paths.add(files.getPath());
                         log.send(receiver, pbSendFile, lblSendFile, paths);
                     }
                 }
             }
-            else if((mouseEvent.getButton().equals(MouseButton.SECONDARY)) && view && (mouseEvent.getClickCount() == 1))
+        }
+    }
+
+    public void DeleteFriend(KeyEvent event) throws IOException, ParseException
+    {
+        if (lstViewContacts.getSelectionModel().getSelectedItem() != null && event.getCode().name().equals("DELETE") && view)
+        {
+            String contact = lstViewContacts.getSelectionModel().getSelectedItem().toString();
+            Alert alert = new Alert(Alert.AlertType.NONE, "Remove '" + contact + "' from your friends list?", ButtonType.APPLY, ButtonType.CANCEL);
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.get() == ButtonType.APPLY)
             {
-                final ContextMenu contextMenu = new ContextMenu();
-                MenuItem remove = new MenuItem("Remove");
-                remove.setOnAction(t -> {
-                    try
-                    {
-                        String contact = lstViewContacts.getSelectionModel().getSelectedItem().toString();
-                        Alert alert = new Alert(Alert.AlertType.NONE, "Remove '"+contact+"' from your friends list?", ButtonType.APPLY, ButtonType.CANCEL);
-                        Optional<ButtonType> result  = alert.showAndWait();
-                        if (result .get() == ButtonType.APPLY)
-                        {
-                            log.removeFriend(contact);
-                            lstViewContacts.setItems(FXCollections.observableList(log.getFriends()));
-                            view = true;
-                        }
-                    }
-                    catch (IOException | ParseException e)
-                    {
-                        e.printStackTrace();
-                    }
-                });
-                contextMenu.getItems().addAll(remove);
-                lstViewContacts.setOnContextMenuRequested(event ->
-                {
-                    view = false;
-                    contextMenu.show(lstViewContacts, event.getScreenX(), event.getScreenY());
-                    event.consume();
-                });
+                log.removeFriend(contact);
+                lstViewContacts.setItems(FXCollections.observableList(log.getFriends()));
             }
         }
     }
@@ -261,7 +264,8 @@ public class MainPageController implements Initializable
                                     VisibleButton(true);
                                 }
                                 clicked = false;
-                            } else
+                            }
+                            else
                             {
                                 updateMessage("");
                                 VisibleButton(false);

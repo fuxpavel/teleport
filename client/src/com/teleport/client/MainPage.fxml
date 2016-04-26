@@ -31,7 +31,7 @@
       </GridPane>
    </bottom>
    <left>
-      <ListView fx:id="lstViewContacts" onMouseClicked="#SendFileBeUsername" prefHeight="332.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+      <ListView fx:id="lstViewContacts" onMouseClicked="#SendFileBeUsername" onKeyPressed="#DeleteFriend" prefHeight="332.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
    </left>
    <top>
       <MenuBar fx:id="MenuBar" BorderPane.alignment="CENTER">
