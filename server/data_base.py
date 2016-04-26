@@ -282,7 +282,7 @@ class Tranfsers(Base):
     receiver = Column(String, ForeignKey(User.token))
     file_name = Column(String)
     file_size = Column(String)
-    statue = Column(String)
+    status = Column(String)
 
     def init_data_base(self, engine=None):
         engine = engine if engine else get_engine()

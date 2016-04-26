@@ -1,6 +1,4 @@
 from sqlalchemy import *
 from data_base import *
 
-dbb = User()
-
-Friendship().create_friendship("33","gal")
+dbb = User().set_user_ip("347","79.179.205.239")

@@ -4,6 +4,7 @@ import javafx.concurrent.Task;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.text.Text;
 import javafx.util.Pair;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
 import org.json.simple.JSONObject;
@@ -26,7 +27,7 @@ public class P2PCommunication extends Thread
 {
     private List<String> paths;
     private static final int PORT = 10113;
-    private static final int BUF_SIZE = 2048;
+   // private static final int BUF_SIZE = 2048;
     private String fileName;
     private static int BYTES2GB = 1073741824;
     private static int BYTES2MB = 1048576;
@@ -126,6 +127,7 @@ public class P2PCommunication extends Thread
                     {
                         path = path1;
                     }
+                    int BUF_SIZE = 1024;
                     updateMessage("zipping...");
                     String compress = Compress.Compression(path);
                     updateMessage("ready");
@@ -140,7 +142,6 @@ public class P2PCommunication extends Thread
                         idConnection = json.get("id").toString();
                         try (ServerSocket serverSock = new ServerSocket(PORT))
                         {
-                            serverSock.setSoTimeout(15000);
                             try (Socket sock = serverSock.accept())
                             {
                                 String ip = sock.getRemoteSocketAddress().toString().split(":")[0].replace("/", "");
@@ -161,15 +162,17 @@ public class P2PCommunication extends Thread
                                     out.flush();
                                     in.read(buf);
                                     float percent;
+//                                    byte[] encodedBytes;
                                     if (new String(buf, StandardCharsets.UTF_8).substring(0, 9).equals(P2P_ANS_CONNECT_REQUEST + ":" + P2P_POSITIVE_ANS + "::"))
                                     {
                                         while ((count = in1.read(buf)) > 0)
                                         {
+//                                            encodedBytes = Base64.encodeBase64(buf);
                                             out.write(buf, 0, count);
                                             currentSize = currentSize + count;
                                             updateProgress(GetCurrentSize(), GetFileSize());
                                             percent = (float) GetCurrentSize() / (float) GetFileSize();
-                                            updateMessage(" send " + GetFileName() + " to " + receiver + " | " + String.format("%.0f", percent * 100) + "%");
+                                            updateMessage("send " + GetFileName() + " to " + receiver + " | " + String.format("%.0f", percent * 100) + "%");
                                             out.flush();
                                         }
                                         sock.close();
@@ -215,6 +218,7 @@ public class P2PCommunication extends Thread
                     //receiver
                     currentSize = 0;
                     int amout_of_files = 1;
+                    int BUF_SIZE = 2048;
                     String[] input;
                     byte[] buf;
                     int len;
@@ -252,18 +256,21 @@ public class P2PCommunication extends Thread
                                 String location = authorizationHandler.getPath() + "\\" + fileName;
                                 FileOutputStream fos = new FileOutputStream(location);
                                 float percent;
+//                                byte[] decodedBytes;
                                 while ((len = in.read(buf)) > 0)
                                 {
+//                                    decodedBytes = Base64.decodeBase64(buf);
+//                                    len = decodedBytes.length;
                                     currentSize = currentSize + len;
                                     fos.write(buf, 0, len);
                                     updateProgress(GetCurrentSize(), GetFileSize());
                                     percent = (float) GetCurrentSize() / (float) GetFileSize();
-                                    updateMessage(" receive " + GetFileName() + " from " + receiver + " | " + String.format("%.0f", percent * 100) + "%");
+                                    updateMessage("receive " + GetFileName() + " from " + receiver + " | " + String.format("%.0f", percent * 100) + "%");
                                 }
                                 currentSize = fileSize;
                                 updateProgress(GetCurrentSize(), GetFileSize());
                                 percent = (float) GetCurrentSize() / (float) GetFileSize();
-                                updateMessage(" receive " + GetFileName() + " from " + receiver + " | " + String.format("%.0f", percent * 100) + "%");
+                                updateMessage("receive " + GetFileName() + " from " + receiver + " | " + String.format("%.0f", percent * 100) + "%");
                                 fos.close();
                                 sock.close();
                                 if(authorizationHandler.getOpen())
