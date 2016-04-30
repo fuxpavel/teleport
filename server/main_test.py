@@ -1,4 +1,3 @@
-from sqlalchemy import *
-from data_base import *
-
-dbb = User().set_user_ip("347","79.179.205.239")
+import subprocess
+subprocess.Popen(['python', 'server.py'], stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                                           stderr=subprocess.PIPE)
