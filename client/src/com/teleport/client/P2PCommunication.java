@@ -27,7 +27,7 @@ public class P2PCommunication extends Thread
 {
     private List<String> paths;
     private static final int PORT = 10113;
-   // private static final int BUF_SIZE = 2048;
+    private static final int BUF_SIZE = 2048;
     private String fileName;
     private static int BYTES2GB = 1073741824;
     private static int BYTES2MB = 1048576;
@@ -39,7 +39,6 @@ public class P2PCommunication extends Thread
     private String idConnection;
     private Transfer transferHandler;
     private String receiver;
-    private String ip_receiver;
     private Task copyWorker;
     private boolean returnVal;
 
@@ -50,7 +49,7 @@ public class P2PCommunication extends Thread
         currentSize = 0;
         receiver = recv;
         transferHandler = transfer;
-        ip_receiver = ip_recv;
+        ip = ip_recv;
     }
 
     public P2PCommunication(String recv, String send, boolean chose, Transfer transfer)
@@ -127,7 +126,6 @@ public class P2PCommunication extends Thread
                     {
                         path = path1;
                     }
-                    int BUF_SIZE = 1024;
                     updateMessage("zipping...");
                     String compress = Compress.Compression(path);
                     updateMessage("ready");
@@ -144,8 +142,8 @@ public class P2PCommunication extends Thread
                         {
                             try (Socket sock = serverSock.accept())
                             {
-                                String ip = sock.getRemoteSocketAddress().toString().split(":")[0].replace("/", "");
-                                if (ip.equals(ip_receiver))
+                                String ipRem = sock.getRemoteSocketAddress().toString().split(":")[0].replace("/", "");
+                                if (ipRem.equals(ip))
                                 {
                                     BufferedInputStream in1 = new BufferedInputStream(new FileInputStream(myFile));
                                     InputStream in = sock.getInputStream();
@@ -218,7 +216,6 @@ public class P2PCommunication extends Thread
                     //receiver
                     currentSize = 0;
                     int amout_of_files = 1;
-                    int BUF_SIZE = 2048;
                     String[] input;
                     byte[] buf;
                     int len;

@@ -78,6 +78,11 @@ public class PostLoginInterface
         return client.getFriends();
     }
 
+    public List<String> getNotPassTransfers() throws IOException, ParseException
+    {
+        return client.getNotPassTransfers();
+    }
+
     public List<String> getUsername(String name) throws IOException, ParseException
     {
         return client.getUsernameList(name);
