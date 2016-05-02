@@ -5,6 +5,8 @@ import java.io.IOException;
 
 public class LoginInterface
 {
+    private Client client;
+
     public String register(String username, String password, String confirm) throws IOException, ParseException
     {
         if (client.register(username, password, confirm))
@@ -28,8 +30,6 @@ public class LoginInterface
             return "Could not login";
         }
     }
-
-    private Client client;
 
     public LoginInterface() throws IOException
     {

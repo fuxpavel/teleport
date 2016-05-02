@@ -32,28 +32,17 @@ import java.util.ResourceBundle;
 
 public class MainPageController implements Initializable
 {
-    @FXML
-    private ListView lstViewContacts;
-    @FXML
-    private ListView lstViewUsername;
-    @FXML
-    private TextField txtSearch;
-    @FXML
-    private Button butInbox;
-    @FXML
-    private Label lblMsg;
-    @FXML
-    private Text lblSendFile;
-    @FXML
-    private Button butSend;
-    @FXML
-    private ProgressBar pbSendFile;
-    @FXML
-    private Button butDenial;
-    @FXML
-    private Button butReceive;
-    @FXML
-    private Text lblIncoming;
+    @FXML private ListView lstViewContacts;
+    @FXML private ListView lstViewUsername;
+    @FXML private TextField txtSearch;
+    @FXML private Button butInbox;
+    @FXML private Label lblMsg;
+    @FXML private Text lblSendFile;
+    @FXML private Button butSend;
+    @FXML private ProgressBar pbSendFile;
+    @FXML private Button butDenial;
+    @FXML private Button butReceive;
+    @FXML private Text lblIncoming;
     private String senderName;
     private PostLoginInterface log;
     private boolean clicked;

@@ -160,6 +160,7 @@ public class Friendship
     private class AddFriend
     {
         private static final String SERVER_URL = "http://" + ADDRESS + ":" + PORT + "/api/username";
+
         public HttpResponse post(String name) throws IOException
         {
             Map<String, String> map = new HashMap<>();

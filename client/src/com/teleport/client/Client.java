@@ -1,6 +1,5 @@
 package com.teleport.client;
 
-import javafx.concurrent.Task;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.text.Text;
 import org.apache.http.HttpResponse;
@@ -10,13 +9,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.SocketTimeoutException;
-import java.nio.file.FileSystemException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,7 +21,6 @@ public class Client
     private Signing signingHandler;
     private Friendship friendshipHandler;
     private Transfer transferHandler;
-    private Task copyWorker;
 
     public Client() throws IOException
     {
@@ -166,7 +158,7 @@ public class Client
         return json.get("status").equals("success");
     }
 
-    public String get_sender_ip(String sender) throws IOException, ParseException
+    public String getSenderIp(String sender) throws IOException, ParseException
     {
         HttpResponse response = transferHandler.getSenderIP(sender);
         String body = EntityUtils.toString(response.getEntity());
@@ -176,7 +168,7 @@ public class Client
 
     public boolean sendFile(String receiver, ProgressBar pbBar, Text lbl, List<String> paths) throws IOException, ParseException
     {
-        String ip_recv = get_sender_ip(receiver);
+        String ip_recv = getSenderIp(receiver);
         if (!ip_recv.equals("failure"))
         {
             P2PCommunication sender = new P2PCommunication(receiver, paths, transferHandler, ip_recv);
@@ -191,7 +183,7 @@ public class Client
 
     public boolean recvFile(String sender, ProgressBar pbBar, Text lbl, boolean chose) throws IOException, ParseException
     {
-        String ip = get_sender_ip(sender);
+        String ip = getSenderIp(sender);
         if (!ip.equals("failure"))
         {
             P2PCommunication receiver = new P2PCommunication(sender, ip, chose, transferHandler);
