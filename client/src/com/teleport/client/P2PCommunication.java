@@ -43,6 +43,7 @@ public class P2PCommunication extends Thread
     private String receiver;
     private Task copyWorker;
     private boolean returnVal;
+    boolean chose;
     Socket sock;
     ServerSocket serverSock;
     InputStream in;
@@ -152,6 +153,7 @@ public class P2PCommunication extends Thread
                                     out = sock.getOutputStream();
                                     out.write((P2P_CONNECT_REQUEST + ":" + P2P_AMOUT_OF_FILES + ":" + paths.size() + ":" + idConnection + "::").getBytes("UTF-8"));
                                     out.flush();
+                                    int amout = paths.size();
                                     for (String path : paths)
                                     {
                                         currentSize = 0;
@@ -179,13 +181,22 @@ public class P2PCommunication extends Thread
                                                 out.flush();
                                             }
                                         }
+                                        else
+                                        {
+                                            updateProgress(0, 1);
+                                        }
+                                        amout--;
                                         sock.close();
                                         in.close();
                                         out.close();
-                                        sock = serverSock.accept();
-                                        in = sock.getInputStream();
-                                        out = sock.getOutputStream();
+                                        if (amout > 0)
+                                        {
+                                            sock = serverSock.accept();
+                                            in = sock.getInputStream();
+                                            out = sock.getOutputStream();
+                                        }
                                     }
+                                    updateMessage("Done!");
                                     serverSock.close();
                                 }
                             }
@@ -210,7 +221,6 @@ public class P2PCommunication extends Thread
                 else
                 {
                     //receiver
-                    String[] input;
                     byte[] buf = new byte[BUF_SIZE];
                     int len;
                     currentSize = 0;
@@ -219,55 +229,36 @@ public class P2PCommunication extends Thread
                         Authorization authorizationHandler = new Authorization();
                         try
                         {
-                            out.write((P2P_ANS_CONNECT_REQUEST + ":" + P2P_POSITIVE_ANS + "::").getBytes());
-                            out.flush();
-                            String location = authorizationHandler.getPath() + "\\" + fileName;
-                            FileOutputStream fos = new FileOutputStream(location);
-                            float percent;
-                            while ((len = in.read(buf)) > 0)
+                            if(chose)
                             {
-                                currentSize = currentSize + len;
-                                fos.write(buf, 0, len);
-                                updateProgress(GetCurrentSize(), GetFileSize());
-                                percent = (float) GetCurrentSize() / (float) GetFileSize();
-                                updateMessage("receive " + GetFileName() + " from " + receiver + " | " + String.format("%.0f", percent * 100) + "%");
-                            }
-                            updateProgress(GetFileSize(), GetFileSize());
-                            updateMessage("receive " + GetFileName() + " from " + receiver + " | 100%");
-                            fos.close();
-                            if (authorizationHandler.getOpen())
-                            {
-                                Runtime.getRuntime().exec("explorer.exe /select," + location);
-                            }
-                            sock.close();
-                            in.close();
-                            out.close();
-                            if (amout_of_files > 0)
-                            {
-                                sock = new Socket(ip, PORT);
-                                in = sock.getInputStream();
-                                in.read(buf);
-                                input = new String(buf, StandardCharsets.UTF_8).split(":");
-                                if (input[0].equals(P2P_SEND_FILE))
+                                out.write((P2P_ANS_CONNECT_REQUEST + ":" + P2P_POSITIVE_ANS + "::").getBytes());
+                                out.flush();
+                                String location = authorizationHandler.getPath() + "\\" + fileName;
+                                FileOutputStream fos = new FileOutputStream(location);
+                                float percent;
+                                while ((len = in.read(buf)) > 0)
                                 {
-                                    fileName = input[1];
-                                    fileSize = sizeToInt(input[2]);
-                                    out = sock.getOutputStream();
-                                    Platform.runLater(() -> AlertToClient());
+                                    currentSize = currentSize + len;
+                                    fos.write(buf, 0, len);
+                                    updateProgress(GetCurrentSize(), GetFileSize());
+                                    percent = (float) GetCurrentSize() / (float) GetFileSize();
+                                    updateMessage("receive " + GetFileName() + " from " + receiver + " | " + String.format("%.0f", percent * 100) + "%");
+                                }
+                                updateProgress(GetFileSize(), GetFileSize());
+                                updateMessage("receive " + GetFileName() + " from " + receiver + " | 100%");
+                                fos.close();
+                                if (authorizationHandler.getOpen())
+                                {
+                                    Runtime.getRuntime().exec("explorer.exe /select," + location);
                                 }
                             }
-                            if (amout_of_files == 0)
+                            else
                             {
-                                try
-                                {
-                                    transferHandler.endTransfer(idConnection);
-                                }
-                                catch (IOException e)
-                                {
-                                    updateMessage(e.getMessage());
-                                    e.printStackTrace();
-                                }
+                                out.write((P2P_ANS_CONNECT_REQUEST + ":" + P2P_REFUSE_ANS + "::").getBytes());
+                                out.flush();
+                                updateProgress(0, 1);
                             }
+                            RestartConnection();
                         }
                         catch (IOException e)
                         {
@@ -285,32 +276,63 @@ public class P2PCommunication extends Thread
             }
         };
     }
+
+    public void RestartConnection() throws IOException
+    {
+        String[] input;
+        byte[] buf = new byte[BUF_SIZE];
+        sock.close();
+        in.close();
+        out.close();
+        if (amout_of_files > 0)
+        {
+            sock = new Socket(ip, PORT);
+            in = sock.getInputStream();
+            in.read(buf);
+            input = new String(buf, StandardCharsets.UTF_8).split(":");
+            if (input[0].equals(P2P_SEND_FILE))
+            {
+                fileName = input[1];
+                fileSize = sizeToInt(input[2]);
+                out = sock.getOutputStream();
+                Platform.runLater(() -> AlertToClient());
+            }
+        }
+        if (amout_of_files == 0)
+        {
+            transferHandler.endTransfer(idConnection);
+        }
+    }
+
     public void AlertToClient()
     {
         Alert alert = new Alert(Alert.AlertType.NONE, receiver + " want send you " + fileName + " " + sizeToString(fileSize) + " do you want to get it?", ButtonType.APPLY, ButtonType.CANCEL);
         Optional<ButtonType> result = alert.showAndWait();
         if (result.get() == ButtonType.APPLY)
         {
-            amout_of_files--;
-            copyWorker = this.createWorker();
-            pbBar.progressProperty().unbind();
-            pbBar.setStyle("-fx-accent: blue;");
-            pbBar.progressProperty().bind(copyWorker.progressProperty());
-            lbl.textProperty().bind(copyWorker.messageProperty());
-            copyWorker.setOnSucceeded(e -> Platform.runLater(() ->
-            {
-                lbl.textProperty().unbind();
-                pbBar.progressProperty().unbind();
-                pbBar.setProgress(1);
-                pbBar.setStyle("-fx-accent: green;");
-            }));
-            copyWorker.setOnFailed(e -> Platform.runLater(() ->
-            {
-                pbBar.progressProperty().unbind();
-                pbBar.setStyle("-fx-accent: red;");
-            }));
-            new Thread(copyWorker).start();
+            chose = true;
+        } else
+        {
+            chose = false;
         }
+        amout_of_files--;
+        copyWorker = this.createWorker();
+        pbBar.progressProperty().unbind();
+        pbBar.setStyle("-fx-accent: blue;");
+        pbBar.progressProperty().bind(copyWorker.progressProperty());
+        lbl.textProperty().bind(copyWorker.messageProperty());
+        copyWorker.setOnSucceeded(e -> Platform.runLater(() ->
+        {
+            lbl.textProperty().unbind();
+            pbBar.progressProperty().unbind();
+            pbBar.setStyle("-fx-accent: green;");
+        }));
+        copyWorker.setOnFailed(e -> Platform.runLater(() ->
+        {
+            pbBar.progressProperty().unbind();
+            pbBar.setStyle("-fx-accent: red;");
+        }));
+        new Thread(copyWorker).start();
     }
 
     public boolean runSender(ProgressBar pbBar, Text lbl)
