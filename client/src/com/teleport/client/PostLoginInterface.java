@@ -92,17 +92,17 @@ public class PostLoginInterface
     {
         if (client.sendFile(receiver, progressBar, lbl, paths))
         {
-            return "Success";
+            return "Send success";
         }
         else
         {
-            return "Failure";
+            return "Send failure";
         }
     }
 
-    public String receive(String sender, ProgressBar pbBar, Text lbl, boolean chose) throws IOException, ParseException
+    public String receive(String sender, ProgressBar pbBar, Text lbl) throws IOException, ParseException
     {
-        if (client.recvFile(sender, pbBar, lbl, chose))
+        if (client.recvFile(sender, pbBar, lbl))
         {
             return "Success";
         }

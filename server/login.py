@@ -49,7 +49,6 @@ class Register(object):
 
     def on_post(self, req, resp):
         userdata = req.stream.read()
-        print userdata
         userdata = json.loads(userdata)
         username = userdata['username']
         password = userdata['password']

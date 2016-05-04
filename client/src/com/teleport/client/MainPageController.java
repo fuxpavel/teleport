@@ -40,8 +40,6 @@ public class MainPageController implements Initializable
     @FXML private Text lblSendFile;
     @FXML private Button butSend;
     @FXML private ProgressBar pbSendFile;
-    @FXML private Button butDenial;
-    @FXML private Button butReceive;
     @FXML private Text lblIncoming;
     private String senderName;
     private PostLoginInterface log;
@@ -164,9 +162,10 @@ public class MainPageController implements Initializable
                         {
                             paths.add(file.getPath());
                         }
-                        log.send(receiver, pbSendFile, lblSendFile, paths);
+                        lblSendFile.setText(log.send(receiver, pbSendFile, lblSendFile, paths));
                     }
-                } else if (mouseEvent.getButton().equals(MouseButton.SECONDARY))
+                }
+                else if (mouseEvent.getButton().equals(MouseButton.SECONDARY))
                 {//if send folders
                     DirectoryChooser directoryChooserChooser = new DirectoryChooser();
                     directoryChooserChooser.setInitialDirectory(javax.swing.filechooser.FileSystemView.getFileSystemView().getHomeDirectory());
@@ -174,7 +173,7 @@ public class MainPageController implements Initializable
                     if (files != null)
                     {
                         paths.add(files.getPath());
-                        log.send(receiver, pbSendFile, lblSendFile, paths);
+                        lblSendFile.setText(log.send(receiver, pbSendFile, lblSendFile, paths));
                     }
                 }
             }
@@ -196,25 +195,11 @@ public class MainPageController implements Initializable
         }
     }
 
-    public void VisibleButton(boolean visible)
+    public void ReceiveFile() throws IOException, ParseException
     {
-        butDenial.setVisible(visible);
-        butReceive.setVisible(visible);
-    }
-
-    public void ReceiveFile(Event e) throws IOException, ParseException
-    {
-        VisibleButton(true);
         clicked = false;
         String sender = senderName;
-        if (e.getSource().toString().contains("Receive"))
-        {
-            log.receive(sender, pbSendFile, lblSendFile, true);
-        }
-        else
-        {
-            log.receive(sender, pbSendFile, lblSendFile, false);
-        }
+        log.receive(sender, pbSendFile, lblSendFile);
     }
 
     @Override
@@ -230,35 +215,22 @@ public class MainPageController implements Initializable
                     @Override
                     public Void call() throws InterruptedException, IOException, ParseException
                     {
-                        String[] msg;
-                        String fileSize = "", fileName = "";
                         List<String> newIncoming;
                         Client client = new Client();
-                        clicked = true;
                         while (true)
                         {
                             newIncoming = client.getIncomingTransfers();
                             if (!newIncoming.isEmpty())
                             {
-                                if (clicked)
+                                for (String newSender : newIncoming)
                                 {
-                                    for (String newSender : newIncoming)
-                                    {
-                                        msg = newSender.split(":");
-                                        senderName = msg[0];
-                                        fileName = msg[1];
-                                        fileSize = msg[2];
-                                    }
-                                    updateMessage(senderName + " wand send you " + fileName + " " + fileSize + " do you want to get it?");
-                                    VisibleButton(true);
+                                    senderName = newSender;
                                 }
-                                clicked = false;
+                                ReceiveFile();
                             }
                             else
                             {
                                 updateMessage("");
-                                VisibleButton(false);
-                                clicked = true;
                             }
                             Thread.sleep(15000);
                         }

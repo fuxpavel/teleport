@@ -13,9 +13,7 @@ class Transfer(object):
         action = data['action']
         if action == 'begin':
             other_user = data['user']
-            file_name = data['fileName']
-            file_size = data['fileSize']
-            id = self.dbt.add_transfer(user, other_user, file_name, file_size)
+            id = self.dbt.add_transfer(user, other_user)
             if id != -1:
                 status = 'success'
             else:
@@ -66,7 +64,10 @@ class SwitchIP(object):
         f = get_friendship_db()
         if f.check_friendship(sender, self.db.get_username_by_token(receiver)):
             ip = self.db.get_user_ip(self.db.get_token_by_username(sender))
-            resp.body = json.dumps({'ip': ip})
+            if ip:
+                resp.body = json.dumps({'ip': ip})
+            else:
+                resp.body = json.dumps({'ip': 'failure'})
         else:
             resp.body = json.dumps({'ip': 'failure'})
 

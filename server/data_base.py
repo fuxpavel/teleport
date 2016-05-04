@@ -121,7 +121,11 @@ class User(Base):
     def get_user_ip(self, token, engine=None):
         session = get_session(engine)
         if self.check_exist_user_token(token, engine):
-            return session.query(User).filter_by(token=token).all()[0].ip
+			ip = session.query(User).filter_by(token=token).all()[0].ip
+			if ip:
+				return ip
+			else:
+				return False
         else:
             return False
 
@@ -280,15 +284,13 @@ class Tranfsers(Base):
     id = Column(Integer, primary_key=True)
     sender = Column(String, ForeignKey(User.token))
     receiver = Column(String, ForeignKey(User.token))
-    file_name = Column(String)
-    file_size = Column(String)
     status = Column(String)
 
     def init_data_base(self, engine=None):
         engine = engine if engine else get_engine()
         Base.metadata.create_all(engine)
 
-    def add_transfer(self, sender_token, receiver_name, file_name, file_size, engine=None):
+    def add_transfer(self, sender_token, receiver_name, engine=None):
         session = get_session(engine)
         users_table = User()
         friendships_table = Friendship()
@@ -299,8 +301,7 @@ class Tranfsers(Base):
             sender_name = users_table.get_username_by_token(sender_token, engine)
             if friendships_table.check_friendship(sender_name, receiver_name, engine):
                 if not transfers_table.check_transfer(sender_name, receiver_name):
-                    new_transfer = Tranfsers(sender=sender_name, receiver=receiver_name, file_name=file_name,
-                                             file_size=file_size, status='begin')
+                    new_transfer = Tranfsers(sender=sender_name, receiver=receiver_name, status='begin')
                     session.add(new_transfer)
                     try:
                         session.commit()
@@ -322,7 +323,7 @@ class Tranfsers(Base):
         not_pass = session.query(Tranfsers).filter_by(receiver=username, status='not_pass').all()
         lst = []
         for i in not_pass:
-            lst += [i.sender + ":" + i.file_size + ":" + i.file_name]
+            lst += [i.sender]
         return lst
 
     def transfer_not_pass(self, id_transfer, engine=None):
@@ -350,7 +351,7 @@ class Tranfsers(Base):
         incoming = session.query(Tranfsers).filter_by(receiver=user).all()
         lst = []
         for i in incoming:
-            lst += [i.sender + ":" + i.file_size + ":" + i.file_name]
+            lst += [i.sender]
         return lst
 
     def get_outgoing_transfers(self, user, engine=None):

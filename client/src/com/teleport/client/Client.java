@@ -181,12 +181,12 @@ public class Client
         }
     }
 
-    public boolean recvFile(String sender, ProgressBar pbBar, Text lbl, boolean chose) throws IOException, ParseException
+    public boolean recvFile(String sender, ProgressBar pbBar, Text lbl) throws IOException, ParseException
     {
         String ip = getSenderIp(sender);
         if (!ip.equals("failure"))
         {
-            P2PCommunication receiver = new P2PCommunication(sender, ip, chose, transferHandler);
+            P2PCommunication receiver = new P2PCommunication(sender, ip, transferHandler);
             receiver.runReceiver(pbBar, lbl);
             return true;
         }
