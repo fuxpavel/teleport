@@ -232,7 +232,7 @@ public class MainPageController implements Initializable
                             {
                                 updateMessage("");
                             }
-                            Thread.sleep(15000);
+                            Thread.sleep(5000);
                         }
                     }
                 };
