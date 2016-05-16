@@ -11,8 +11,8 @@ class Transfer(object):
         user = req.get_header('Authorization')
         # update ip address in DB
         ip = req.env['REMOTE_ADDR']
-        if self.db.get_user_ip(user) != ip:
-            self.db.set_user_ip(user, ip)
+        if User().get_user_ip(user) != ip:
+            User().set_user_ip(user, ip)
 
         data = json.loads(req.stream.read())
         action = data['action']
@@ -52,8 +52,8 @@ class Transfer(object):
         user = req.get_header('Authorization')
         # update ip address in DB
         ip = req.env['REMOTE_ADDR']
-        if self.db.get_user_ip(user) != ip:
-            self.db.set_user_ip(user, ip)
+        if User().get_user_ip(user) != ip:
+            User().set_user_ip(user, ip)
 
         incoming = self.dbt.get_incoming_transfers(user)
         outgoing = self.dbt.get_outgoing_transfers(user)
@@ -72,8 +72,8 @@ class SwitchIP(object):
         receiver = req.get_header('Authorization')
         # update ip address in DB
         ip = req.env['REMOTE_ADDR']
-        if self.db.get_user_ip(receiver) != ip:
-            self.db.set_user_ip(receiver, ip)
+        if User().get_user_ip(receiver) != ip:
+            User().set_user_ip(receiver, ip)
 
         sender = userdata['sender']
         f = get_friendship_db()

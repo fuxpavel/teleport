@@ -12,8 +12,8 @@ class RemoveFriendship(object):
         user = req.get_header('Authorization')
         # update ip address in DB
         ip = req.env['REMOTE_ADDR']
-        if self.db.get_user_ip(user) != ip:
-            self.db.set_user_ip(user, ip)
+        if User().get_user_ip(user) != ip:
+            User().set_user_ip(user, ip)
 
         remove = userdata['remove']
         if self.db.remove_friendship(user, remove):
@@ -36,8 +36,8 @@ class Friendship(object):
         sender = req.get_header('Authorization')
         # update ip address in DB
         ip = req.env['REMOTE_ADDR']
-        if self.db.get_user_ip(sender) != ip:
-            self.db.set_user_ip(sender, ip)
+        if User().get_user_ip(sender) != ip:
+            User().set_user_ip(sender, ip)
 
         reply = userdata['reply']
 
@@ -54,8 +54,8 @@ class Friendship(object):
         reply = req.get_header('Authorization')
         # update ip address in DB
         ip = req.env['REMOTE_ADDR']
-        if self.db.get_user_ip(reply) != ip:
-            self.db.set_user_ip(reply, ip)
+        if User().get_user_ip(reply) != ip:
+            User().set_user_ip(reply, ip)
 
         friends = self.dbf.get_friends_list(reply)
         resp.body = json.dumps(friends)
@@ -72,8 +72,8 @@ class FriendshipResponse(object):
         sender = req.get_header('Authorization')
         # update ip address in DB
         ip = req.env['REMOTE_ADDR']
-        if self.db.get_user_ip(sender) != ip:
-            self.db.set_user_ip(sender, ip)
+        if User().get_user_ip(sender) != ip:
+            User().set_user_ip(sender, ip)
 
         reply = userdata['reply']
         request_status = userdata['status']
@@ -100,8 +100,8 @@ class FriendshipResponse(object):
         reply = req.get_header('Authorization')
         # update ip address in DB
         ip = req.env['REMOTE_ADDR']
-        if self.db.get_user_ip(reply) != ip:
-            self.db.set_user_ip(reply, ip)
+        if User().get_user_ip(reply) != ip:
+            User().set_user_ip(reply, ip)
 
         incoming = self.db.check_incoming_request(reply)
         outgoing = self.db.check_outgoing_request(reply)
@@ -119,8 +119,8 @@ class Username(object):
         reply = req.get_header('Authorization')
         # update ip address in DB
         ip = req.env['REMOTE_ADDR']
-        if self.db.get_user_ip(reply) != ip:
-            self.db.set_user_ip(reply, ip)
+        if User().get_user_ip(reply) != ip:
+            User().set_user_ip(reply, ip)
 
         usernames = self.db.username_like(userdata['name'], reply)
         resp.body = json.dumps(usernames)
