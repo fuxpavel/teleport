@@ -122,7 +122,6 @@ class User(Base):
         session = get_session(engine)
         if self.check_exist_user_token(token, engine):
             ip = session.query(User).filter_by(token=token).all()[0].ip
-            print "in db " ,ip
             if ip:
                 return ip
             else:
