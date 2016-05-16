@@ -9,6 +9,11 @@ class Transfer(object):
 
     def on_post(self, req, resp):
         user = req.get_header('Authorization')
+        # update ip address in DB
+        ip = req.env['REMOTE_ADDR']
+        if self.db.get_user_ip(user) != ip:
+            self.db.set_user_ip(user, ip)
+
         data = json.loads(req.stream.read())
         action = data['action']
         if action == 'begin':
@@ -45,6 +50,11 @@ class Transfer(object):
 
     def on_get(self, req, resp):
         user = req.get_header('Authorization')
+        # update ip address in DB
+        ip = req.env['REMOTE_ADDR']
+        if self.db.get_user_ip(user) != ip:
+            self.db.set_user_ip(user, ip)
+
         incoming = self.dbt.get_incoming_transfers(user)
         outgoing = self.dbt.get_outgoing_transfers(user)
         not_pass = self.dbt.get_transfers_not_pass(user)
@@ -60,6 +70,11 @@ class SwitchIP(object):
     def on_post(self, req, resp):
         userdata = json.loads(req.stream.read())
         receiver = req.get_header('Authorization')
+        # update ip address in DB
+        ip = req.env['REMOTE_ADDR']
+        if self.db.get_user_ip(receiver) != ip:
+            self.db.set_user_ip(receiver, ip)
+
         sender = userdata['sender']
         f = get_friendship_db()
         if f.check_friendship(sender, self.db.get_username_by_token(receiver)):
