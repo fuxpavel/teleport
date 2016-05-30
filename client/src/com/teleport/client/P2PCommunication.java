@@ -352,20 +352,17 @@ public class P2PCommunication extends Thread
                 pbBar.setStyle("-fx-accent: green;");
                 try
                 {
-                    if (new Authorization().getZip())
+                    try
                     {
-                        try
-                        {
-                            Files.delete(Paths.get(paths.get(0)));
-                        }
-                        catch (FileNotFoundException e1)
-                        {
-                            lbl.setText("File not found");
-                        }
-                        catch (FileSystemException e1)
-                        {
-                            lbl.setText("Use by other process");
-                        }
+                        Files.delete(Paths.get(paths.get(0)));
+                    }
+                    catch (FileNotFoundException e1)
+                    {
+                        lbl.setText("File not found");
+                    }
+                    catch (FileSystemException e1)
+                    {
+                        lbl.setText("Use by other process");
                     }
                 }
                 catch (IOException e1)
