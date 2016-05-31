@@ -34,7 +34,5 @@
       <CheckBox fx:id="cbxOpenPath" layoutX="48.0" layoutY="151.0" mnemonicParsing="false" onAction="#CheckedOpenLocation" prefHeight="17.0" prefWidth="321.0" text="Open in new windown the location of the received file" />
       <VBox alignment="CENTER" layoutX="-23.0" layoutY="130.0" />
       <CheckBox fx:id="cbxSaveZip" layoutX="48.0" layoutY="110.0" mnemonicParsing="false" onAction="#CheckedSaveZip" text="Delete zip file after sending" />
-      <SplitMenuButton fx:id="ddlTimeout" layoutX="48.0" layoutY="187.0" mnemonicParsing="false" text="Chose timeout">
-      </SplitMenuButton>
    </children>
 </Pane>

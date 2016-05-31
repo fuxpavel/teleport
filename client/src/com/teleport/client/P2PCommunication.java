@@ -374,7 +374,8 @@ public class P2PCommunication extends Thread
                         }
                         catch (FileSystemException e1)
                         {
-                            lbl.setText("Use by other process");
+                            System.out.println("");
+                            //lbl.setText("Use by other process");
                         }
                     }
                     catch (IOException e1)
