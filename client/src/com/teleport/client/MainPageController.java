@@ -43,13 +43,10 @@ public class MainPageController implements Initializable
     @FXML private Text lblIncoming;
     private String senderName;
     private PostLoginInterface log;
-    private boolean clicked;
-    private boolean view;
 
     public MainPageController() throws IOException
     {
         log = new PostLoginInterface();
-        view = true;
     }
 
     public void MainPage(Stage stage) throws IOException
@@ -182,7 +179,7 @@ public class MainPageController implements Initializable
 
     public void DeleteFriend(KeyEvent event) throws IOException, ParseException
     {
-        if (lstViewContacts.getSelectionModel().getSelectedItem() != null && event.getCode().name().equals("DELETE") && view)
+        if (lstViewContacts.getSelectionModel().getSelectedItem() != null && event.getCode().name().equals("DELETE"))
         {
             String contact = lstViewContacts.getSelectionModel().getSelectedItem().toString();
             Alert alert = new Alert(Alert.AlertType.NONE, "Remove '" + contact + "' from your friends list?", ButtonType.APPLY, ButtonType.CANCEL);
@@ -197,7 +194,6 @@ public class MainPageController implements Initializable
 
     public void ReceiveFile() throws IOException, ParseException
     {
-        clicked = false;
         String sender = senderName;
         log.receive(sender, pbSendFile, lblSendFile);
     }
@@ -215,6 +211,9 @@ public class MainPageController implements Initializable
                     @Override
                     public Void call() throws InterruptedException, IOException, ParseException
                     {
+                        String id = "0";
+                        senderName = "";
+                        List<String> inProgress = new ArrayList<>();
                         List<String> newIncoming;
                         Client client = new Client();
                         while (true)
@@ -224,9 +223,18 @@ public class MainPageController implements Initializable
                             {
                                 for (String newSender : newIncoming)
                                 {
-                                    senderName = newSender;
+                                    senderName = newSender.split("\\.")[0];
+                                    id = newSender.split("\\.")[1];
+                                    if (!inProgress.contains(id))
+                                    {
+                                        inProgress.add(id);
+                                        ReceiveFile();
+                                    }
                                 }
-                                ReceiveFile();
+                            }
+                            else if (inProgress.contains(id) && !newIncoming.contains(senderName + "." + id))
+                            {
+                                inProgress.remove(id);
                             }
                             else
                             {
@@ -237,8 +245,8 @@ public class MainPageController implements Initializable
                     }
                 };
 
-                lblIncoming.textProperty().bind(task.messageProperty());
-                task.setOnSucceeded(e -> lblIncoming.textProperty().unbind());
+//                lblIncoming.textProperty().bind(task.messageProperty());
+               // task.setOnSucceeded(e -> lblIncoming.textProperty().unbind());
                 Thread thread = new Thread(task);
                 thread.setDaemon(true);
                 thread.start();

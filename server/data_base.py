@@ -351,7 +351,7 @@ class Tranfsers(Base):
         incoming = session.query(Tranfsers).filter_by(receiver=user).all()
         lst = []
         for i in incoming:
-            lst += [i.sender]
+            lst += [i.sender+"."+str(i.id)]
         return lst
 
     def get_outgoing_transfers(self, user, engine=None):

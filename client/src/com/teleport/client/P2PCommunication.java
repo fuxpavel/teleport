@@ -20,6 +20,7 @@ import java.nio.file.FileSystemException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.EmptyStackException;
 import java.util.List;
 import java.util.Optional;
@@ -51,6 +52,7 @@ public class P2PCommunication extends Thread
     int amout_of_files;
     ProgressBar pbBar;
     Text lbl;
+    private List<Path> delete;
 
 
     public P2PCommunication(String recv, List<String> path, Transfer transfer, String ip_recv)
@@ -133,6 +135,7 @@ public class P2PCommunication extends Thread
                     try
                     {
                         HttpResponse response = transferHandler.beginTransfer(receiver);
+                        delete = new ArrayList<>();
                         int count;
                         float percent;
                         BufferedInputStream in1;
@@ -162,6 +165,7 @@ public class P2PCommunication extends Thread
                                         String compress = Compress.Compression(path);
                                         updateMessage("ready");
                                         File myFile = new File(compress);
+                                        delete.add(myFile.toPath());
                                         fileName = compress.substring(compress.lastIndexOf("\\") + 1);
                                         fileSize = (int) myFile.length();
                                         in1 = new BufferedInputStream(new FileInputStream(myFile));
@@ -189,6 +193,11 @@ public class P2PCommunication extends Thread
                                         sock.close();
                                         in.close();
                                         out.close();
+                                        out = null;
+                                        myFile.delete();
+                                        System.gc();
+                                       // here myFile.delete();
+
                                         if (amout > 0)
                                         {
                                             sock = serverSock.accept();
@@ -311,7 +320,8 @@ public class P2PCommunication extends Thread
         if (result.get() == ButtonType.APPLY)
         {
             chose = true;
-        } else
+        }
+        else
         {
             chose = false;
         }
@@ -350,24 +360,27 @@ public class P2PCommunication extends Thread
             Platform.runLater(() -> {
                 lbl.textProperty().unbind();
                 pbBar.setStyle("-fx-accent: green;");
-                try
+                for(Path path1 : delete)
                 {
                     try
                     {
-                        Files.delete(Paths.get(paths.get(0)));
+                        try
+                        {
+                            Files.delete(path1);
+                        }
+                        catch (FileNotFoundException e1)
+                        {
+                            lbl.setText("File not found");
+                        }
+                        catch (FileSystemException e1)
+                        {
+                            lbl.setText("Use by other process");
+                        }
                     }
-                    catch (FileNotFoundException e1)
+                    catch (IOException e1)
                     {
-                        lbl.setText("File not found");
+                        e1.printStackTrace();
                     }
-                    catch (FileSystemException e1)
-                    {
-                        lbl.setText("Use by other process");
-                    }
-                }
-                catch (IOException e1)
-                {
-                    e1.printStackTrace();
                 }
             });
         });
@@ -410,25 +423,6 @@ public class P2PCommunication extends Thread
                     Platform.runLater(() -> AlertToClient());
                 }
             }
-            copyWorker.setOnSucceeded(e ->
-            {
-                returnVal = true;
-                Platform.runLater(() ->
-                {
-                    lbl.textProperty().unbind();
-                    pbBar.progressProperty().unbind();
-                    pbBar.setStyle("-fx-accent: green;");
-                });
-            });
-            copyWorker.setOnFailed(e ->
-            {
-                returnVal = false;
-                Platform.runLater(() ->
-                {
-                    pbBar.progressProperty().unbind();
-                    pbBar.setStyle("-fx-accent: red;");
-                });
-            });
         }
         catch (java.net.SocketException e)
         {
