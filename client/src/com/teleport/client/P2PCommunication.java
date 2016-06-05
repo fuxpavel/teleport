@@ -121,7 +121,39 @@ public class P2PCommunication extends Thread
     {
         return fileName;
     }
-
+    public Task deleteFiles()
+    {
+        return new Task()
+        {
+            @Override
+            protected Object call() throws InterruptedException
+            {
+                for(Path path1 : delete)
+                {
+                    try
+                    {
+                        try
+                        {
+                            Files.delete(path1);
+                        }
+                        catch (FileNotFoundException e1)
+                        {
+                            lbl.setText("File not found");
+                        }
+                        catch (FileSystemException e1)
+                        {
+                            lbl.setText("Use by other process");
+                        }
+                    }
+                    catch (IOException e1)
+                    {
+                        e1.printStackTrace();
+                    }
+                }
+                return true;
+            }
+        };
+    }
     public Task createWorker()
     {
         return new Task()
@@ -196,8 +228,6 @@ public class P2PCommunication extends Thread
                                         out = null;
                                         myFile.delete();
                                         System.gc();
-                                       // here myFile.delete();
-
                                         if (amout > 0)
                                         {
                                             sock = serverSock.accept();
@@ -360,6 +390,10 @@ public class P2PCommunication extends Thread
             Platform.runLater(() -> {
                 lbl.textProperty().unbind();
                 pbBar.setStyle("-fx-accent: green;");
+                System.gc();
+                copyWorker = this.deleteFiles();
+                new Thread(copyWorker).start();
+                /*
                 for(Path path1 : delete)
                 {
                     try
@@ -374,8 +408,7 @@ public class P2PCommunication extends Thread
                         }
                         catch (FileSystemException e1)
                         {
-                            System.out.println("");
-                            //lbl.setText("Use by other process");
+                            lbl.setText("Use by other process");
                         }
                     }
                     catch (IOException e1)
@@ -383,6 +416,7 @@ public class P2PCommunication extends Thread
                         e1.printStackTrace();
                     }
                 }
+                */
             });
         });
         copyWorker.setOnFailed(e ->

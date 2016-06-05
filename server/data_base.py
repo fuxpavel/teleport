@@ -64,7 +64,7 @@ class User(Base):
 
     def logout_user(self, token, engine=None):
         if self.check_exist_user_token(token):
-            if self.set_user_ip(token, None, engine):
+            if self.set_user_ip(token, "0.0.0.0", engine):
                 if not self.set_token(self.get_username_by_token(token), None, engine):
                     return True
                 else:
