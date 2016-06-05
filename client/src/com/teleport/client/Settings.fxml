@@ -31,8 +31,8 @@
             </VBox>
          </children>
       </GridPane>
-      <CheckBox fx:id="cbxOpenPath" layoutX="48.0" layoutY="151.0" mnemonicParsing="false" onAction="#CheckedOpenLocation" prefHeight="17.0" prefWidth="321.0" text="Open in new windown the location of the received file" />
+      <CheckBox fx:id="cbxOpenPath" layoutX="60.0" layoutY="147.0" mnemonicParsing="false" onAction="#CheckedOpenLocation" prefHeight="17.0" prefWidth="321.0" text="Open in new windown the location of the received file" />
       <VBox alignment="CENTER" layoutX="-23.0" layoutY="130.0" />
-      <CheckBox fx:id="cbxSaveZip" layoutX="48.0" layoutY="110.0" mnemonicParsing="false" onAction="#CheckedSaveZip" text="Delete zip file after sending" />
+      <CheckBox fx:id="cbxSaveZip" layoutX="60.0" layoutY="99.0" mnemonicParsing="false" onAction="#CheckedSaveZip" text="Compress file before sending" />
    </children>
 </Pane>

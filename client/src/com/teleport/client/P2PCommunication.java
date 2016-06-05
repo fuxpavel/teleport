@@ -44,14 +44,14 @@ public class P2PCommunication extends Thread
     private String receiver;
     private Task copyWorker;
     private boolean returnVal;
-    boolean chose;
-    Socket sock;
-    ServerSocket serverSock;
-    InputStream in;
-    OutputStream out;
-    int amout_of_files;
-    ProgressBar pbBar;
-    Text lbl;
+    private boolean chose;
+    private Socket sock;
+    private ServerSocket serverSock;
+    private InputStream in;
+    private OutputStream out;
+    private int amout_of_files;
+    private ProgressBar pbBar;
+    private Text lbl;
     private List<Path> delete;
 
 
@@ -121,6 +121,7 @@ public class P2PCommunication extends Thread
     {
         return fileName;
     }
+
     public Task deleteFiles()
     {
         return new Task()
@@ -154,6 +155,7 @@ public class P2PCommunication extends Thread
             }
         };
     }
+
     public Task createWorker()
     {
         return new Task()
@@ -193,8 +195,12 @@ public class P2PCommunication extends Thread
                                     {
                                         currentSize = 0;
                                         fileSize = 0;
-                                        updateMessage("zipping...");
-                                        String compress = Compress.Compression(path);
+                                        String compress = path;
+                                        if(new Authorization().getZip())
+                                        {
+                                            updateMessage("zipping...");
+                                            compress = Compress.Compression(path);
+                                        }
                                         updateMessage("ready");
                                         File myFile = new File(compress);
                                         delete.add(myFile.toPath());
@@ -391,32 +397,18 @@ public class P2PCommunication extends Thread
                 lbl.textProperty().unbind();
                 pbBar.setStyle("-fx-accent: green;");
                 System.gc();
-                copyWorker = this.deleteFiles();
-                new Thread(copyWorker).start();
-                /*
-                for(Path path1 : delete)
+                try
                 {
-                    try
+                    if(new Authorization().getZip())
                     {
-                        try
-                        {
-                            Files.delete(path1);
-                        }
-                        catch (FileNotFoundException e1)
-                        {
-                            lbl.setText("File not found");
-                        }
-                        catch (FileSystemException e1)
-                        {
-                            lbl.setText("Use by other process");
-                        }
-                    }
-                    catch (IOException e1)
-                    {
-                        e1.printStackTrace();
+                        copyWorker = this.deleteFiles();
+                        new Thread(copyWorker).start();
                     }
                 }
-                */
+                catch (IOException e1)
+                {
+                    e1.printStackTrace();
+                }
             });
         });
         copyWorker.setOnFailed(e ->

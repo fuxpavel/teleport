@@ -50,7 +50,7 @@ public class SettingsController implements Initializable
     @Override
     public void initialize(URL url, ResourceBundle rb)
     {
-        ddlTimeout.setText("Timeout: "+authorization.getTimeout());
+        //ddlTimeout.setText("Timeout: "+authorization.getTimeout());
         MenuItem[] menuItems = new MenuItem[10];
         for (int i =1;i<= 10; i++)
         {
@@ -60,7 +60,7 @@ public class SettingsController implements Initializable
                 try
                 {
                     authorization.setTimeout(Integer.parseInt(mItem.getText()));
-                    ddlTimeout.setText("Timeout: "+authorization.getTimeout());
+                    //ddlTimeout.setText("Timeout: "+authorization.getTimeout());
                 }
                 catch (IOException e1)
                 {
@@ -71,6 +71,6 @@ public class SettingsController implements Initializable
         txtDefaultPath.setText(authorization.getPath());
         cbxSaveZip.setSelected(authorization.getZip());
         cbxOpenPath.setSelected(authorization.getOpen());
-        ddlTimeout.getItems().addAll(menuItems);
+        //ddlTimeout.getItems().addAll(menuItems);
     }
 }
