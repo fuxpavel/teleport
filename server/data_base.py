@@ -19,7 +19,6 @@ def get_session(engine=None):
     return session
 
 
-
 class User(Base):
     __tablename__ = 'User'
     id = Column(Integer, primary_key=True)
