@@ -18,7 +18,6 @@ class Transfer(object):
         action = data['action']
         if action == 'begin':
             other_user = data['user']
-            user = User().get_username_by_token(user)
             id = self.dbt.add_transfer(user, other_user)
             if id != -1:
                 status = 'success'
