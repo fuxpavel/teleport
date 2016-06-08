@@ -47,7 +47,8 @@ public class TestSigning
     {
         String username = "username1";
         String password = "password1";
-        assertTrue(client.register(username, password));
+        String confirm = "password1";
+        assertTrue(client.register(username, password, confirm));
     }
 
     @Test
@@ -55,7 +56,8 @@ public class TestSigning
     {
         String username = "username1";
         String password = "password1";
-        assertFalse(client.register(username, password));
+        String confirm = "password1";
+        assertFalse(client.register(username, password, confirm));
     }
 
     @Test
@@ -63,7 +65,8 @@ public class TestSigning
     {
         String username = "username1";
         String password = "wordpass1";
-        assertFalse(client.register(username, password));
+        String confirm = "password1";
+        assertFalse(client.register(username, password, confirm));
     }
 
     //User 2
@@ -72,7 +75,8 @@ public class TestSigning
     {
         String username = "username2";
         String password = "password2";
-        assertTrue(client.register(username, password));
+        String confirm = "password1";
+        assertTrue(client.register(username, password, confirm));
     }
 
     @Test
@@ -80,7 +84,8 @@ public class TestSigning
     {
         String username = "username2";
         String password = "password2";
-        assertFalse(client.register(username, password));
+        String confirm = "password1";
+        assertFalse(client.register(username, password, confirm));
     }
 
     @Test
@@ -88,7 +93,8 @@ public class TestSigning
     {
         String username = "username2";
         String password = "wordpass2";
-        assertFalse(client.register(username, password));
+        String confirm = "password1";
+        assertFalse(client.register(username, password, confirm));
     }
 
     /*****************************************************************************************/

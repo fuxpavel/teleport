@@ -2,8 +2,8 @@ from data_base import User, Friendship, FriendRequest
 import unittest
 from sqlalchemy import create_engine
 
-class TestDataBase(unittest.TestCase):
 
+class TestDataBase(unittest.TestCase):
     def setUp(self):
         self.engine = create_engine('sqlite:///:memory:')
         db = User()
@@ -55,4 +55,5 @@ class TestDataBase(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    suite = unittest.TestLoader().loadTestsFromTestCase(TestDataBase)
+    unittest.TextTestRunner(verbosity=2).run(suite)

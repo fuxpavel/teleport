@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.teleport.client.InboxController">
+   <children>
+      <ListView fx:id="lstIncoming" layoutX="161.0" layoutY="41.0" onMouseClicked="#PressedButton" prefHeight="144.0" prefWidth="278.0" />
+      <ListView fx:id="lstOutgoing" layoutX="161.0" layoutY="226.0" prefHeight="144.0" prefWidth="278.0" />
+      <Label layoutX="241.0" layoutY="14.0" text="Incoming Requests">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <Label layoutX="241.0" layoutY="200.0" text="Outgoing Requests">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <Button fx:id="butConfirm" layoutX="486.0" layoutY="67.0" mnemonicParsing="false" onAction="#RespondToRequest" text="Confirm" textFill="#1ea941"
+              visible="false" />
+      <Button fx:id="butDenial" layoutX="489.0" layoutY="121.0" mnemonicParsing="false" onAction="#RespondToRequest" text="Denial" textFill="#ee1515" visible="false" />
+      <Label fx:id="lblMsg" layoutX="489.0" layoutY="185.0" />
+   </children>
+</Pane>

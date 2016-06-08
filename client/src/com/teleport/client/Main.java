@@ -1,13 +1,20 @@
 package com.teleport.client;
 
-import asg.cliche.ShellFactory;
+import javafx.application.Application;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class Main
-{
-    public static void main(String[] args) throws IOException
-    {
-        ShellFactory.createConsoleShell("Login interface", "teleport-client", new LoginInterface()).commandLoop();
+
+public class Main extends Application {
+
+    @Override
+    public void start(Stage primaryStage) throws IOException {
+        LoginRegisterController c = new LoginRegisterController();
+        c.Login(primaryStage);
+    }
+
+    public static void main(String[] args) {
+        launch(args);
     }
 }

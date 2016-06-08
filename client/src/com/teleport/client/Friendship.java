@@ -7,10 +7,8 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.json.simple.JSONObject;
-
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static com.teleport.client.ServerInfo.ADDRESS;
@@ -22,20 +20,28 @@ public class Friendship
     private RequestRetriever requestsRetriever;
     private RequestResponder requestResponder;
     private FriendsRetriever friendsRetriever;
+    private RemoveFriend removeFriend;
     private HttpClient httpClient;
     private Authorization authorizationHandler;
-    private SwitchIP senderIP;
-    private List<String> friends;
+    private AddFriend addFriend;
+    private Logout logout;
 
     public Friendship(Authorization authorizationHandler) throws IOException
     {
         httpClient = HttpClientBuilder.create().build();
         this.authorizationHandler = authorizationHandler;
         friendsAdder = new FriendsAdder();
+        removeFriend = new RemoveFriend();
         requestsRetriever = new RequestRetriever();
         requestResponder = new RequestResponder();
         friendsRetriever = new FriendsRetriever();
-        senderIP = new SwitchIP();
+        addFriend = new AddFriend();
+        logout = new Logout();
+    }
+
+    public HttpResponse removeFriend(String remove) throws IOException
+    {
+        return removeFriend.post(remove);
     }
 
     public HttpResponse addFriend(String friend) throws IOException
@@ -48,6 +54,11 @@ public class Friendship
         return requestsRetriever.get();
     }
 
+    public HttpResponse getUsernameList(String name) throws IOException
+    {
+        return addFriend.post(name);
+    }
+
     public HttpResponse respondToRequest(String friend, boolean status) throws IOException
     {
         return requestResponder.post(friend, status);
@@ -58,9 +69,41 @@ public class Friendship
         return friendsRetriever.get();
     }
 
-    public HttpResponse getSenderIP(String sender) throws IOException
+    public HttpResponse logout() throws IOException
     {
-        return senderIP.post(sender);
+        return logout.post();
+    }
+
+    private class Logout
+    {
+        private static final String SERVER_URL = "http://" + ADDRESS + ":" + PORT + "/api/logout";
+
+        public HttpResponse post() throws IOException
+        {
+            HttpPost request = new HttpPost(SERVER_URL);
+            request.addHeader("Authorization", authorizationHandler.getToken());
+            request.setHeader("Content-Type", "application/json");
+            return httpClient.execute(request);
+        }
+    }
+
+    private class RemoveFriend
+    {
+        private static final String SERVER_URL = "http://" + ADDRESS + ":" + PORT + "/api/friendship/remove";
+
+        public HttpResponse post(String remove) throws IOException
+        {
+            Map<String, String> map = new HashMap<>();
+            map.put("remove", remove);
+            JSONObject sendData = new JSONObject(map);
+
+            HttpPost request = new HttpPost(SERVER_URL);
+            request.addHeader("Authorization", authorizationHandler.getToken());
+            request.setHeader("Content-Type", "application/json");
+            StringEntity params = new StringEntity(sendData.toJSONString());
+            request.setEntity(params);
+            return httpClient.execute(request);
+        }
     }
 
     private class FriendsAdder
@@ -114,6 +157,24 @@ public class Friendship
         }
     }
 
+    private class AddFriend
+    {
+        private static final String SERVER_URL = "http://" + ADDRESS + ":" + PORT + "/api/username";
+
+        public HttpResponse post(String name) throws IOException
+        {
+            Map<String, String> map = new HashMap<>();
+            map.put("name", name);
+            JSONObject sendData = new JSONObject(map);
+            HttpPost request = new HttpPost(SERVER_URL);
+            request.addHeader("Authorization", authorizationHandler.getToken());
+            request.setHeader("Content-Type", "application/json");
+            StringEntity params = new StringEntity(sendData.toJSONString());
+            request.setEntity(params);
+            return httpClient.execute(request);
+        }
+    }
+
     private class FriendsRetriever
     {
         private static final String SERVER_URL = "http://" + ADDRESS + ":" + PORT + "/api/friendship";
@@ -122,24 +183,6 @@ public class Friendship
         {
             HttpGet request = new HttpGet(SERVER_URL);
             request.addHeader("Authorization", authorizationHandler.getToken());
-            return httpClient.execute(request);
-        }
-    }
-
-    private class SwitchIP
-    {
-        private static final String SERVER_URL = "http://" + ADDRESS + ":" + PORT + "/api/switch-ip";
-
-        public HttpResponse post(String sender) throws IOException
-        {
-            Map<String, String> map = new HashMap<>();
-            map.put("sender", sender);
-            JSONObject sendData = new JSONObject(map);
-            HttpPost request = new HttpPost(SERVER_URL);
-            request.addHeader("Authorization", authorizationHandler.getToken());
-            request.setHeader("Content-Type", "application/json");
-            StringEntity params = new StringEntity(sendData.toJSONString());
-            request.setEntity(params);
             return httpClient.execute(request);
         }
     }

@@ -26,9 +26,9 @@ public class Signing
         httpClient = HttpClientBuilder.create().build();
     }
 
-    public HttpResponse register(String username, String password) throws IOException
+    public HttpResponse register(String username, String password, String confirm) throws IOException
     {
-        return registerHandler.post(username, password);
+        return registerHandler.post(username, password, confirm);
     }
 
 
@@ -41,11 +41,12 @@ public class Signing
     {
         private static final String SERVER_URL = "http://" + ADDRESS + ":" + PORT + "/api/register";
 
-        public HttpResponse post(String username, String password) throws IOException
+        public HttpResponse post(String username, String password, String confirm) throws IOException
         {
             Map<String, String> map = new HashMap<>();
             map.put("username", username);
             map.put("password", password);
+            map.put("confirm", confirm);
             JSONObject sendData = new JSONObject(map);
 
             HttpPost request = new HttpPost(SERVER_URL);

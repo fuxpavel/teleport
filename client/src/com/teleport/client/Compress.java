@@ -11,7 +11,14 @@ public class Compress
 {
     public static boolean CheckAlreadyCompress(String input)
     {
-        return !(input.substring(input.lastIndexOf(".")).equals(".zip"));
+        if (input.lastIndexOf(".") > 0)
+        {
+            return !(input.substring(input.lastIndexOf(".")).equals(".zip"));
+        }
+        else
+        {
+            return true;
+        }
     }
 
     public static String ParseFileName(String inputFile)
@@ -28,27 +35,28 @@ public class Compress
                 return inputFile + ".zip";
             }
         }
-        return null;
+        return inputFile;
     }
 
     public static String Compression(String inputPath) throws IOException
     {
         FileOutputStream fileOutputStream = null;
         String outputCompressFile = ParseFileName(inputPath);
-        fileOutputStream = new FileOutputStream(outputCompressFile);
-        ZipOutputStream zipOutputStream = new ZipOutputStream(fileOutputStream);
-
-        File inputFile = new File(inputPath);
-
-        if (inputFile.isFile())
+        if(CheckAlreadyCompress(inputPath))
         {
-            compressFile(inputFile, "", zipOutputStream);
+            fileOutputStream = new FileOutputStream(outputCompressFile);
+            ZipOutputStream zipOutputStream = new ZipOutputStream(fileOutputStream);
+            File inputFile = new File(inputPath);
+            if (inputFile.isFile())
+            {
+                compressFile(inputFile, "", zipOutputStream);
+            }
+            else if (inputFile.isDirectory())
+            {
+                compressFolder(zipOutputStream, inputFile, "");
+            }
+            zipOutputStream.close();
         }
-        else if (inputFile.isDirectory())
-        {
-            compressFolder(zipOutputStream, inputFile, "");
-        }
-        zipOutputStream.close();
         return outputCompressFile;
     }
 
@@ -57,7 +65,6 @@ public class Compress
         String myname = parentName + inputFolder.getName() + "\\";
         ZipEntry folderZipEntry = new ZipEntry(myname);
         zipOutputStream.putNextEntry(folderZipEntry);
-        System.out.println(myname);
         File[] dir = inputFolder.listFiles();
         for (File file : dir)
         {
@@ -81,7 +88,6 @@ public class Compress
         ZipEntry zipEntry = new ZipEntry(parentName + inputFile.getName());
         zipOutputStream.putNextEntry(zipEntry);
         FileInputStream fileInputStream = new FileInputStream(inputFile);
-        System.out.println((zipEntry.getCompressedSize()));
         byte[] buf = new byte[1024];
         int bytesRead;
 
