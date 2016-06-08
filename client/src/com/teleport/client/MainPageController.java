@@ -215,9 +215,19 @@ public class MainPageController implements Initializable
                         senderName = "";
                         List<String> inProgress = new ArrayList<>();
                         List<String> newIncoming;
+                        List<String> requests;
                         Client client = new Client();
                         while (true)
                         {
+                            requests = client.getIncomingFriendRequests();
+                            if(requests.size() > 0)
+                            {
+                                butInbox.setStyle("-fx-background-color:green;");
+                            }
+                            else
+                            {
+                                butInbox.setStyle("-fx-background-color:-fx-base;");
+                            }
                             newIncoming = client.getIncomingTransfers();
                             if (!newIncoming.isEmpty())
                             {

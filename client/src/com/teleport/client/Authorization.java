@@ -11,7 +11,7 @@ import java.util.Map;
 public class Authorization
 {
     private String token = null;
-    private static final String fileName = "conf.txt";
+    private static final String fileName = System.getenv("APPDATA") + "\\Teleport\\conf.txt";
     private String path;
     private boolean zip;
     private boolean open;
